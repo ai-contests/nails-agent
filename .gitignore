@@ -24,3 +24,24 @@ __pycache__/
 # (see docs/dataset.md) or regenerate via the scripts.
 data/*
 !data/.gitkeep
+
+# ─── scripts/ ────────────────────────────────────────────────────
+# 本地 Python 工具集（试戴管线 / 手模生成 / 批量 runner）。
+# 用于一次性构造 data/ 资产与 mock 数据，不进 v1 Demo 运行路径，
+# 不入仓库。Next.js 运行栈走 TypeScript + LangGraph.js。
+scripts/
+
+# 本地图像提取脚手架（OpenCV / Roboflow 调用），不入仓库
+extract_nails.py
+nail_extractor.py
+
+# Node.js
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -27,26 +27,19 @@
 
 ```
 nails-agent/
-├── README.md                            # 你正在看的文件
-├── .env.example                         # 复制为 .env 后填 ComfyCloud key
-├── docs/
-│   ├── PRD.md
-│   ├── system-flow.md
-│   ├── data-model.md
-│   ├── confirmed-flow.md
-│   └── open-questions.md
-├── data/                                # runtime 数据家（SQLite / 上传图 / 试戴结果），git 不跟踪
-│   └── .gitkeep                         # 占位用
-└── scripts/                             # 试戴/手模生成/批量管线
-    ├── comfycloud.py                    # ComfyCloud REST 客户端
-    ├── workflow.py                      # Nano Banana 2 workflow 模板
-    ├── gen_hand_pool.py                 # 生成 14 canonical 手模
-    ├── select_nails.py                  # 从 Pinterest 池自动选 50 设计
-    ├── build_pairs.py                   # 生成 100-对 manifest
-    ├── batch_tryon.py                   # 并行批量试戴 runner
-    ├── batch_sheet.py                   # 总览 contact sheet
-    └── (其他 smoke / 工具脚本)
+├── README.md                  # 你正在看的文件
+├── .env.example               # 复制为 .env 后填 ComfyCloud / LLM key
+├── docs/                      # PRD / 流程图 / 数据模型 / 未定项
+└── data/                      # runtime 家（SQLite / 上传图 / 试戴结果），git 不跟踪
+
+# 不入仓库（本地辅助）
+├── scripts/                   # 一次性 Python 工具集：试戴管线、手模生成、批量 runner
+├── extract_nails.py           # OpenCV / Roboflow 单美甲提取脚手架
+└── nail_extractor.py          # 同上
 ```
+
+> v1 Demo 的运行栈是 TypeScript + Next.js + LangGraph.js（见 §技术栈）。
+> `scripts/` 是构造 `data/` 资产 + mock 数据的一次性 Python 工具集，**不进运行路径，不入仓库**。
 
 ## 静态资产（图片）下载
 
@@ -55,30 +48,37 @@ nails-agent/
 - **下载链接**：TBD（Google Drive / GitHub Release，待补充）
 - **或者自己跑一遍重生成**：参考下文「快速开始 §4」
 
+## 技术栈
+
+| 层 | 技术 |
+|---|---|
+| 前端 + 后端 | **Next.js 14（App Router）+ TypeScript** |
+| Agent | **LangGraph.js** + OpenAI 兼容 LLM（首选 Qwen via ModelScope） |
+| DB | SQLite + Drizzle ORM 或 Prisma（TBD） |
+| 试戴管线 | TS 客户端封装 ComfyCloud REST + Nano Banana 2，工作流模板照抄本地 `scripts/workflow.py`（Python 参考实现） |
+| 部署 | 本地 `pnpm dev` + 必要时 ngrok 给评委演示 |
+
+> 本地 Python `scripts/` 仅用于一次性产出 `data/` 资产与 mock 种子，**不在生产路径里**。生产代码全部用 TypeScript。
+
 ## 快速开始
 
 ```bash
-# 1. 安装依赖
-pip install requests python-dotenv pillow
-
-# 2. 配置 ComfyCloud API key
+# 1. 复制环境变量
 cp .env.example .env
-# 编辑 .env，填入 COMFYCLOUD_API_KEY=comfyui-xxx
+# 填入 COMFYCLOUD_API_KEY=comfyui-xxx 与（可选）LLM key
 
-# 3. 试戴一对（hand_canon_fair × nails_24144c1d3a）作为 smoke test
-python3 scripts/smoke_canonical.py
-
-# 4. 批量复现 100 张试戴
-python3 scripts/build_pairs.py
-python3 scripts/batch_tryon.py --workers 6
-python3 scripts/batch_sheet.py
-# → 输出 data/tryon_v2/batch_contact_sheet.jpg
+# 2. 启动 Next.js（待 pnpm create next-app 后接入）
+pnpm install
+pnpm dev
 ```
 
-## 后端 / 前端开发
+> 当前仓库尚未 init Next.js 脚手架，下一步是 `pnpm create next-app@latest .` 起项目骨架并接入 LangGraph.js。
 
-> v1 Demo 的后端和前端尚未启动。技术栈建议：FastAPI + React + SQLite（详见 PRD §9）。
-> 下一步首先开发 `scripts/seed_db.py` 把 50 listed + 50 candidate + 第一轮 mock 行为种入 SQLite。
+## 数据 / 资产复现
+
+> 50 enhanced + 50 Pinterest + 14 手模 + 100 试戴成品图共 ~289MB，**不在 git 里**。
+> 下载链接见 [`docs/dataset.md`](./docs/dataset.md)（TBD：GitHub Release）。
+> 也可以用本地 `scripts/` 里的 Python 管线自己跑一遍（不属于 v1 运行路径）。
 
 ## 关键决策（已锁定）
 

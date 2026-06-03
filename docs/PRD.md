@@ -265,7 +265,7 @@ B 端
 ### Demo 启动数据 seeding 脚本
 
 ```text
-scripts/seed_db.py
+seed pipeline（本地 Python `scripts/seed_db.py`，或 `pnpm run seed` TS 版 TBD）
   ├─ 写 50 listed styles （来自 enhanced_style_*）
   ├─ 写 50 candidate styles （来自 nail_refs.csv）
   ├─ 写 mock user_sessions + user_hand_profiles （覆盖 hand_shape 4 种）
@@ -274,19 +274,23 @@ scripts/seed_db.py
   └─ 写第一个 active recommendation_snapshots(global_main)（rank_no 随机）
 ```
 
-> 这个脚本是 v1 Demo 必做项 —— 没有它 Agent 第一轮没数据可读。
+> 这个 seed 流程是 v1 Demo 必做项 —— 没有它 Agent 第一轮没数据可读。
 
 ---
 
-## 9. 技术栈（建议，非强约束）
+## 9. 技术栈（已锁定）
 
 | 层 | 技术 | 备注 |
 |---|---|---|
-| DB | SQLite + SQLAlchemy | 跟数据库草案一致；JSON 字段用字符串 |
-| 后端 | Python + FastAPI | 跟试戴 wrap 同一语言、易复用 `scripts/comfycloud.py` |
-| 前端 | React + Vite（或 Next.js） | 主推荐页 + 详情页 + B 端面板都是表单/列表型，无需 SSR |
-| Agent | LLM via OpenAI 兼容 API | 用什么模型 TBD，第一版可走 ComfyCloud 同一账号或本地 mock |
-| 部署 | 本地跑 + ngrok 暴露给评委 | Demo 阶段无须云部署 |
+| 前端 + 后端 | **Next.js 14（App Router）+ TypeScript** | 单仓单进程；C/B 端走 route group + Server Actions / Route Handlers |
+| Agent | **LangGraph.js** + OpenAI 兼容 LLM | 首选 Qwen via ModelScope；状态机定义 Agent 一轮的 finding → decision → review |
+| DB | SQLite + Drizzle ORM（或 Prisma，TBD） | 跟 `data-model.md` 一致；JSON 字段用 text 列 + 应用层 parse |
+| 试戴管线 | TS 客户端封装 ComfyCloud REST + Nano Banana 2 | 工作流模板照抄本地 `scripts/workflow.py` 的 PROMPT_WITH_HAND，runtime 走 TS |
+| Mock 数据 seeding | 本地 Python `scripts/seed_db.py`（一次性，不入 git） | 或迁成 `pnpm run seed`（TS）—— TBD |
+| 部署 | 本地 `pnpm dev` + ngrok | Demo 阶段无须云部署 |
+
+> 本地 Python `scripts/` + `extract_nails.py` / `nail_extractor.py` 是**一次性数据工具**，
+> 用来生成 `data/` 资产与 mock 种子，不在 v1 运行路径里，也不入仓库。
 
 ---
 

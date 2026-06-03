@@ -24,6 +24,7 @@ __pycache__/
 # (see docs/dataset.md) or regenerate via the scripts.
 data/*
 !data/.gitkeep
+# 但提取产出的 manifest 走 data/extraction/，跟随 data/ 一起 gitignore
 
 # ─── scripts/ ────────────────────────────────────────────────────
 # 本地 Python 工具集（试戴管线 / 手模生成 / 批量 runner）。

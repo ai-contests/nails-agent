@@ -1,0 +1,22 @@
+{
+  "name": "@nails-agent/extraction",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Extract nail color/length features from style images via Roboflow segmentation + k-means color clustering",
+  "type": "module",
+  "scripts": {
+    "extract": "tsx src/extractAll.ts",
+    "extract:enhanced": "tsx src/extractAll.ts --only=enhanced",
+    "extract:candidate": "tsx src/extractAll.ts --only=candidate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,26 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# macOS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# transient outputs
+*.tmp
+*.log
+
+# ─── data/ ───────────────────────────────────────────────────────
+# Runtime data home (SQLite db, generated images, batch results).
+# Nothing in here is committed to git. The local dev box can keep its
+# own copies; CI/teammates restore from the external dataset link
+# (see docs/dataset.md) or regenerate via the scripts.
+data/*
+!data/.gitkeep

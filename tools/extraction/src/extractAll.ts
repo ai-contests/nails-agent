@@ -1,7 +1,11 @@
-import 'dotenv/config';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { config as loadEnv } from 'dotenv';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = resolve(__dirname, '../../..');
+loadEnv({ path: join(PROJECT_ROOT, '.env') });
 
 import { inferSegmentation } from './roboflowClient.ts';
 import { buildCombinedMask, bboxFromPoints, readRGB } from './maskCrop.ts';
@@ -9,8 +13,6 @@ import { extractColor } from './colorExtractor.ts';
 import { extractLength } from './lengthExtractor.ts';
 import type { StyleManifestEntry } from './types.ts';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = resolve(__dirname, '../../..');
 const DATA_DIR = join(PROJECT_ROOT, 'data');
 const OUT_DIR = join(DATA_DIR, 'extraction');
 const MANIFEST_PATH = join(OUT_DIR, 'manifest.json');

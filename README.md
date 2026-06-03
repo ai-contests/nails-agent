@@ -65,14 +65,38 @@ nails-agent/
 ```bash
 # 1. 复制环境变量
 cp .env.example .env
-# 填入 COMFYCLOUD_API_KEY=comfyui-xxx 与（可选）LLM key
+# 必须填：ROBOFLOW_API_KEY（用于美甲特征提取）
+# 试戴管线再填：COMFYCLOUD_API_KEY
 
-# 2. 启动 Next.js（待 pnpm create next-app 后接入）
-pnpm install
-pnpm dev
+# 2. 装依赖（npm workspaces，一次装好 tools/extraction + db）
+npm install
+
+# 3. 一键跑：提取 100 张美甲特征 → 建库 → 种子 → 自检
+npm run setup
+# ≈ 3-5 分钟（Roboflow 调用 100 次 + DB 建表 + seed）
 ```
 
-> 当前仓库尚未 init Next.js 脚手架，下一步是 `pnpm create next-app@latest .` 起项目骨架并接入 LangGraph.js。
+跑完产物：
+
+| 路径 | 内容 |
+|---|---|
+| `data/extraction/manifest.json` | 98 条美甲特征（color/length/RGB/palette/bbox） |
+| `data/extraction/raw/STYLE###.roboflow.json` | Roboflow 原始返回，调阈值不重打 API |
+| `data/nails.db` | SQLite，17 张表、98 nail_styles + 98 features + 1 active global_main 快照 + 50 reco items |
+
+### 单步
+
+```bash
+npm run extract            # 只提取（不建库）
+npm run db:reset           # 删 data/nails.db
+npm run db:seed            # 重新 seed（前提：库已建好）
+npm run db:check           # 看每张表行数 + 抽样
+```
+
+## Next.js 接入（下一步）
+
+> 当前仓库还没有 Next.js 脚手架，下一步是 `npx create-next-app@latest web --ts --tailwind --app` 起 web app 子项目，
+> 然后 `web/` 里 import `@nails-agent/db` 拿数据。LangGraph.js 接 Agent 一轮。
 
 ## 数据 / 资产复现
 

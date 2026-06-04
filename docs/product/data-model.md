@@ -73,26 +73,20 @@ unknown
 ### 2.5 BehaviorType
 
 ```text
-style_view
 style_click
 favorite_add
 favorite_remove
 tryon_start
-tryon_success
-tryon_failed
 ```
 
 行为含义：
 
 | 枚举值 | 说明 | 主要来源 |
 | --- | --- | --- |
-| `style_view` | 款式被展示或进入可见区域 | 主推荐页、详情页 |
 | `style_click` | 用户点击款式进入详情或打开款式 | 主推荐页、相似手型弹窗 |
-| `favorite_add` | 用户收藏款式 | 详情页、相似手型弹窗、试戴结果弹窗 |
+| `favorite_add` | 用户收藏款式（仅在详情页发生） | 详情页 |
 | `favorite_remove` | 用户取消收藏 | 详情页、收藏夹 |
-| `tryon_start` | 用户发起试戴 | 详情页、相似手型弹窗 |
-| `tryon_success` | ComfyUI 试戴成功并返回结果图 | 试戴结果弹窗 |
-| `tryon_failed` | ComfyUI 试戴失败 | 试戴流程 |
+| `tryon_start` | 用户发起试戴操作（仅在详情页发生） | 详情页 |
 
 第一版不设计分享行为。
 
@@ -178,7 +172,7 @@ agent_chat_messages
 | `status` | enum | 款式状态 |
 | `image_url` | string | 原始/当前可展示图片 |
 | `enhanced_image_url` | string nullable | 增强后图片 |
-| `color_tags` | json array | 颜色标签，沿用视觉特征提取后的主色结果，最多展示 2 个 |
+| `color_tags` | json array | 颜色标签，沿用视觉特征提取后的主色结果，展示 2 个 |
 | `length_tags` | json array | 长度标签，最多展示 2 个 |
 | `visual_feature_id` | string nullable | 关联视觉特征 |
 | `is_available_for_tryon` | bool | 是否允许试戴 |
@@ -439,7 +433,7 @@ idx_reco_items_style_id
 | `window_end` | datetime | 统计窗口结束 |
 | `view_count` | int | 浏览数 |
 | `click_count` | int | 点击数 |
-| `tryon_count` | int | 试戴成功数 |
+| `tryon_count` | int | 试戴开始数 |
 | `favorite_count` | int | 收藏数 |
 | `heat_score` | float | 当前窗口综合热度分 |
 | `growth_score` | float | 相比最近 N 轮均值的增长分 |
@@ -494,7 +488,7 @@ color / length 标签热度快照。候选池复判依赖这张表，它也是 A
 | `style_count` | int | 覆盖款式数量 |
 | `view_count` | int | 浏览数 |
 | `click_count` | int | 点击数 |
-| `tryon_count` | int | 试戴成功数 |
+| `tryon_count` | int | 试戴开始数 |
 | `favorite_count` | int | 收藏数 |
 | `heat_score` | float | 当前窗口标签综合热度分 |
 | `growth_score` | float | 相比最近 N 轮均值的标签增长分 |

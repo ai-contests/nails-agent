@@ -1,6 +1,6 @@
 {
-  "schema": "./src/db/schema.ts",
-  "out": "./drizzle",
+  "schema": "./db/src/schema/index.ts",
+  "out": "./db/migrations",
   "dialect": "sqlite",
   "dbCredentials": {
     "url": "data/nails.db"

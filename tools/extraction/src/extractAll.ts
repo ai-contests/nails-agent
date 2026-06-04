@@ -23,8 +23,8 @@ const MANIFEST_PATH = join(OUT_DIR, 'manifest.json');
 const RAW_DIR = join(OUT_DIR, 'raw');
 
 const EXTRACTOR_VERSION = 'roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color';
-const ROBOFLOW_MODEL_ID = process.env.ROBOFLOW_MODEL_ID ?? 'fingernail-segmentation-yy1l7/3';
-const ROBOFLOW_CONFIDENCE = Number(process.env.ROBOFLOW_CONFIDENCE ?? 0.5);
+const ROBOFLOW_MODEL_ID = process.env['ROBOFLOW_MODEL_ID'] ?? 'fingernail-segmentation-yy1l7/3';
+const ROBOFLOW_CONFIDENCE = Number(process.env['ROBOFLOW_CONFIDENCE'] ?? 0.5);
 
 interface JobItem {
   style_id: string;
@@ -147,7 +147,7 @@ async function buildJobList(): Promise<JobItem[]> {
 }
 
 async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
-  const apiKey = process.env.ROBOFLOW_API_KEY;
+  const apiKey = process.env['ROBOFLOW_API_KEY'];
   if (!apiKey) throw new Error('ROBOFLOW_API_KEY is not set in env');
 
   const seg = await inferSegmentation(job.tryon_image_path, {

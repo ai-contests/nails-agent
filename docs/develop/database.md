@@ -69,7 +69,7 @@ erDiagram
 - **`user_hand_profiles`**：计算机视觉识别出的手型（`slender_long` 细长型, `short_wide` 宽短型等）以及肤色结果。
 
 ### 3. 行为模块 (`db/src/schema/behavior.ts`)
-- **`behavior_events`**：记录原子用户行为，包括：`style_view`（曝光）、`style_click`（点击）、`tryon_success`（试戴成功）、`favorite_add`（收藏）和 `favorite_remove`（取消收藏）。
+- **`behavior_events`**：记录原子用户行为，包括：`style_click`（点击）、`tryon_start`（试戴开始）、`favorite_add`（详情页收藏）和 `favorite_remove`（取消收藏）。
 - **`session_favorites`**：会话内处于收藏状态的美甲款式。
 - **`tryon_jobs`**：ComfyCloud 异步试戴任务的工作流状态。
 

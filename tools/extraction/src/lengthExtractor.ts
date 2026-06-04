@@ -9,9 +9,6 @@ import type { BBox, LengthResult, LengthTag, RoboflowPoint } from './types.ts';
 const SHORT_MAX = 1.50;
 const MEDIUM_MAX = 1.75;
 
-interface PolygonShape {
-  axisRatio: number;
-}
 
 // 协方差矩阵 + 解析特征值（2x2 对称矩阵）
 function polygonAxisRatio(points: RoboflowPoint[]): number {

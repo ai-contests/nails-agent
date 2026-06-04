@@ -9,4 +9,5 @@ export const EXTRACTION_MANIFEST = join(DATA_DIR, 'extraction', 'manifest.json')
 
 loadEnv({ path: join(PROJECT_ROOT, '.env') });
 
-export const DB_PATH = process.env.SQLITE_PATH ?? join(DATA_DIR, 'nails.db');
+export const DB_PATH = process.env['SQLITE_PATH'] ?? join(DATA_DIR, 'nails.db');
+

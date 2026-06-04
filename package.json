@@ -1,20 +1,34 @@
 {
   "name": "nails-agent",
-  "version": "0.1.0",
-  "private": true,
-  "description": "美团 AI 比赛参赛项目 · 美甲 AI 试戴与智能运营",
+  "version": "1.0.0",
+  "description": "Nails-Agent - AI Nail Try-on & Intelligent Operations",
+  "main": "src/api/server.ts",
+  "type": "module",
   "workspaces": [
-    "tools/extraction",
-    "db"
+    "db",
+    "tools/extraction"
   ],
   "scripts": {
-    "extract": "npm run extract -w @nails-agent/extraction && npm run grid",
-    "db:setup": "npm run db:setup -w @nails-agent/db",
-    "db:reset": "npm run db:reset -w @nails-agent/db",
-    "db:seed": "npm run db:seed -w @nails-agent/db",
-    "db:check": "npm run db:check -w @nails-agent/db",
-    "grid": "python3 scripts/make_grid.py",
-    "setup": "npm run extract && npm run db:setup",
-    "typecheck": "npm run typecheck -w @nails-agent/extraction && npm run typecheck -w @nails-agent/db"
+    "dev": "bun run src/api/server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.5.4",
+    "@types/bun": "^1.1.8",
+    "drizzle-kit": "^0.28.1",
+    "eslint": "^9.10.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.5.0"
   }
 }
+

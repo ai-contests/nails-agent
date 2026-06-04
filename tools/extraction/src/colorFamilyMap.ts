@@ -92,8 +92,86 @@ export function rgbToLab(rgb: RGB): [number, number, number] {
 }
 
 export function labDistance(a: [number, number, number], b: [number, number, number]): number {
-  const dL = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2];
-  return Math.sqrt(dL * dL + da * da + db * db);
+  const L1 = a[0], a1 = a[1], b1 = a[2];
+  const L2 = b[0], a2 = b[1], b2 = b[2];
+
+  const kL = 1;
+  const kC = 1;
+  const kH = 1;
+
+  const C1 = Math.sqrt(a1 * a1 + b1 * b1);
+  const C2 = Math.sqrt(a2 * a2 + b2 * b2);
+
+  const C_bar = (C1 + C2) / 2;
+
+  const C_bar7 = Math.pow(C_bar, 7);
+  const G = 0.5 * (1 - Math.sqrt(C_bar7 / (C_bar7 + Math.pow(25, 7))));
+
+  const a1_prime = (1 + G) * a1;
+  const a2_prime = (1 + G) * a2;
+
+  const C1_prime = Math.sqrt(a1_prime * a1_prime + b1 * b1);
+  const C2_prime = Math.sqrt(a2_prime * a2_prime + b2 * b2);
+
+  const C_bar_prime = (C1_prime + C2_prime) / 2;
+
+  const rad2deg = 180 / Math.PI;
+  const deg2rad = Math.PI / 180;
+
+  let h1_prime = Math.atan2(b1, a1_prime) * rad2deg;
+  if (h1_prime < 0) h1_prime += 360;
+
+  let h2_prime = Math.atan2(b2, a2_prime) * rad2deg;
+  if (h2_prime < 0) h2_prime += 360;
+
+  let delta_h_prime = h2_prime - h1_prime;
+  if (Math.abs(delta_h_prime) > 180) {
+    if (h2_prime <= h1_prime) {
+      delta_h_prime += 360;
+    } else {
+      delta_h_prime -= 360;
+    }
+  }
+
+  const delta_L_prime = L2 - L1;
+  const delta_C_prime = C2_prime - C1_prime;
+  const delta_H_prime = 2 * Math.sqrt(C1_prime * C2_prime) * Math.sin((delta_h_prime / 2) * deg2rad);
+
+  let H_bar_prime = (h1_prime + h2_prime) / 2;
+  if (Math.abs(h1_prime - h2_prime) > 180) {
+    if (h1_prime + h2_prime < 360) {
+      H_bar_prime += 180;
+    } else {
+      H_bar_prime -= 180;
+    }
+  }
+
+  const T = 1 - 0.17 * Math.cos((H_bar_prime - 30) * deg2rad)
+              + 0.24 * Math.cos((2 * H_bar_prime) * deg2rad)
+              + 0.32 * Math.cos((3 * H_bar_prime + 6) * deg2rad)
+              - 0.20 * Math.cos((4 * H_bar_prime - 63) * deg2rad);
+
+  const delta_theta = 30 * Math.exp(-Math.pow((H_bar_prime - 275) / 25, 2));
+
+  const R_C = 2 * Math.sqrt(Math.pow(C_bar_prime, 7) / (Math.pow(C_bar_prime, 7) + Math.pow(25, 7)));
+
+  const L_bar = (L1 + L2) / 2;
+  const L_bar_minus_50_sq = Math.pow(L_bar - 50, 2);
+  const S_L = 1 + (0.015 * L_bar_minus_50_sq) / Math.sqrt(20 + L_bar_minus_50_sq);
+
+  const S_C = 1 + 0.045 * C_bar_prime;
+  const S_H = 1 + 0.015 * C_bar_prime * T;
+
+  const R_T = -Math.sin(2 * delta_theta * deg2rad) * R_C;
+
+  const dE00 = Math.sqrt(
+    Math.pow(delta_L_prime / (kL * S_L), 2) +
+    Math.pow(delta_C_prime / (kC * S_C), 2) +
+    Math.pow(delta_H_prime / (kH * S_H), 2) +
+    R_T * (delta_C_prime / (kC * S_C)) * (delta_H_prime / (kH * S_H))
+  );
+
+  return dE00;
 }
 
 const ANCHOR_LABS = COLOR_ANCHORS.map(a => rgbToLab(a.rgb));

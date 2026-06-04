@@ -124,3 +124,27 @@ export const agentChatMessages = sqliteTable('agent_chat_messages', {
   related_memory_ids: text('related_memory_ids').notNull().default('[]'),
   created_at: text('created_at').notNull(),
 });
+
+// agent-cycle §15.1 agent_action_proposals
+export const agentActionProposals = sqliteTable('agent_action_proposals', {
+  proposal_id: text('proposal_id').primaryKey(),
+  agent_run_id: text('agent_run_id').notNull().references(() => agentRuns.agent_run_id),
+  proposal_type: text('proposal_type').notNull(), // adjust_recommendation | list_candidate | unlist_to_candidate | start_experiment | no_action
+  target_type: text('target_type').notNull(), // style | candidate | tag | tag_combo | global
+  target_ids: text('target_ids').notNull().default('[]'), // JSON array string
+  intended_action: text('intended_action').notNull(),
+  hypothesis: text('hypothesis').notNull(),
+  expected_metrics: text('expected_metrics').notNull().default('[]'), // JSON array string
+  rollback_condition: text('rollback_condition').notNull(),
+  review_window_hours: integer('review_window_hours'),
+  confidence: real('confidence'),
+  status: text('status').notNull(), // pending_check | approved | rejected | executed | skipped
+  check_result: text('check_result'), // JSON object string
+  execution_tool: text('execution_tool'),
+  execution_payload: text('execution_payload'), // JSON object string
+  decision_id: text('decision_id').references(() => agentDecisions.decision_id),
+  created_at: text('created_at').notNull(),
+  updated_at: text('updated_at').notNull(),
+});
+
+

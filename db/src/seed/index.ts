@@ -220,8 +220,12 @@ function main() {
   const eventRows: (typeof behaviorEvents.$inferInsert)[] = [];
   const favoriteRows: (typeof sessionFavorites.$inferInsert)[] = [];
 
-  // Load and copy hand files from dataset
-  const datasetHandDir = '/Users/nev4rb14su/workspace/dataset/nails_agent/processed/hands_832x1216';
+  // Load and copy hand files from dataset (fallback to built-in seed_hands for collaborators)
+  let datasetHandDir = '/Users/nev4rb14su/workspace/dataset/nails_agent/processed/hands_832x1216';
+  if (!existsSync(datasetHandDir)) {
+    console.log(`[seed] External hand dataset not found. Falling back to built-in seed_hands.`);
+    datasetHandDir = join(PROJECT_ROOT, 'data', 'seed_hands');
+  }
   const uploadDir = join(PROJECT_ROOT, 'data', 'hand_uploads');
   if (!existsSync(uploadDir)) {
     mkdirSync(uploadDir, { recursive: true });

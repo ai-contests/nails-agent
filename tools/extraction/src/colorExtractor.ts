@@ -1,142 +1,215 @@
-import { classifyColor } from './colorFamilyMap.ts';
+import { COLOR_ANCHORS, classifyColor, rgbToLab, labDistance, anchorCountByFamily } from './colorFamilyMap.ts';
 import type { ColorClusterResult, RGB } from './types.ts';
 
-const SAMPLE_BUDGET = 1000;
-const KMEANS_K = 5;
-const KMEANS_MAX_ITER = 20;
+const SAMPLE_BUDGET = 1500;
+const PALETTE_SIZE = 5;
+// Lab outlier 阈值（关掉肤色误归 + 极端高光黑斑）
+const ANCHOR_MAX_DIST = 35;
+// 皮肤参考 ΔE 内的甲油像素一律视作"皮肤泄漏"，丢弃
+const SKIN_REJECT_DELTA_E = 15;
 
-// 在 mask == 255 的像素里随机采样最多 SAMPLE_BUDGET 个 RGB
-function sampleMaskedPixels(
-  rgb: Buffer,
-  mask: Buffer,
-  width: number,
-  height: number,
-  channels: number,
+interface AnchorBucket {
+  anchorIdx: number;
+  family: string;
+  nameZh: string;
+  pixelCount: number;
+  rSum: number;
+  gSum: number;
+  bSum: number;
+}
+
+function sampleMask(
+  rgb: Buffer, mask: Buffer,
+  width: number, height: number, channels: number,
 ): RGB[] {
-  // 先收集所有 mask 内的索引，再 reservoir / 随机抽 SAMPLE_BUDGET
   const total = width * height;
   const insideIdx: number[] = [];
-  for (let i = 0; i < total; i++) {
-    if (mask[i]! > 128) insideIdx.push(i);
-  }
-
+  for (let i = 0; i < total; i++) if (mask[i]! > 128) insideIdx.push(i);
   if (insideIdx.length === 0) return [];
-
-  const samples: RGB[] = [];
   const N = Math.min(SAMPLE_BUDGET, insideIdx.length);
-  // Fisher–Yates 部分洗牌
+  const step = insideIdx.length / N;
+  const out: RGB[] = [];
   for (let k = 0; k < N; k++) {
-    const j = k + Math.floor(Math.random() * (insideIdx.length - k));
-    const tmp = insideIdx[k]!;
-    insideIdx[k] = insideIdx[j]!;
-    insideIdx[j] = tmp;
-    const px = insideIdx[k]!;
+    const px = insideIdx[Math.floor(k * step)]!;
     const base = px * channels;
-    samples.push({
-      r: rgb[base]!,
-      g: rgb[base + 1]!,
-      b: rgb[base + 2]!,
-    });
+    out.push({ r: rgb[base]!, g: rgb[base + 1]!, b: rgb[base + 2]! });
   }
-  return samples;
+  return out;
 }
 
-function rgbDist2(a: RGB, b: RGB): number {
-  const dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b;
-  return dr * dr + dg * dg + db * db;
+// 环形带 → per-image 皮肤 Lab 中位数
+export function computeSkinRefLab(
+  rgb: Buffer, ring: Buffer,
+  width: number, height: number, channels: number,
+): [number, number, number] | null {
+  const labs: [number, number, number][] = [];
+  const total = width * height;
+  for (let i = 0; i < total; i++) {
+    if (ring[i]! > 128) {
+      const base = i * channels;
+      labs.push(rgbToLab({ r: rgb[base]!, g: rgb[base + 1]!, b: rgb[base + 2]! }));
+    }
+  }
+  if (labs.length < 40) return null;
+  // 通道独立中位数（鲁棒）
+  const sortBy = (k: 0 | 1 | 2) => labs.slice().sort((a, b) => a[k] - b[k]);
+  const L = sortBy(0)[Math.floor(labs.length / 2)]![0];
+  const A = sortBy(1)[Math.floor(labs.length / 2)]![1];
+  const B = sortBy(2)[Math.floor(labs.length / 2)]![2];
+  return [L, A, B];
 }
 
-function kmeans(samples: RGB[], k: number): { centroid: RGB; size: number }[] {
-  if (samples.length === 0) return [];
-  const realK = Math.min(k, samples.length);
-
-  // k-means++ 初始化
-  const centroids: RGB[] = [samples[Math.floor(Math.random() * samples.length)]!];
-  while (centroids.length < realK) {
-    const d2: number[] = samples.map(s => {
-      let best = Infinity;
-      for (const c of centroids) {
-        const d = rgbDist2(s, c);
-        if (d < best) best = d;
+function quantize(
+  samples: RGB[], skinRefLab: [number, number, number] | null,
+): { buckets: AnchorBucket[]; outliers: number; skinFiltered: number; usedTotal: number } {
+  const buckets: AnchorBucket[] = COLOR_ANCHORS.map((a, idx) => ({
+    anchorIdx: idx, family: a.family, nameZh: a.nameZh,
+    pixelCount: 0, rSum: 0, gSum: 0, bSum: 0,
+  }));
+  let outliers = 0, skinFiltered = 0, used = 0;
+  for (const s of samples) {
+    if (skinRefLab) {
+      const slab = rgbToLab(s);
+      if (labDistance(slab, skinRefLab) < SKIN_REJECT_DELTA_E) {
+        skinFiltered++;
+        continue;
       }
-      return best;
-    });
-    const sum = d2.reduce((a, b) => a + b, 0);
-    let r = Math.random() * sum;
-    let picked = 0;
-    for (let i = 0; i < d2.length; i++) {
-      r -= d2[i]!;
-      if (r <= 0) { picked = i; break; }
     }
-    centroids.push(samples[picked]!);
+    const cls = classifyColor(s);
+    if (cls.distance > ANCHOR_MAX_DIST) {
+      outliers++;
+      continue;
+    }
+    const b = buckets[cls.anchorIdx]!;
+    b.pixelCount++; b.rSum += s.r; b.gSum += s.g; b.bSum += s.b;
+    used++;
   }
-
-  const assignments = new Int32Array(samples.length);
-  for (let iter = 0; iter < KMEANS_MAX_ITER; iter++) {
-    let moved = 0;
-    // assign
-    for (let i = 0; i < samples.length; i++) {
-      let bestC = 0, bestD = Infinity;
-      for (let c = 0; c < centroids.length; c++) {
-        const d = rgbDist2(samples[i]!, centroids[c]!);
-        if (d < bestD) { bestD = d; bestC = c; }
-      }
-      if (assignments[i] !== bestC) {
-        assignments[i] = bestC;
-        moved++;
-      }
-    }
-    // recompute centroids
-    const sums = centroids.map(() => ({ r: 0, g: 0, b: 0, n: 0 }));
-    for (let i = 0; i < samples.length; i++) {
-      const c = assignments[i]!;
-      const s = sums[c]!;
-      const px = samples[i]!;
-      s.r += px.r; s.g += px.g; s.b += px.b; s.n++;
-    }
-    for (let c = 0; c < centroids.length; c++) {
-      const s = sums[c]!;
-      if (s.n > 0) {
-        centroids[c] = { r: Math.round(s.r / s.n), g: Math.round(s.g / s.n), b: Math.round(s.b / s.n) };
-      }
-    }
-    if (moved === 0) break;
-  }
-
-  const sizes = new Array(centroids.length).fill(0) as number[];
-  for (let i = 0; i < samples.length; i++) sizes[assignments[i]!]!++;
-  return centroids.map((c, i) => ({ centroid: c, size: sizes[i]! }))
-    .sort((a, b) => b.size - a.size);
+  return { buckets, outliers, skinFiltered, usedTotal: used };
 }
 
-export function extractColor(
-  rgb: Buffer,
-  mask: Buffer,
-  width: number,
-  height: number,
-  channels: number,
+export function extractColorWithRing(
+  rgb: Buffer, innerMask: Buffer, outerRing: Buffer,
+  width: number, height: number, channels: number,
 ): ColorClusterResult | null {
-  const samples = sampleMaskedPixels(rgb, mask, width, height, channels);
+  const samples = sampleMask(rgb, innerMask, width, height, channels);
   if (samples.length < 20) return null;
 
-  const clusters = kmeans(samples, KMEANS_K);
-  if (clusters.length === 0) return null;
+  const skinRefLab = computeSkinRefLab(rgb, outerRing, width, height, channels);
+  const { buckets, outliers, skinFiltered, usedTotal } = quantize(samples, skinRefLab);
+  if (usedTotal < 20) return null;
 
-  const total = clusters.reduce((acc, c) => acc + c.size, 0);
-  const top = clusters[0]!;
-  const cls = classifyColor(top.centroid);
+  // anchor-count-normalized family vote
+  const familyAnchorCount = anchorCountByFamily();
+  const familyVotes = new Map<string, number>();
+  for (const b of buckets) {
+    if (b.pixelCount > 0) {
+      familyVotes.set(b.family, (familyVotes.get(b.family) ?? 0) + b.pixelCount);
+    }
+  }
+  if (familyVotes.size === 0) return null;
 
-  // 颜色置信度 = top cluster 占比 × (1 - normalized lab distance)
-  // 远到 anchor 大约 60 lab 单位以上视为很弱
-  const ratio = top.size / total;
-  const distScore = Math.max(0, 1 - cls.distance / 60);
-  const colorConfidence = +(ratio * distScore).toFixed(3);
+  let winnerFamily = '';
+  let bestScore = -1;
+  for (const [fam, v] of familyVotes) {
+    const n = familyAnchorCount.get(fam) ?? 1;
+    const score = v / n;  // 等价于「平均每锚点票数」
+    if (score > bestScore) { bestScore = score; winnerFamily = fam; }
+  }
+
+  const winnerBuckets = buckets
+    .filter(b => b.family === winnerFamily && b.pixelCount > 0)
+    .sort((a, b) => b.pixelCount - a.pixelCount);
+  const primary = winnerBuckets[0]!;
+  const primaryRgb: RGB = {
+    r: Math.round(primary.rSum / primary.pixelCount),
+    g: Math.round(primary.gSum / primary.pixelCount),
+    b: Math.round(primary.bSum / primary.pixelCount),
+  };
+
+  const topBuckets = buckets
+    .filter(b => b.pixelCount > 0)
+    .sort((a, b) => b.pixelCount - a.pixelCount)
+    .slice(0, PALETTE_SIZE);
+  const palette: RGB[] = topBuckets.map(b => ({
+    r: Math.round(b.rSum / b.pixelCount),
+    g: Math.round(b.gSum / b.pixelCount),
+    b: Math.round(b.bSum / b.pixelCount),
+  }));
+
+  const winnerVotes = familyVotes.get(winnerFamily) ?? 0;
+  const familyRatio = winnerVotes / usedTotal;
+  const cleanRatio = usedTotal / (usedTotal + outliers + skinFiltered);
+  const colorConfidence = +(familyRatio * cleanRatio).toFixed(3);
 
   return {
-    primaryColorRgb: top.centroid,
-    primaryColorFamily: cls.family,
-    primaryColorNameZh: cls.nameZh,
-    dominantPalette: clusters.map(c => c.centroid),
+    primaryColorRgb: primaryRgb,
+    primaryColorFamily: winnerFamily,
+    primaryColorNameZh: primary.nameZh,
+    dominantPalette: palette,
     colorConfidence,
   };
 }
+
+export function extractColorDebug(
+  rgb: Buffer, innerMask: Buffer, outerRing: Buffer,
+  width: number, height: number, channels: number,
+) {
+  const samples = sampleMask(rgb, innerMask, width, height, channels);
+  if (samples.length < 20) return null;
+  const skinRefLab = computeSkinRefLab(rgb, outerRing, width, height, channels);
+  const { buckets, outliers, skinFiltered, usedTotal } = quantize(samples, skinRefLab);
+  const fam = new Map<string, number>();
+  for (const b of buckets) if (b.pixelCount > 0) fam.set(b.family, (fam.get(b.family) ?? 0) + b.pixelCount);
+  return {
+    samples: samples.length, skinFiltered, outliers, usedTotal,
+    skinRefLab,
+    perAnchor: buckets.filter(b => b.pixelCount > 0).sort((a, b) => b.pixelCount - a.pixelCount),
+    perFamily: [...fam.entries()].sort((a, b) => b[1] - a[1]),
+  };
+}
+
+// 兼容旧接口
+export function extractColor(
+  rgb: Buffer, mask: Buffer,
+  width: number, height: number, channels: number,
+): ColorClusterResult | null {
+  // 无 ring 时不做皮肤过滤，回退到 v3 行为
+  const samples = sampleMask(rgb, mask, width, height, channels);
+  if (samples.length < 20) return null;
+  const { buckets, outliers, usedTotal } = quantize(samples, null);
+  if (usedTotal < 20) return null;
+  const familyAnchorCount = anchorCountByFamily();
+  const familyVotes = new Map<string, number>();
+  for (const b of buckets) {
+    if (b.pixelCount > 0) familyVotes.set(b.family, (familyVotes.get(b.family) ?? 0) + b.pixelCount);
+  }
+  let winnerFamily = '', bestScore = -1;
+  for (const [fam, v] of familyVotes) {
+    const n = familyAnchorCount.get(fam) ?? 1;
+    const score = v / n;
+    if (score > bestScore) { bestScore = score; winnerFamily = fam; }
+  }
+  const winnerBuckets = buckets.filter(b => b.family === winnerFamily && b.pixelCount > 0).sort((a, b) => b.pixelCount - a.pixelCount);
+  const primary = winnerBuckets[0]!;
+  const primaryRgb: RGB = {
+    r: Math.round(primary.rSum / primary.pixelCount),
+    g: Math.round(primary.gSum / primary.pixelCount),
+    b: Math.round(primary.bSum / primary.pixelCount),
+  };
+  const topBuckets = buckets.filter(b => b.pixelCount > 0).sort((a, b) => b.pixelCount - a.pixelCount).slice(0, PALETTE_SIZE);
+  const palette = topBuckets.map(b => ({
+    r: Math.round(b.rSum / b.pixelCount),
+    g: Math.round(b.gSum / b.pixelCount),
+    b: Math.round(b.bSum / b.pixelCount),
+  }));
+  const winnerVotes = familyVotes.get(winnerFamily) ?? 0;
+  return {
+    primaryColorRgb: primaryRgb,
+    primaryColorFamily: winnerFamily,
+    primaryColorNameZh: primary.nameZh,
+    dominantPalette: palette,
+    colorConfidence: +(winnerVotes / (usedTotal + outliers)).toFixed(3),
+  };
+}
+
+export { COLOR_ANCHORS };

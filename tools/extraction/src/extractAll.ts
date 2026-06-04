@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
-import { join, resolve, dirname } from 'node:path';
+import { existsSync } from 'node:fs';
+import { basename, join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 
@@ -8,24 +9,29 @@ const PROJECT_ROOT = resolve(__dirname, '../../..');
 loadEnv({ path: join(PROJECT_ROOT, '.env') });
 
 import { inferSegmentation } from './roboflowClient.ts';
-import { buildCombinedMask, bboxFromPoints, readRGB } from './maskCrop.ts';
-import { extractColor } from './colorExtractor.ts';
+import { buildMaskBundle, bboxFromPoints, readRGB } from './maskCrop.ts';
+import { extractColorWithRing } from './colorExtractor.ts';
 import { extractLength } from './lengthExtractor.ts';
 import type { StyleManifestEntry } from './types.ts';
 
 const DATA_DIR = join(PROJECT_ROOT, 'data');
+const TRYON_DIR = join(DATA_DIR, 'tryon_v2');
+const PAIRS_CSV = join(DATA_DIR, 'pairs.csv');
+const NAIL_REFS_CSV = join(DATA_DIR, 'nail_refs.csv');
 const OUT_DIR = join(DATA_DIR, 'extraction');
 const MANIFEST_PATH = join(OUT_DIR, 'manifest.json');
 const RAW_DIR = join(OUT_DIR, 'raw');
 
-const EXTRACTOR_VERSION = 'roboflow_seg_v3+kmeans_v1+aspect_v1';
+const EXTRACTOR_VERSION = 'roboflow_seg_v3+v5_skinref_DT_erode+pca_axis_v2';
 const ROBOFLOW_MODEL_ID = process.env.ROBOFLOW_MODEL_ID ?? 'fingernail-segmentation-yy1l7/3';
 const ROBOFLOW_CONFIDENCE = Number(process.env.ROBOFLOW_CONFIDENCE ?? 0.5);
 
 interface JobItem {
   style_id: string;
   source: 'enhanced' | 'candidate';
-  image_path: string;
+  pair_id: string;
+  tryon_image_path: string;       // 实际跑提取的图（tryon 成品）
+  original_nail_path: string;     // 原 catalog 款式图（参考用）
 }
 
 interface Args {
@@ -59,44 +65,84 @@ function styleId(n: number): string {
   return `STYLE${String(n).padStart(3, '0')}`;
 }
 
+// 简易 CSV 解析（pairs.csv / nail_refs.csv 都没有引号转义）
+function parseCsv(text: string): Record<string, string>[] {
+  const lines = text.trim().split('\n');
+  const header = lines[0]!.split(',');
+  return lines.slice(1).map(line => {
+    const cells = line.split(',');
+    const row: Record<string, string> = {};
+    header.forEach((h, i) => { row[h.trim()] = (cells[i] ?? '').trim(); });
+    return row;
+  });
+}
+
+// 从 enhanced_style_NN.png 文件名解析 NN
+function enhancedIndex(nailPath: string): number | null {
+  const m = basename(nailPath).match(/enhanced_style_(\d{2})\.png/);
+  if (!m) return null;
+  return parseInt(m[1]!, 10);
+}
+
 async function buildJobList(): Promise<JobItem[]> {
+  if (!existsSync(PAIRS_CSV)) {
+    throw new Error(`missing ${PAIRS_CSV}`);
+  }
+  if (!existsSync(NAIL_REFS_CSV)) {
+    throw new Error(`missing ${NAIL_REFS_CSV}`);
+  }
+
+  // 1. nail_refs.csv 建立 source_path → index 字典（候选 Pinterest 映射用）
+  const refs = parseCsv(await readFile(NAIL_REFS_CSV, 'utf8'));
+  const pinterestIndex = new Map<string, number>();
+  for (const r of refs) {
+    const sp = r['source_path'];
+    const idx = Number(r['index']);
+    if (sp && Number.isFinite(idx)) pinterestIndex.set(sp, idx);
+  }
+
+  // 2. pairs.csv 遍历，建立 jobs
+  const pairs = parseCsv(await readFile(PAIRS_CSV, 'utf8'));
   const jobs: JobItem[] = [];
 
-  // 50 enhanced → STYLE001..050（listed）
-  for (let i = 1; i <= 50; i++) {
-    const p = join(DATA_DIR, `enhanced_style_${String(i).padStart(2, '0')}.png`);
-    if (!(await exists(p))) {
-      console.warn(`[warn] missing enhanced ${p} — skip`);
+  for (const p of pairs) {
+    const outName = p['out_name'];
+    const nailSource = p['nail_source'];
+    const nailPath = p['nail_path'];
+    const pairId = p['pair_id'] ?? '';
+    if (!outName || !nailSource || !nailPath) continue;
+
+    const tryonPath = join(TRYON_DIR, outName);
+    if (!(await exists(tryonPath))) {
+      console.warn(`[warn] tryon missing: ${outName} — skip`);
       continue;
     }
-    jobs.push({ style_id: styleId(i), source: 'enhanced', image_path: p });
-  }
 
-  // 50 Pinterest → STYLE051..100（candidate）
-  const csvPath = join(DATA_DIR, 'nail_refs.csv');
-  if (await exists(csvPath)) {
-    const csv = await readFile(csvPath, 'utf8');
-    const lines = csv.trim().split('\n').slice(1); // skip header
-    let next = 51;
-    for (const line of lines) {
-      if (next > 100) break;
-      // index, source_path, query — source_path 不含逗号；query 可能含但我们不用
-      const firstComma = line.indexOf(',');
-      const secondComma = line.indexOf(',', firstComma + 1);
-      if (firstComma < 0 || secondComma < 0) continue;
-      const src = line.slice(firstComma + 1, secondComma).trim();
-      if (!src) continue;
-      if (!(await exists(src))) {
-        console.warn(`[warn] candidate not found: ${src} — skip`);
-        continue;
-      }
-      jobs.push({ style_id: styleId(next), source: 'candidate', image_path: src });
-      next++;
+    let style_id: string;
+    if (nailSource === 'enhanced') {
+      const nn = enhancedIndex(nailPath);
+      if (nn === null) { console.warn(`[warn] cannot parse enhanced index from ${nailPath}`); continue; }
+      style_id = styleId(nn);  // STYLE001..050
+    } else if (nailSource === 'pinterest') {
+      const idx = pinterestIndex.get(nailPath);
+      if (idx === undefined) { console.warn(`[warn] pinterest path not in nail_refs.csv: ${nailPath}`); continue; }
+      style_id = styleId(51 + idx);  // STYLE051..100
+    } else {
+      console.warn(`[warn] unknown nail_source: ${nailSource}`);
+      continue;
     }
-  } else {
-    console.warn(`[warn] ${csvPath} missing — skipping candidate jobs`);
+
+    jobs.push({
+      style_id,
+      source: nailSource === 'enhanced' ? 'enhanced' : 'candidate',
+      pair_id: pairId,
+      tryon_image_path: tryonPath,
+      original_nail_path: nailPath,
+    });
   }
 
+  // 按 style_id 排序，方便观察
+  jobs.sort((a, b) => a.style_id.localeCompare(b.style_id));
   return jobs;
 }
 
@@ -104,13 +150,12 @@ async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
   const apiKey = process.env.ROBOFLOW_API_KEY;
   if (!apiKey) throw new Error('ROBOFLOW_API_KEY is not set in env');
 
-  const seg = await inferSegmentation(job.image_path, {
+  const seg = await inferSegmentation(job.tryon_image_path, {
     apiKey,
     modelId: ROBOFLOW_MODEL_ID,
     confidence: ROBOFLOW_CONFIDENCE,
   });
 
-  // 持久化原始返回，方便后续调阈值不重打 API
   await writeFile(
     join(RAW_DIR, `${job.style_id}.roboflow.json`),
     JSON.stringify(seg, null, 2),
@@ -119,15 +164,16 @@ async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
 
   const preds = (seg.predictions ?? []).filter(p => p.points && p.points.length >= 3);
   if (preds.length === 0) {
-    console.warn(`[warn] ${job.style_id}: no usable predictions`);
+    console.warn(`[warn] ${job.style_id}: no usable predictions on tryon image`);
     return null;
   }
 
-  const { buf: rgb, width, height, channels } = await readRGB(job.image_path);
-  const mask = await buildCombinedMask(job.image_path, preds, width, height);
-  const color = extractColor(rgb, mask, width, height, channels);
+  const { buf: rgb, width, height, channels } = await readRGB(job.tryon_image_path);
+  const { innerMask, outerRing } = await buildMaskBundle(job.tryon_image_path, preds, width, height);
+  const color = extractColorWithRing(rgb, innerMask, outerRing, width, height, channels);
   const bboxes = preds.map(p => bboxFromPoints(p.points));
-  const length = extractLength(bboxes);
+  const polygons = preds.map(p => p.points);
+  const length = extractLength(bboxes, polygons);
 
   if (!color) {
     console.warn(`[warn] ${job.style_id}: empty mask, skipping color`);
@@ -137,7 +183,7 @@ async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
   return {
     style_id: job.style_id,
     source: job.source,
-    image_path: job.image_path,
+    image_path: job.tryon_image_path,   // 主图 = tryon 成品图
     image_width: width,
     image_height: height,
     nail_count: preds.length,
@@ -158,11 +204,8 @@ async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
 async function loadExistingManifest(): Promise<StyleManifestEntry[]> {
   if (!(await exists(MANIFEST_PATH))) return [];
   const text = await readFile(MANIFEST_PATH, 'utf8');
-  try {
-    return JSON.parse(text) as StyleManifestEntry[];
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(text) as StyleManifestEntry[]; }
+  catch { return []; }
 }
 
 async function main() {
@@ -178,6 +221,7 @@ async function main() {
   if (args.resume) jobs = jobs.filter(j => !doneIds.has(j.style_id));
   if (args.max !== undefined) jobs = jobs.slice(0, args.max);
 
+  console.log(`[info] data source = tryon_v2/canon_*.png (via pairs.csv)`);
   console.log(`[info] ${jobs.length} jobs to process (resume=${args.resume}, already done=${existing.length})`);
 
   const newEntries: StyleManifestEntry[] = [];
@@ -189,16 +233,12 @@ async function main() {
       if (entry) {
         newEntries.push(entry);
         ok++;
-        console.log(`[ok ] ${job.style_id} (${job.source}) ${entry.primary_color_family}/${entry.length_tag} nails=${entry.nail_count} ${Date.now() - t0}ms`);
-      } else {
-        fail++;
-      }
+        console.log(`[ok ] ${job.style_id} (${job.source}) ${entry.primary_color_family}/${entry.length_tag} conf=${entry.color_confidence} nails=${entry.nail_count} ${Date.now() - t0}ms`);
+      } else { fail++; }
     } catch (e) {
       fail++;
       console.error(`[err] ${job.style_id}: ${(e as Error).message}`);
     }
-
-    // 每 5 张做一次中间落盘，防止断网丢数据
     if ((ok + fail) % 5 === 0) {
       await writeFile(MANIFEST_PATH, JSON.stringify([...existing, ...newEntries], null, 2), 'utf8');
     }
@@ -210,7 +250,4 @@ async function main() {
   console.log(`[done] manifest → ${MANIFEST_PATH}`);
 }
 
-main().catch(e => {
-  console.error(e);
-  process.exit(1);
-});
+main().catch(e => { console.error(e); process.exit(1); });

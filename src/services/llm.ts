@@ -2,8 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const MODELSCOPE_API_URL = 'https://api-inference.modelscope.cn/v1/chat/completions';
-const MODEL_NAME = 'MiniMax/MiniMax-M2.7:MiniMax';
-const DEFAULT_KEY = 'ms-734a3c65-6fa1-415f-be16-8eb9a5605bcd';
+const MODEL_NAME = 'MiniMax/MiniMax-M2.5';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -11,7 +10,11 @@ export interface ChatMessage {
 }
 
 export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
-  const apiKey = process.env['MODELSCOPE_API_KEY'] || process.env['NVIDIA_API_KEY'] || DEFAULT_KEY;
+  const apiKey = process.env['MODELSCOPE_API_KEY'] || process.env['NVIDIA_API_KEY'];
+
+  if (!apiKey) {
+    throw new Error('API key is missing. Please set MODELSCOPE_API_KEY or NVIDIA_API_KEY environment variable.');
+  }
 
   try {
     const response = await fetch(MODELSCOPE_API_URL, {

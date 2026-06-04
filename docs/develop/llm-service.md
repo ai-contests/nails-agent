@@ -14,7 +14,7 @@ LLM 服务存放在 [llm.ts](file:///Users/nev4rb14su/workspace/nails-agent/src/
 
 - **服务商**：ModelScope Inference API
 - **接口地址**：`https://api-inference.modelscope.cn/v1/chat/completions`
-- **模型标识 (Model ID)**：`MiniMax/MiniMax-M2.7:MiniMax`
+- **模型标识 (Model ID)**：`MiniMax/MiniMax-M2.5`
 - **温度值 (Temperature)**：`0.2`（采用较低的温度值，确保 Agent 在进行自我诊断并输出结构化 JSON 时具有确定性）
 - **最大 Token 数 (Max Tokens)**：`1024`
 
@@ -25,7 +25,8 @@ LLM 服务存放在 [llm.ts](file:///Users/nev4rb14su/workspace/nails-agent/src/
 服务会从环境变量中动态读取 API 密钥，读取优先级如下：
 1. `MODELSCOPE_API_KEY`：ModelScope 平台的访问令牌。
 2. `NVIDIA_API_KEY`：过渡兼容使用的 NVIDIA 凭据。
-3. `ms-734a3c65-6fa1-415f-be16-8eb9a5605bcd`（默认密钥）：硬编码的备用密钥，用于本地开发调试。
+
+若以上环境变量均未被配置，系统将抛出 API Key 缺失的异常。
 
 ---
 

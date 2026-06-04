@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "Nails-Agent - AI Nail Try-on & Intelligent Operations",
   "main": "src/api/server.ts",
+  "private": true,
   "type": "module",
   "workspaces": [
     "db",
     "tools/extraction"
   ],
   "scripts": {
-    "dev": "bun run src/api/server.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "bun:dev": "bun run src/api/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
@@ -21,18 +25,24 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "better-sqlite3": "^11.3.0",
+    "@libsql/client": "^0.17.3",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.4"
+    "drizzle-orm": "^0.36.4",
+    "next": "^16.2.7",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.11",
-    "@types/node": "^22.5.4",
     "@types/bun": "^1.1.8",
+    "@types/node": "^22.5.4",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
     "drizzle-kit": "^0.28.1",
     "eslint": "^9.10.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.5.0"
   }
 }
-

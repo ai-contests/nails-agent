@@ -481,7 +481,7 @@ function main() {
   /* ──────────────────────────────────────────────
      6. Commit all in a single transaction
   ────────────────────────────────────────────── */
-  sqlite.exec('BEGIN');
+  sqlite.run('BEGIN');
   try {
     db.insert(nailStyles).values(styleRows).run();
     db.insert(nailVisualFeatures).values(featureRows).run();
@@ -508,7 +508,7 @@ function main() {
     if (styleSnapshotRows.length > 0) db.insert(styleHeatSnapshots).values(styleSnapshotRows).run();
     if (tagSnapshotRows.length > 0) db.insert(tagHeatSnapshots).values(tagSnapshotRows).run();
 
-    sqlite.exec('COMMIT');
+    sqlite.run('COMMIT');
     console.log(`[seed] inserted:`);
     console.log(`  - ${styleRows.length} nail_styles`);
     console.log(`  - ${featureRows.length} visual features`);
@@ -521,7 +521,7 @@ function main() {
     console.log(`  - ${styleSnapshotRows.length} style heat snapshots`);
     console.log(`  - ${tagSnapshotRows.length} tag heat snapshots`);
   } catch (e) {
-    sqlite.exec('ROLLBACK');
+    sqlite.run('ROLLBACK');
     throw e;
   } finally {
     sqlite.close();

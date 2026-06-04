@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { basename, join, resolve, dirname } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 
@@ -77,12 +77,6 @@ function parseCsv(text: string): Record<string, string>[] {
   });
 }
 
-// 从 enhanced_style_NN.png 文件名解析 NN
-function enhancedIndex(nailPath: string): number | null {
-  const m = basename(nailPath).match(/enhanced_style_(\d{2})\.png/);
-  if (!m) return null;
-  return parseInt(m[1]!, 10);
-}
 
 async function buildJobList(): Promise<JobItem[]> {
   if (!existsSync(PAIRS_CSV)) {
@@ -118,19 +112,14 @@ async function buildJobList(): Promise<JobItem[]> {
       continue;
     }
 
-    let style_id: string;
-    if (nailSource === 'enhanced') {
-      const nn = enhancedIndex(nailPath);
-      if (nn === null) { console.warn(`[warn] cannot parse enhanced index from ${nailPath}`); continue; }
-      style_id = styleId(nn);  // STYLE001..050
-    } else if (nailSource === 'pinterest') {
-      const idx = pinterestIndex.get(nailPath);
-      if (idx === undefined) { console.warn(`[warn] pinterest path not in nail_refs.csv: ${nailPath}`); continue; }
-      style_id = styleId(51 + idx);  // STYLE051..100
-    } else {
-      console.warn(`[warn] unknown nail_source: ${nailSource}`);
+    // style_id derives from pair_id (canon_NNN_…) so the sequence is stable
+    // regardless of whether the nail source is enhanced or pinterest
+    const pairSeq = parseInt(pairId.split('_')[1] ?? '', 10);
+    if (!Number.isFinite(pairSeq)) {
+      console.warn(`[warn] cannot parse seq from pair_id: ${pairId}`);
       continue;
     }
+    const style_id = styleId(pairSeq);
 
     jobs.push({
       style_id,

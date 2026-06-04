@@ -6,19 +6,18 @@
   "type": "module",
   "scripts": {
     "db:reset": "bun src/reset.ts",
-    "db:migrate": "drizzle-kit push",
+    "db:migrate": "bun --bun drizzle-kit push",
     "db:seed": "bun src/seed/index.ts",
     "db:check": "bun src/check.ts",
     "db:setup": "bun run db:reset && bun run db:migrate && bun run db:seed && bun run db:check",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
+    "@libsql/client": "^0.17.3",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.4"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.10.0",
     "drizzle-kit": "^0.28.1",
     "tsx": "^4.19.2",

@@ -7,8 +7,8 @@ const dbPath = process.env['SQLITE_PATH'] ?? '../data/nails.db';
 export default defineConfig({
   out: './migrations',
   schema: './src/schema/index.ts',
-  dialect: 'sqlite',
-  dbCredentials: { url: dbPath },
+  dialect: 'turso',
+  dbCredentials: { url: 'file:' + dbPath },
   verbose: true,
   strict: false,
 });

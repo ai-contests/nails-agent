@@ -4,7 +4,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { analyzeHandImage } from '../services/handCV.js';
 import { buildTryonWorkflow, submitPrompt, pollJob, downloadView, extractOutputs, uploadImage } from '../services/comfycloud.js';
 import { runOperationCycle } from '../agent/orchestrator.js';
-import { callLlamaModel, ChatMessage } from '../services/llama.js';
+import { callLlmModel, ChatMessage } from '../services/llm.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -653,11 +653,11 @@ router.post('/api/admin/chat/messages', async (req) => {
 
   let replyText = 'Fallback: Unable to generate LLM response.';
   try {
-    replyText = await callLlamaModel(messages);
+    replyText = await callLlmModel(messages);
   } catch (e: unknown) {
     const err = e as Error;
     console.error('Error calling LLM for Chat:', err);
-    replyText = `Error calling Llama model: ${err.message || String(e)}`;
+    replyText = `Error calling LLM model: ${err.message || String(e)}`;
   }
 
   // Save Agent Response

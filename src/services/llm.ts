@@ -1,23 +1,20 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const NVIDIA_API_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
-const MODEL_NAME = 'nvidia/llama-3.1-nemotron-nano-8b-v1';
+const MODELSCOPE_API_URL = 'https://api-inference.modelscope.cn/v1/chat/completions';
+const MODEL_NAME = 'MiniMax/MiniMax-M2.7:MiniMax';
+const DEFAULT_KEY = 'ms-734a3c65-6fa1-415f-be16-8eb9a5605bcd';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-export async function callLlamaModel(messages: ChatMessage[]): Promise<string> {
-  const apiKey = process.env['NVIDIA_API_KEY'];
-  if (!apiKey) {
-    console.warn('NVIDIA_API_KEY is not set. Falling back to mock response.');
-    return 'Mock Response: NVIDIA API key is missing. Please set NVIDIA_API_KEY in .env.';
-  }
+export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
+  const apiKey = process.env['MODELSCOPE_API_KEY'] || process.env['NVIDIA_API_KEY'] || DEFAULT_KEY;
 
   try {
-    const response = await fetch(NVIDIA_API_URL, {
+    const response = await fetch(MODELSCOPE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,13 +30,13 @@ export async function callLlamaModel(messages: ChatMessage[]): Promise<string> {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`NVIDIA API error: ${response.status} - ${errorText}`);
+      throw new Error(`ModelScope API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json() as { choices: { message: { content: string } }[] };
     return data.choices[0]?.message.content || '';
   } catch (error) {
-    console.error('Error calling NVIDIA Llama model:', error);
+    console.error('Error calling ModelScope MiniMax model:', error);
     throw error;
   }
 }

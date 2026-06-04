@@ -1,5 +1,5 @@
 import * as tools from './tools.js';
-import { callLlamaModel, ChatMessage } from '../services/llama.js';
+import { callLlmModel, ChatMessage } from '../services/llm.js';
 
 interface StyleHeatItem {
   style_id: string | null;
@@ -107,7 +107,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
     } = {};
 
     try {
-      const responseText = await callLlamaModel(promptMessages);
+      const responseText = await callLlmModel(promptMessages);
       // Attempt to parse JSON response from LLM
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch && jsonMatch[0]) {

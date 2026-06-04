@@ -141,12 +141,50 @@ export function extractColorWithRing(
   const cleanRatio = usedTotal / (usedTotal + outliers + skinFiltered);
   const colorConfidence = +(familyRatio * cleanRatio).toFixed(3);
 
+  // Extract secondary color
+  let secondaryFamily: string | null = null;
+  let maxSecVotes = 0;
+  for (const [fam, v] of familyVotes) {
+    if (fam === winnerFamily) continue;
+    if (v > maxSecVotes) {
+      maxSecVotes = v;
+      secondaryFamily = fam;
+    }
+  }
+
+  let secondaryColorFamily: string | null = null;
+  let secondaryColorNameZh: string | null = null;
+  let secondaryColorRgb: [number, number, number] | null = null;
+  let secondaryColorConfidence: number | null = null;
+
+  if (secondaryFamily && (maxSecVotes / usedTotal) >= 0.05) {
+    secondaryColorFamily = secondaryFamily;
+    const secBuckets = buckets
+      .filter(b => b.family === secondaryFamily && b.pixelCount > 0)
+      .sort((a, b) => b.pixelCount - a.pixelCount);
+    if (secBuckets.length > 0) {
+      const secPrimary = secBuckets[0]!;
+      secondaryColorNameZh = secPrimary.nameZh;
+      secondaryColorRgb = [
+        Math.round(secPrimary.rSum / secPrimary.pixelCount),
+        Math.round(secPrimary.gSum / secPrimary.pixelCount),
+        Math.round(secPrimary.bSum / secPrimary.pixelCount),
+      ];
+      const secFamilyRatio = maxSecVotes / usedTotal;
+      secondaryColorConfidence = +(secFamilyRatio * cleanRatio).toFixed(3);
+    }
+  }
+
   return {
     primaryColorRgb: primaryRgb,
     primaryColorFamily: winnerFamily,
     primaryColorNameZh: primary.nameZh,
     dominantPalette: palette,
     colorConfidence,
+    secondaryColorFamily,
+    secondaryColorNameZh,
+    secondaryColorRgb,
+    secondaryColorConfidence,
   };
 }
 
@@ -203,12 +241,52 @@ export function extractColor(
     b: Math.round(b.bSum / b.pixelCount),
   }));
   const winnerVotes = familyVotes.get(winnerFamily) ?? 0;
+
+  // Extract secondary color
+  let secondaryFamily: string | null = null;
+  let maxSecVotes = 0;
+  for (const [fam, v] of familyVotes) {
+    if (fam === winnerFamily) continue;
+    if (v > maxSecVotes) {
+      maxSecVotes = v;
+      secondaryFamily = fam;
+    }
+  }
+
+  let secondaryColorFamily: string | null = null;
+  let secondaryColorNameZh: string | null = null;
+  let secondaryColorRgb: [number, number, number] | null = null;
+  let secondaryColorConfidence: number | null = null;
+
+  const cleanRatio = usedTotal / (usedTotal + outliers);
+  if (secondaryFamily && (maxSecVotes / usedTotal) >= 0.05) {
+    secondaryColorFamily = secondaryFamily;
+    const secBuckets = buckets
+      .filter(b => b.family === secondaryFamily && b.pixelCount > 0)
+      .sort((a, b) => b.pixelCount - a.pixelCount);
+    if (secBuckets.length > 0) {
+      const secPrimary = secBuckets[0]!;
+      secondaryColorNameZh = secPrimary.nameZh;
+      secondaryColorRgb = [
+        Math.round(secPrimary.rSum / secPrimary.pixelCount),
+        Math.round(secPrimary.gSum / secPrimary.pixelCount),
+        Math.round(secPrimary.bSum / secPrimary.pixelCount),
+      ];
+      const secFamilyRatio = maxSecVotes / usedTotal;
+      secondaryColorConfidence = +(secFamilyRatio * cleanRatio).toFixed(3);
+    }
+  }
+
   return {
     primaryColorRgb: primaryRgb,
     primaryColorFamily: winnerFamily,
     primaryColorNameZh: primary.nameZh,
     dominantPalette: palette,
     colorConfidence: +(winnerVotes / (usedTotal + outliers)).toFixed(3),
+    secondaryColorFamily,
+    secondaryColorNameZh,
+    secondaryColorRgb,
+    secondaryColorConfidence,
   };
 }
 

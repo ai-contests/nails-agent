@@ -8,11 +8,12 @@
     "db"
   ],
   "scripts": {
-    "extract": "npm run extract -w @nails-agent/extraction",
+    "extract": "npm run extract -w @nails-agent/extraction && npm run grid",
     "db:setup": "npm run db:setup -w @nails-agent/db",
     "db:reset": "npm run db:reset -w @nails-agent/db",
     "db:seed": "npm run db:seed -w @nails-agent/db",
     "db:check": "npm run db:check -w @nails-agent/db",
+    "grid": "python3 scripts/make_grid.py",
     "setup": "npm run extract && npm run db:setup",
     "typecheck": "npm run typecheck -w @nails-agent/extraction && npm run typecheck -w @nails-agent/db"
   }

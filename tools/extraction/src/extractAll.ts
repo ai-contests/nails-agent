@@ -22,7 +22,7 @@ const OUT_DIR = join(DATA_DIR, 'extraction');
 const MANIFEST_PATH = join(OUT_DIR, 'manifest.json');
 const RAW_DIR = join(OUT_DIR, 'raw');
 
-const EXTRACTOR_VERSION = 'roboflow_seg_v3+v5_skinref_DT_erode+pca_axis_v2';
+const EXTRACTOR_VERSION = 'roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color';
 const ROBOFLOW_MODEL_ID = process.env.ROBOFLOW_MODEL_ID ?? 'fingernail-segmentation-yy1l7/3';
 const ROBOFLOW_CONFIDENCE = Number(process.env.ROBOFLOW_CONFIDENCE ?? 0.5);
 
@@ -193,6 +193,10 @@ async function processOne(job: JobItem): Promise<StyleManifestEntry | null> {
     primary_color_rgb: [color.primaryColorRgb.r, color.primaryColorRgb.g, color.primaryColorRgb.b],
     dominant_palette: color.dominantPalette.map(c => [c.r, c.g, c.b] as [number, number, number]),
     color_confidence: color.colorConfidence,
+    secondary_color_family: color.secondaryColorFamily,
+    secondary_color_name: color.secondaryColorNameZh,
+    secondary_color_rgb: color.secondaryColorRgb,
+    secondary_color_confidence: color.secondaryColorConfidence,
     length_tag: length.lengthTag,
     length_ratio: length.lengthRatio,
     length_confidence: length.lengthConfidence,

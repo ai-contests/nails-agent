@@ -22,6 +22,10 @@ interface ManifestEntry {
   primary_color_rgb: [number, number, number];
   dominant_palette: [number, number, number][];
   color_confidence: number;
+  secondary_color_family: string | null;
+  secondary_color_name: string | null;
+  secondary_color_rgb: [number, number, number] | null;
+  secondary_color_confidence: number | null;
   length_tag: 'short' | 'medium' | 'long' | 'unknown';
   length_ratio: number;
   length_confidence: number;
@@ -94,6 +98,10 @@ function main() {
       primary_color_rgb: JSON.stringify(m.primary_color_rgb),
       dominant_palette: JSON.stringify(m.dominant_palette),
       color_confidence: m.color_confidence,
+      secondary_color_family: m.secondary_color_family,
+      secondary_color_name: m.secondary_color_name,
+      secondary_color_rgb: m.secondary_color_rgb ? JSON.stringify(m.secondary_color_rgb) : null,
+      secondary_color_confidence: m.secondary_color_confidence,
       nail_crop_url: null,
       length_tag: m.length_tag,
       length_ratio: m.length_ratio,

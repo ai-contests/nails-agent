@@ -35,6 +35,10 @@ export const nailVisualFeatures = sqliteTable(
     primary_color_rgb: text('primary_color_rgb').notNull(), // JSON [r,g,b]
     dominant_palette: text('dominant_palette').notNull(), // JSON [[r,g,b], ...]
     color_confidence: real('color_confidence'),
+    secondary_color_family: text('secondary_color_family'),
+    secondary_color_name: text('secondary_color_name'),
+    secondary_color_rgb: text('secondary_color_rgb'), // JSON [r,g,b] or null
+    secondary_color_confidence: real('secondary_color_confidence'),
     nail_crop_url: text('nail_crop_url'),
     length_tag: text('length_tag').notNull(), // short | medium | long | unknown
     length_ratio: real('length_ratio'),

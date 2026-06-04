@@ -37,6 +37,10 @@ export interface ColorClusterResult {
   primaryColorNameZh: string;
   dominantPalette: RGB[];
   colorConfidence: number;
+  secondaryColorFamily: string | null;
+  secondaryColorNameZh: string | null;
+  secondaryColorRgb: [number, number, number] | null;
+  secondaryColorConfidence: number | null;
 }
 
 export type LengthTag = 'short' | 'medium' | 'long' | 'unknown';
@@ -60,6 +64,10 @@ export interface StyleManifestEntry {
   primary_color_rgb: [number, number, number];
   dominant_palette: [number, number, number][];
   color_confidence: number;
+  secondary_color_family: string | null;
+  secondary_color_name: string | null;
+  secondary_color_rgb: [number, number, number] | null;
+  secondary_color_confidence: number | null;
   length_tag: LengthTag;
   length_ratio: number;
   length_confidence: number;

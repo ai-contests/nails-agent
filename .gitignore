@@ -18,13 +18,19 @@ __pycache__/
 *.log
 
 # ─── data/ ───────────────────────────────────────────────────────
-# Runtime data home (SQLite db, generated images, batch results).
-# Nothing in here is committed to git. The local dev box can keep its
-# own copies; CI/teammates restore from the external dataset link
-# (see docs/dataset.md) or regenerate via the scripts.
+# Large binary assets (images, models, generated outputs, SQLite db)
+# are NOT committed. Collaborators restore them from the external dataset
+# link or regenerate via scripts.
+#
+# Exception: the three lightweight seed-critical text files are tracked
+# so collaborators can run `npm run db:setup` out of the box.
 data/*
 !data/.gitkeep
-# 但提取产出的 manifest 走 data/extraction/，跟随 data/ 一起 gitignore
+!data/pairs.csv
+!data/nail_refs.csv
+!data/extraction/
+data/extraction/*
+!data/extraction/manifest.json
 
 # ─── scripts/ ────────────────────────────────────────────────────
 # 本地 Python 工具集（试戴管线 / 手模生成 / 批量 runner）。

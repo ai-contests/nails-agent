@@ -1,0 +1,8678 @@
+[
+  {
+    "style_id": "STYLE002",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/jOXQI",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 222,
+        "y1": 468,
+        "x2": 270,
+        "y2": 544
+      },
+      {
+        "x1": 373,
+        "y1": 195,
+        "x2": 418,
+        "y2": 260
+      },
+      {
+        "x1": 626,
+        "y1": 213,
+        "x2": 672,
+        "y2": 277
+      },
+      {
+        "x1": 504,
+        "y1": 146,
+        "x2": 552,
+        "y2": 214
+      },
+      {
+        "x1": 761,
+        "y1": 368,
+        "x2": 795,
+        "y2": 419
+      }
+    ],
+    "primary_color_family": "olive",
+    "primary_color_name": "橄榄绿",
+    "primary_color_rgb": [
+      103,
+      90,
+      30
+    ],
+    "dominant_palette": [
+      [
+        103,
+        90,
+        30
+      ],
+      [
+        158,
+        119,
+        105
+      ],
+      [
+        176,
+        135,
+        122
+      ],
+      [
+        157,
+        144,
+        99
+      ],
+      [
+        166,
+        126,
+        115
+      ]
+    ],
+    "color_confidence": 0.46,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "焦糖",
+    "secondary_color_rgb": [
+      158,
+      119,
+      105
+    ],
+    "secondary_color_confidence": 0.077,
+    "length_tag": "short",
+    "length_ratio": 1.468,
+    "length_confidence": 0.998,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:57:56.400Z"
+  },
+  {
+    "style_id": "STYLE003",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/idlcu",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 459,
+        "y1": 482,
+        "x2": 526,
+        "y2": 572
+      },
+      {
+        "x1": 393,
+        "y1": 418,
+        "x2": 448,
+        "y2": 507
+      },
+      {
+        "x1": 529,
+        "y1": 522,
+        "x2": 593,
+        "y2": 603
+      },
+      {
+        "x1": 311,
+        "y1": 150,
+        "x2": 370,
+        "y2": 236
+      },
+      {
+        "x1": 608,
+        "y1": 532,
+        "x2": 663,
+        "y2": 604
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      18,
+      10,
+      6
+    ],
+    "dominant_palette": [
+      [
+        18,
+        10,
+        6
+      ],
+      [
+        173,
+        51,
+        57
+      ],
+      [
+        104,
+        32,
+        33
+      ],
+      [
+        50,
+        18,
+        14
+      ],
+      [
+        150,
+        144,
+        141
+      ]
+    ],
+    "color_confidence": 0.322,
+    "secondary_color_family": "red",
+    "secondary_color_name": "正红",
+    "secondary_color_rgb": [
+      173,
+      51,
+      57
+    ],
+    "secondary_color_confidence": 0.131,
+    "length_tag": "short",
+    "length_ratio": 1.323,
+    "length_confidence": 0.88,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:57:57.724Z"
+  },
+  {
+    "style_id": "STYLE004",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/b9IQc",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 7,
+    "bboxes": [
+      {
+        "x1": 473,
+        "y1": 310,
+        "x2": 508,
+        "y2": 363
+      },
+      {
+        "x1": 532,
+        "y1": 308,
+        "x2": 562,
+        "y2": 363
+      },
+      {
+        "x1": 416,
+        "y1": 151,
+        "x2": 460,
+        "y2": 207
+      },
+      {
+        "x1": 464,
+        "y1": 122,
+        "x2": 504,
+        "y2": 175
+      },
+      {
+        "x1": 471,
+        "y1": 180,
+        "x2": 510,
+        "y2": 240
+      },
+      {
+        "x1": 535,
+        "y1": 123,
+        "x2": 577,
+        "y2": 176
+      },
+      {
+        "x1": 576,
+        "y1": 149,
+        "x2": 613,
+        "y2": 203
+      }
+    ],
+    "primary_color_family": "tan",
+    "primary_color_name": "焦糖",
+    "primary_color_rgb": [
+      154,
+      129,
+      108
+    ],
+    "dominant_palette": [
+      [
+        154,
+        129,
+        108
+      ],
+      [
+        253,
+        252,
+        246
+      ],
+      [
+        245,
+        239,
+        225
+      ],
+      [
+        121,
+        98,
+        71
+      ],
+      [
+        111,
+        87,
+        55
+      ]
+    ],
+    "color_confidence": 0.146,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      253,
+      252,
+      246
+    ],
+    "secondary_color_confidence": 0.065,
+    "length_tag": "medium",
+    "length_ratio": 1.567,
+    "length_confidence": 0.965,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:57:58.711Z"
+  },
+  {
+    "style_id": "STYLE005",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/Xhqc9",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 572,
+        "y1": 773,
+        "x2": 609,
+        "y2": 830
+      },
+      {
+        "x1": 499,
+        "y1": 820,
+        "x2": 540,
+        "y2": 877
+      },
+      {
+        "x1": 420,
+        "y1": 788,
+        "x2": 456,
+        "y2": 843
+      },
+      {
+        "x1": 657,
+        "y1": 677,
+        "x2": 685,
+        "y2": 723
+      },
+      {
+        "x1": 316,
+        "y1": 601,
+        "x2": 341,
+        "y2": 654
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      25,
+      19,
+      14
+    ],
+    "dominant_palette": [
+      [
+        25,
+        19,
+        14
+      ],
+      [
+        145,
+        139,
+        132
+      ],
+      [
+        214,
+        163,
+        149
+      ],
+      [
+        77,
+        70,
+        62
+      ],
+      [
+        102,
+        96,
+        88
+      ]
+    ],
+    "color_confidence": 0.057,
+    "secondary_color_family": "gray",
+    "secondary_color_name": "灰色",
+    "secondary_color_rgb": [
+      145,
+      139,
+      132
+    ],
+    "secondary_color_confidence": 0.009,
+    "length_tag": "medium",
+    "length_ratio": 1.605,
+    "length_confidence": 0.893,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:57:59.575Z"
+  },
+  {
+    "style_id": "STYLE006",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/BhSpa",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 491,
+        "y1": 808,
+        "x2": 539,
+        "y2": 919
+      },
+      {
+        "x1": 414,
+        "y1": 766,
+        "x2": 444,
+        "y2": 876
+      },
+      {
+        "x1": 590,
+        "y1": 771,
+        "x2": 630,
+        "y2": 871
+      },
+      {
+        "x1": 319,
+        "y1": 670,
+        "x2": 354,
+        "y2": 764
+      },
+      {
+        "x1": 716,
+        "y1": 573,
+        "x2": 762,
+        "y2": 675
+      }
+    ],
+    "primary_color_family": "tan",
+    "primary_color_name": "深焦糖",
+    "primary_color_rgb": [
+      128,
+      94,
+      82
+    ],
+    "dominant_palette": [
+      [
+        128,
+        94,
+        82
+      ],
+      [
+        152,
+        121,
+        106
+      ],
+      [
+        174,
+        141,
+        132
+      ],
+      [
+        209,
+        191,
+        177
+      ],
+      [
+        163,
+        127,
+        118
+      ]
+    ],
+    "color_confidence": 0.391,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      174,
+      141,
+      132
+    ],
+    "secondary_color_confidence": 0.1,
+    "length_tag": "long",
+    "length_ratio": 2.829,
+    "length_confidence": 0.715,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:00.906Z"
+  },
+  {
+    "style_id": "STYLE007",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/guK2a",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 507,
+        "y1": 352,
+        "x2": 603,
+        "y2": 440
+      },
+      {
+        "x1": 538,
+        "y1": 410,
+        "x2": 633,
+        "y2": 488
+      },
+      {
+        "x1": 520,
+        "y1": 150,
+        "x2": 617,
+        "y2": 216
+      },
+      {
+        "x1": 485,
+        "y1": 286,
+        "x2": 576,
+        "y2": 375
+      },
+      {
+        "x1": 574,
+        "y1": 461,
+        "x2": 661,
+        "y2": 516
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      164,
+      155,
+      150
+    ],
+    "dominant_palette": [
+      [
+        164,
+        155,
+        150
+      ],
+      [
+        236,
+        233,
+        229
+      ],
+      [
+        201,
+        195,
+        192
+      ],
+      [
+        222,
+        216,
+        208
+      ],
+      [
+        197,
+        186,
+        177
+      ]
+    ],
+    "color_confidence": 0.264,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      236,
+      233,
+      229
+    ],
+    "secondary_color_confidence": 0.195,
+    "length_tag": "long",
+    "length_ratio": 2.383,
+    "length_confidence": 0.68,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:02.287Z"
+  },
+  {
+    "style_id": "STYLE008",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/zvvxo",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 502,
+        "y1": 116,
+        "x2": 552,
+        "y2": 235
+      },
+      {
+        "x1": 752,
+        "y1": 345,
+        "x2": 798,
+        "y2": 440
+      },
+      {
+        "x1": 218,
+        "y1": 446,
+        "x2": 276,
+        "y2": 563
+      },
+      {
+        "x1": 361,
+        "y1": 163,
+        "x2": 411,
+        "y2": 277
+      },
+      {
+        "x1": 623,
+        "y1": 184,
+        "x2": 669,
+        "y2": 296
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      16,
+      15,
+      12
+    ],
+    "dominant_palette": [
+      [
+        16,
+        15,
+        12
+      ],
+      [
+        144,
+        140,
+        137
+      ],
+      [
+        105,
+        95,
+        91
+      ],
+      [
+        80,
+        67,
+        65
+      ],
+      [
+        130,
+        118,
+        110
+      ]
+    ],
+    "color_confidence": 0.309,
+    "secondary_color_family": "gray",
+    "secondary_color_name": "灰色",
+    "secondary_color_rgb": [
+      144,
+      140,
+      137
+    ],
+    "secondary_color_confidence": 0.201,
+    "length_tag": "long",
+    "length_ratio": 2.326,
+    "length_confidence": 0.975,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:03.622Z"
+  },
+  {
+    "style_id": "STYLE009",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/7MaL8",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 374,
+        "y1": 195,
+        "x2": 417,
+        "y2": 259
+      },
+      {
+        "x1": 503,
+        "y1": 146,
+        "x2": 552,
+        "y2": 214
+      },
+      {
+        "x1": 629,
+        "y1": 208,
+        "x2": 673,
+        "y2": 276
+      },
+      {
+        "x1": 222,
+        "y1": 468,
+        "x2": 269,
+        "y2": 533
+      },
+      {
+        "x1": 760,
+        "y1": 367,
+        "x2": 798,
+        "y2": 418
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      16,
+      14,
+      10
+    ],
+    "dominant_palette": [
+      [
+        16,
+        14,
+        10
+      ],
+      [
+        192,
+        137,
+        119
+      ],
+      [
+        171,
+        120,
+        101
+      ],
+      [
+        131,
+        129,
+        128
+      ],
+      [
+        59,
+        34,
+        25
+      ]
+    ],
+    "color_confidence": 0.431,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "焦糖",
+    "secondary_color_rgb": [
+      171,
+      120,
+      101
+    ],
+    "secondary_color_confidence": 0.092,
+    "length_tag": "short",
+    "length_ratio": 1.381,
+    "length_confidence": 0.988,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:05.685Z"
+  },
+  {
+    "style_id": "STYLE010",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/rOntm",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 459,
+        "y1": 482,
+        "x2": 524,
+        "y2": 587
+      },
+      {
+        "x1": 390,
+        "y1": 419,
+        "x2": 451,
+        "y2": 520
+      },
+      {
+        "x1": 526,
+        "y1": 520,
+        "x2": 594,
+        "y2": 618
+      },
+      {
+        "x1": 603,
+        "y1": 533,
+        "x2": 661,
+        "y2": 620
+      },
+      {
+        "x1": 309,
+        "y1": 140,
+        "x2": 378,
+        "y2": 235
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      214,
+      170,
+      155
+    ],
+    "dominant_palette": [
+      [
+        214,
+        170,
+        155
+      ],
+      [
+        238,
+        223,
+        216
+      ],
+      [
+        243,
+        236,
+        232
+      ],
+      [
+        232,
+        206,
+        197
+      ],
+      [
+        238,
+        201,
+        188
+      ]
+    ],
+    "color_confidence": 0.172,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      238,
+      223,
+      216
+    ],
+    "secondary_color_confidence": 0.128,
+    "length_tag": "medium",
+    "length_ratio": 1.645,
+    "length_confidence": 0.749,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:07.272Z"
+  },
+  {
+    "style_id": "STYLE011",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/R3PVA",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 475,
+        "y1": 293,
+        "x2": 507,
+        "y2": 358
+      },
+      {
+        "x1": 470,
+        "y1": 158,
+        "x2": 514,
+        "y2": 239
+      },
+      {
+        "x1": 416,
+        "y1": 143,
+        "x2": 458,
+        "y2": 206
+      },
+      {
+        "x1": 571,
+        "y1": 138,
+        "x2": 612,
+        "y2": 200
+      },
+      {
+        "x1": 464,
+        "y1": 109,
+        "x2": 511,
+        "y2": 173
+      },
+      {
+        "x1": 533,
+        "y1": 299,
+        "x2": 560,
+        "y2": 358
+      },
+      {
+        "x1": 534,
+        "y1": 126,
+        "x2": 571,
+        "y2": 235
+      },
+      {
+        "x1": 530,
+        "y1": 106,
+        "x2": 564,
+        "y2": 157
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      245,
+      242,
+      238
+    ],
+    "dominant_palette": [
+      [
+        245,
+        242,
+        238
+      ],
+      [
+        244,
+        239,
+        228
+      ],
+      [
+        176,
+        136,
+        124
+      ],
+      [
+        165,
+        128,
+        112
+      ],
+      [
+        173,
+        130,
+        121
+      ]
+    ],
+    "color_confidence": 0.13,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      244,
+      239,
+      228
+    ],
+    "secondary_color_confidence": 0.007,
+    "length_tag": "long",
+    "length_ratio": 2.196,
+    "length_confidence": 0.868,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:08.857Z"
+  },
+  {
+    "style_id": "STYLE012",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/ZUIAd",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 656,
+        "y1": 681,
+        "x2": 686,
+        "y2": 764
+      },
+      {
+        "x1": 419,
+        "y1": 791,
+        "x2": 457,
+        "y2": 890
+      },
+      {
+        "x1": 500,
+        "y1": 822,
+        "x2": 541,
+        "y2": 933
+      },
+      {
+        "x1": 306,
+        "y1": 599,
+        "x2": 341,
+        "y2": 698
+      },
+      {
+        "x1": 569,
+        "y1": 778,
+        "x2": 606,
+        "y2": 870
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      25,
+      17,
+      11
+    ],
+    "dominant_palette": [
+      [
+        25,
+        17,
+        11
+      ],
+      [
+        59,
+        38,
+        25
+      ],
+      [
+        156,
+        123,
+        103
+      ],
+      [
+        188,
+        152,
+        134
+      ],
+      [
+        118,
+        96,
+        81
+      ]
+    ],
+    "color_confidence": 0.342,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "焦糖",
+    "secondary_color_rgb": [
+      156,
+      123,
+      103
+    ],
+    "secondary_color_confidence": 0.135,
+    "length_tag": "long",
+    "length_ratio": 2.826,
+    "length_confidence": 0.95,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:10.072Z"
+  },
+  {
+    "style_id": "STYLE013",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/rLUZX",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 807,
+        "x2": 538,
+        "y2": 921
+      },
+      {
+        "x1": 408,
+        "y1": 764,
+        "x2": 448,
+        "y2": 874
+      },
+      {
+        "x1": 591,
+        "y1": 771,
+        "x2": 631,
+        "y2": 879
+      },
+      {
+        "x1": 715,
+        "y1": 571,
+        "x2": 765,
+        "y2": 675
+      },
+      {
+        "x1": 319,
+        "y1": 669,
+        "x2": 350,
+        "y2": 769
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      158,
+      150,
+      140
+    ],
+    "dominant_palette": [
+      [
+        158,
+        150,
+        140
+      ],
+      [
+        203,
+        189,
+        181
+      ],
+      [
+        241,
+        233,
+        231
+      ],
+      [
+        211,
+        199,
+        198
+      ],
+      [
+        194,
+        174,
+        170
+      ]
+    ],
+    "color_confidence": 0.092,
+    "secondary_color_family": "champagne",
+    "secondary_color_name": "香槟金",
+    "secondary_color_rgb": [
+      203,
+      189,
+      181
+    ],
+    "secondary_color_confidence": 0.091,
+    "length_tag": "long",
+    "length_ratio": 2.811,
+    "length_confidence": 0.85,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:11.688Z"
+  },
+  {
+    "style_id": "STYLE014",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/T66cx",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 513,
+        "y1": 351,
+        "x2": 606,
+        "y2": 433
+      },
+      {
+        "x1": 540,
+        "y1": 409,
+        "x2": 633,
+        "y2": 487
+      },
+      {
+        "x1": 573,
+        "y1": 462,
+        "x2": 662,
+        "y2": 516
+      },
+      {
+        "x1": 492,
+        "y1": 286,
+        "x2": 579,
+        "y2": 367
+      },
+      {
+        "x1": 521,
+        "y1": 154,
+        "x2": 612,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "beige",
+    "primary_color_name": "米白",
+    "primary_color_rgb": [
+      232,
+      220,
+      212
+    ],
+    "dominant_palette": [
+      [
+        232,
+        220,
+        212
+      ],
+      [
+        240,
+        236,
+        231
+      ],
+      [
+        217,
+        196,
+        186
+      ],
+      [
+        216,
+        188,
+        181
+      ],
+      [
+        217,
+        208,
+        206
+      ]
+    ],
+    "color_confidence": 0.315,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      240,
+      236,
+      231
+    ],
+    "secondary_color_confidence": 0.281,
+    "length_tag": "long",
+    "length_ratio": 2.163,
+    "length_confidence": 0.671,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:13.841Z"
+  },
+  {
+    "style_id": "STYLE015",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/ztrRR",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 501,
+        "y1": 167,
+        "x2": 552,
+        "y2": 234
+      },
+      {
+        "x1": 365,
+        "y1": 217,
+        "x2": 410,
+        "y2": 281
+      },
+      {
+        "x1": 756,
+        "y1": 382,
+        "x2": 793,
+        "y2": 437
+      },
+      {
+        "x1": 226,
+        "y1": 486,
+        "x2": 275,
+        "y2": 554
+      },
+      {
+        "x1": 625,
+        "y1": 233,
+        "x2": 668,
+        "y2": 296
+      }
+    ],
+    "primary_color_family": "silver",
+    "primary_color_name": "银色",
+    "primary_color_rgb": [
+      181,
+      193,
+      195
+    ],
+    "dominant_palette": [
+      [
+        181,
+        193,
+        195
+      ],
+      [
+        211,
+        144,
+        132
+      ],
+      [
+        158,
+        167,
+        169
+      ],
+      [
+        122,
+        14,
+        24
+      ],
+      [
+        173,
+        38,
+        32
+      ]
+    ],
+    "color_confidence": 0.129,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      211,
+      144,
+      132
+    ],
+    "secondary_color_confidence": 0.087,
+    "length_tag": "short",
+    "length_ratio": 1.494,
+    "length_confidence": 0.994,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:15.550Z"
+  },
+  {
+    "style_id": "STYLE016",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/yffkJ",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 503,
+        "y1": 151,
+        "x2": 551,
+        "y2": 211
+      },
+      {
+        "x1": 373,
+        "y1": 199,
+        "x2": 419,
+        "y2": 259
+      },
+      {
+        "x1": 627,
+        "y1": 215,
+        "x2": 672,
+        "y2": 275
+      },
+      {
+        "x1": 223,
+        "y1": 469,
+        "x2": 268,
+        "y2": 540
+      },
+      {
+        "x1": 759,
+        "y1": 368,
+        "x2": 797,
+        "y2": 420
+      }
+    ],
+    "primary_color_family": "dusty_rose",
+    "primary_color_name": "灰粉",
+    "primary_color_rgb": [
+      195,
+      137,
+      122
+    ],
+    "dominant_palette": [
+      [
+        195,
+        137,
+        122
+      ],
+      [
+        242,
+        71,
+        149
+      ],
+      [
+        236,
+        133,
+        166
+      ],
+      [
+        246,
+        247,
+        239
+      ],
+      [
+        215,
+        53,
+        116
+      ]
+    ],
+    "color_confidence": 0.085,
+    "secondary_color_family": "hot_pink",
+    "secondary_color_name": "桃红",
+    "secondary_color_rgb": [
+      242,
+      71,
+      149
+    ],
+    "secondary_color_confidence": 0.064,
+    "length_tag": "short",
+    "length_ratio": 1.364,
+    "length_confidence": 0.992,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:17.596Z"
+  },
+  {
+    "style_id": "STYLE017",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/PWnfX",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 454,
+        "y1": 482,
+        "x2": 524,
+        "y2": 602
+      },
+      {
+        "x1": 386,
+        "y1": 418,
+        "x2": 453,
+        "y2": 536
+      },
+      {
+        "x1": 308,
+        "y1": 122,
+        "x2": 393,
+        "y2": 237
+      },
+      {
+        "x1": 521,
+        "y1": 521,
+        "x2": 591,
+        "y2": 632
+      },
+      {
+        "x1": 596,
+        "y1": 534,
+        "x2": 662,
+        "y2": 629
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      206,
+      170,
+      153
+    ],
+    "dominant_palette": [
+      [
+        206,
+        170,
+        153
+      ],
+      [
+        212,
+        191,
+        178
+      ],
+      [
+        230,
+        219,
+        209
+      ],
+      [
+        249,
+        247,
+        243
+      ],
+      [
+        150,
+        145,
+        135
+      ]
+    ],
+    "color_confidence": 0.235,
+    "secondary_color_family": "champagne",
+    "secondary_color_name": "香槟金",
+    "secondary_color_rgb": [
+      212,
+      191,
+      178
+    ],
+    "secondary_color_confidence": 0.195,
+    "length_tag": "long",
+    "length_ratio": 1.793,
+    "length_confidence": 0.973,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:19.512Z"
+  },
+  {
+    "style_id": "STYLE018",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/Idc4g",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 7,
+    "bboxes": [
+      {
+        "x1": 417,
+        "y1": 149,
+        "x2": 461,
+        "y2": 209
+      },
+      {
+        "x1": 473,
+        "y1": 309,
+        "x2": 510,
+        "y2": 364
+      },
+      {
+        "x1": 465,
+        "y1": 122,
+        "x2": 516,
+        "y2": 183
+      },
+      {
+        "x1": 533,
+        "y1": 311,
+        "x2": 564,
+        "y2": 356
+      },
+      {
+        "x1": 539,
+        "y1": 177,
+        "x2": 579,
+        "y2": 232
+      },
+      {
+        "x1": 539,
+        "y1": 125,
+        "x2": 567,
+        "y2": 160
+      },
+      {
+        "x1": 575,
+        "y1": 146,
+        "x2": 614,
+        "y2": 196
+      }
+    ],
+    "primary_color_family": "red_pink",
+    "primary_color_name": "玫红",
+    "primary_color_rgb": [
+      194,
+      88,
+      99
+    ],
+    "dominant_palette": [
+      [
+        194,
+        88,
+        99
+      ],
+      [
+        189,
+        118,
+        116
+      ],
+      [
+        247,
+        239,
+        238
+      ],
+      [
+        126,
+        21,
+        24
+      ],
+      [
+        168,
+        124,
+        95
+      ]
+    ],
+    "color_confidence": 0.053,
+    "secondary_color_family": "mauve",
+    "secondary_color_name": "玫粉",
+    "secondary_color_rgb": [
+      189,
+      118,
+      116
+    ],
+    "secondary_color_confidence": 0.052,
+    "length_tag": "short",
+    "length_ratio": 1.47,
+    "length_confidence": 0.972,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:20.974Z"
+  },
+  {
+    "style_id": "STYLE019",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/oWopP",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 421,
+        "y1": 790,
+        "x2": 456,
+        "y2": 857
+      },
+      {
+        "x1": 497,
+        "y1": 823,
+        "x2": 540,
+        "y2": 893
+      },
+      {
+        "x1": 573,
+        "y1": 774,
+        "x2": 608,
+        "y2": 847
+      },
+      {
+        "x1": 308,
+        "y1": 598,
+        "x2": 341,
+        "y2": 661
+      },
+      {
+        "x1": 658,
+        "y1": 680,
+        "x2": 685,
+        "y2": 734
+      }
+    ],
+    "primary_color_family": "tan",
+    "primary_color_name": "焦糖",
+    "primary_color_rgb": [
+      159,
+      124,
+      85
+    ],
+    "dominant_palette": [
+      [
+        159,
+        124,
+        85
+      ],
+      [
+        176,
+        146,
+        101
+      ],
+      [
+        185,
+        152,
+        125
+      ],
+      [
+        199,
+        160,
+        103
+      ],
+      [
+        108,
+        69,
+        24
+      ]
+    ],
+    "color_confidence": 0.123,
+    "secondary_color_family": "brown",
+    "secondary_color_name": "棕色",
+    "secondary_color_rgb": [
+      108,
+      69,
+      24
+    ],
+    "secondary_color_confidence": 0.045,
+    "length_tag": "long",
+    "length_ratio": 2.003,
+    "length_confidence": 0.957,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:22.382Z"
+  },
+  {
+    "style_id": "STYLE020",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/EHY1n",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 471,
+        "y1": 624,
+        "x2": 694,
+        "y2": 794
+      },
+      {
+        "x1": 478,
+        "y1": 489,
+        "x2": 701,
+        "y2": 713
+      },
+      {
+        "x1": 429,
+        "y1": 256,
+        "x2": 591,
+        "y2": 502
+      },
+      {
+        "x1": 318,
+        "y1": 142,
+        "x2": 550,
+        "y2": 247
+      },
+      {
+        "x1": 469,
+        "y1": 350,
+        "x2": 679,
+        "y2": 595
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      154,
+      147,
+      135
+    ],
+    "dominant_palette": [
+      [
+        154,
+        147,
+        135
+      ],
+      [
+        148,
+        123,
+        109
+      ],
+      [
+        173,
+        141,
+        130
+      ],
+      [
+        198,
+        186,
+        174
+      ],
+      [
+        190,
+        163,
+        153
+      ]
+    ],
+    "color_confidence": 0.191,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "焦糖",
+    "secondary_color_rgb": [
+      148,
+      123,
+      109
+    ],
+    "secondary_color_confidence": 0.171,
+    "length_tag": "long",
+    "length_ratio": 3.123,
+    "length_confidence": 0.746,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:24.832Z"
+  },
+  {
+    "style_id": "STYLE021",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/sYn2r",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 570,
+        "y1": 409,
+        "x2": 635,
+        "y2": 473
+      },
+      {
+        "x1": 517,
+        "y1": 283,
+        "x2": 579,
+        "y2": 349
+      },
+      {
+        "x1": 540,
+        "y1": 352,
+        "x2": 603,
+        "y2": 416
+      },
+      {
+        "x1": 604,
+        "y1": 462,
+        "x2": 662,
+        "y2": 509
+      },
+      {
+        "x1": 521,
+        "y1": 172,
+        "x2": 582,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "cream",
+    "primary_color_name": "奶白",
+    "primary_color_rgb": [
+      227,
+      217,
+      185
+    ],
+    "dominant_palette": [
+      [
+        227,
+        217,
+        185
+      ],
+      [
+        241,
+        235,
+        217
+      ],
+      [
+        220,
+        197,
+        172
+      ],
+      [
+        96,
+        86,
+        65
+      ],
+      [
+        167,
+        153,
+        119
+      ]
+    ],
+    "color_confidence": 0.078,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      241,
+      235,
+      217
+    ],
+    "secondary_color_confidence": 0.068,
+    "length_tag": "medium",
+    "length_ratio": 1.527,
+    "length_confidence": 0.479,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:26.345Z"
+  },
+  {
+    "style_id": "STYLE022",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/WRX6c",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 505,
+        "y1": 164,
+        "x2": 551,
+        "y2": 234
+      },
+      {
+        "x1": 624,
+        "y1": 226,
+        "x2": 667,
+        "y2": 296
+      },
+      {
+        "x1": 753,
+        "y1": 381,
+        "x2": 791,
+        "y2": 439
+      },
+      {
+        "x1": 365,
+        "y1": 215,
+        "x2": 409,
+        "y2": 279
+      },
+      {
+        "x1": 234,
+        "y1": 487,
+        "x2": 273,
+        "y2": 557
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      253,
+      252,
+      251
+    ],
+    "dominant_palette": [
+      [
+        253,
+        252,
+        251
+      ],
+      [
+        142,
+        85,
+        75
+      ],
+      [
+        176,
+        117,
+        118
+      ],
+      [
+        194,
+        142,
+        141
+      ],
+      [
+        117,
+        66,
+        55
+      ]
+    ],
+    "color_confidence": 0.133,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "深焦糖",
+    "secondary_color_rgb": [
+      142,
+      85,
+      75
+    ],
+    "secondary_color_confidence": 0.107,
+    "length_tag": "medium",
+    "length_ratio": 1.531,
+    "length_confidence": 0.981,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:27.671Z"
+  },
+  {
+    "style_id": "STYLE023",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/bhvuL",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 374,
+        "y1": 181,
+        "x2": 417,
+        "y2": 261
+      },
+      {
+        "x1": 502,
+        "y1": 132,
+        "x2": 551,
+        "y2": 216
+      },
+      {
+        "x1": 218,
+        "y1": 458,
+        "x2": 271,
+        "y2": 544
+      },
+      {
+        "x1": 623,
+        "y1": 198,
+        "x2": 672,
+        "y2": 277
+      },
+      {
+        "x1": 755,
+        "y1": 357,
+        "x2": 795,
+        "y2": 424
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      206,
+      158,
+      137
+    ],
+    "dominant_palette": [
+      [
+        206,
+        158,
+        137
+      ],
+      [
+        218,
+        168,
+        139
+      ],
+      [
+        191,
+        139,
+        120
+      ],
+      [
+        188,
+        127,
+        100
+      ],
+      [
+        181,
+        126,
+        110
+      ]
+    ],
+    "color_confidence": 0.384,
+    "secondary_color_family": "peach",
+    "secondary_color_name": "蜜桃",
+    "secondary_color_rgb": [
+      218,
+      168,
+      139
+    ],
+    "secondary_color_confidence": 0.077,
+    "length_tag": "medium",
+    "length_ratio": 1.695,
+    "length_confidence": 0.98,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:29.195Z"
+  },
+  {
+    "style_id": "STYLE024",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/B2IYh",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 457,
+        "y1": 480,
+        "x2": 527,
+        "y2": 570
+      },
+      {
+        "x1": 390,
+        "y1": 416,
+        "x2": 451,
+        "y2": 502
+      },
+      {
+        "x1": 607,
+        "y1": 533,
+        "x2": 663,
+        "y2": 603
+      },
+      {
+        "x1": 309,
+        "y1": 145,
+        "x2": 370,
+        "y2": 235
+      },
+      {
+        "x1": 530,
+        "y1": 522,
+        "x2": 592,
+        "y2": 601
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      136,
+      140,
+      134
+    ],
+    "dominant_palette": [
+      [
+        136,
+        140,
+        134
+      ],
+      [
+        195,
+        201,
+        198
+      ],
+      [
+        230,
+        237,
+        233
+      ],
+      [
+        195,
+        223,
+        195
+      ],
+      [
+        130,
+        80,
+        95
+      ]
+    ],
+    "color_confidence": 0.441,
+    "secondary_color_family": "silver",
+    "secondary_color_name": "银色",
+    "secondary_color_rgb": [
+      195,
+      201,
+      198
+    ],
+    "secondary_color_confidence": 0.136,
+    "length_tag": "short",
+    "length_ratio": 1.294,
+    "length_confidence": 0.885,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:30.816Z"
+  },
+  {
+    "style_id": "STYLE025",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/JmcRr",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 473,
+        "y1": 310,
+        "x2": 504,
+        "y2": 365
+      },
+      {
+        "x1": 534,
+        "y1": 307,
+        "x2": 560,
+        "y2": 363
+      },
+      {
+        "x1": 463,
+        "y1": 121,
+        "x2": 509,
+        "y2": 180
+      },
+      {
+        "x1": 416,
+        "y1": 151,
+        "x2": 457,
+        "y2": 208
+      },
+      {
+        "x1": 536,
+        "y1": 122,
+        "x2": 575,
+        "y2": 181
+      },
+      {
+        "x1": 575,
+        "y1": 150,
+        "x2": 612,
+        "y2": 202
+      },
+      {
+        "x1": 475,
+        "y1": 184,
+        "x2": 511,
+        "y2": 239
+      },
+      {
+        "x1": 537,
+        "y1": 185,
+        "x2": 568,
+        "y2": 238
+      }
+    ],
+    "primary_color_family": "dusty_rose",
+    "primary_color_name": "灰粉",
+    "primary_color_rgb": [
+      205,
+      136,
+      130
+    ],
+    "dominant_palette": [
+      [
+        205,
+        136,
+        130
+      ],
+      [
+        159,
+        51,
+        52
+      ],
+      [
+        140,
+        29,
+        31
+      ],
+      [
+        191,
+        117,
+        111
+      ],
+      [
+        250,
+        240,
+        235
+      ]
+    ],
+    "color_confidence": 0.037,
+    "secondary_color_family": "red",
+    "secondary_color_name": "正红",
+    "secondary_color_rgb": [
+      159,
+      51,
+      52
+    ],
+    "secondary_color_confidence": 0.033,
+    "length_tag": "long",
+    "length_ratio": 1.831,
+    "length_confidence": 0.946,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:32.034Z"
+  },
+  {
+    "style_id": "STYLE026",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/3aRPR",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 498,
+        "y1": 822,
+        "x2": 539,
+        "y2": 877
+      },
+      {
+        "x1": 572,
+        "y1": 774,
+        "x2": 608,
+        "y2": 829
+      },
+      {
+        "x1": 419,
+        "y1": 789,
+        "x2": 457,
+        "y2": 841
+      },
+      {
+        "x1": 657,
+        "y1": 679,
+        "x2": 685,
+        "y2": 723
+      },
+      {
+        "x1": 316,
+        "y1": 602,
+        "x2": 340,
+        "y2": 655
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      164,
+      147,
+      139
+    ],
+    "dominant_palette": [
+      [
+        164,
+        147,
+        139
+      ],
+      [
+        166,
+        145,
+        138
+      ],
+      [
+        173,
+        154,
+        145
+      ],
+      [
+        149,
+        130,
+        120
+      ],
+      [
+        145,
+        125,
+        120
+      ]
+    ],
+    "color_confidence": 0.488,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      166,
+      145,
+      138
+    ],
+    "secondary_color_confidence": 0.112,
+    "length_tag": "medium",
+    "length_ratio": 1.585,
+    "length_confidence": 0.79,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:33.138Z"
+  },
+  {
+    "style_id": "STYLE027",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/28Zhg",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 407,
+        "y1": 765,
+        "x2": 447,
+        "y2": 830
+      },
+      {
+        "x1": 494,
+        "y1": 807,
+        "x2": 537,
+        "y2": 874
+      },
+      {
+        "x1": 592,
+        "y1": 770,
+        "x2": 631,
+        "y2": 830
+      },
+      {
+        "x1": 320,
+        "y1": 671,
+        "x2": 350,
+        "y2": 721
+      },
+      {
+        "x1": 715,
+        "y1": 577,
+        "x2": 748,
+        "y2": 634
+      }
+    ],
+    "primary_color_family": "navy",
+    "primary_color_name": "藏蓝",
+    "primary_color_rgb": [
+      7,
+      43,
+      104
+    ],
+    "dominant_palette": [
+      [
+        7,
+        43,
+        104
+      ],
+      [
+        85,
+        105,
+        140
+      ],
+      [
+        141,
+        161,
+        198
+      ],
+      [
+        133,
+        144,
+        163
+      ],
+      [
+        51,
+        59,
+        66
+      ]
+    ],
+    "color_confidence": 0.606,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "medium",
+    "length_ratio": 1.622,
+    "length_confidence": 0.843,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:34.667Z"
+  },
+  {
+    "style_id": "STYLE028",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/WmMjl",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 569,
+        "y1": 410,
+        "x2": 634,
+        "y2": 471
+      },
+      {
+        "x1": 538,
+        "y1": 351,
+        "x2": 606,
+        "y2": 417
+      },
+      {
+        "x1": 514,
+        "y1": 284,
+        "x2": 579,
+        "y2": 350
+      },
+      {
+        "x1": 602,
+        "y1": 462,
+        "x2": 662,
+        "y2": 510
+      },
+      {
+        "x1": 521,
+        "y1": 175,
+        "x2": 577,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "beige",
+    "primary_color_name": "米白",
+    "primary_color_rgb": [
+      244,
+      234,
+      221
+    ],
+    "dominant_palette": [
+      [
+        244,
+        234,
+        221
+      ],
+      [
+        225,
+        200,
+        184
+      ],
+      [
+        190,
+        99,
+        105
+      ],
+      [
+        252,
+        241,
+        238
+      ],
+      [
+        240,
+        203,
+        186
+      ]
+    ],
+    "color_confidence": 0.111,
+    "secondary_color_family": "champagne",
+    "secondary_color_name": "香槟金",
+    "secondary_color_rgb": [
+      225,
+      200,
+      184
+    ],
+    "secondary_color_confidence": 0.056,
+    "length_tag": "medium",
+    "length_ratio": 1.518,
+    "length_confidence": 0.751,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:36.038Z"
+  },
+  {
+    "style_id": "STYLE029",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/gea54",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 504,
+        "y1": 164,
+        "x2": 552,
+        "y2": 238
+      },
+      {
+        "x1": 755,
+        "y1": 382,
+        "x2": 792,
+        "y2": 438
+      },
+      {
+        "x1": 623,
+        "y1": 231,
+        "x2": 668,
+        "y2": 296
+      },
+      {
+        "x1": 363,
+        "y1": 212,
+        "x2": 409,
+        "y2": 279
+      },
+      {
+        "x1": 228,
+        "y1": 487,
+        "x2": 276,
+        "y2": 558
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      252,
+      253,
+      249
+    ],
+    "dominant_palette": [
+      [
+        252,
+        253,
+        249
+      ]
+    ],
+    "color_confidence": 0.018,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "short",
+    "length_ratio": 1.47,
+    "length_confidence": 0.997,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:37.538Z"
+  },
+  {
+    "style_id": "STYLE030",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/cy3dr",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 224,
+        "y1": 468,
+        "x2": 269,
+        "y2": 541
+      },
+      {
+        "x1": 502,
+        "y1": 148,
+        "x2": 552,
+        "y2": 218
+      },
+      {
+        "x1": 373,
+        "y1": 199,
+        "x2": 418,
+        "y2": 262
+      },
+      {
+        "x1": 628,
+        "y1": 211,
+        "x2": 672,
+        "y2": 279
+      },
+      {
+        "x1": 758,
+        "y1": 367,
+        "x2": 795,
+        "y2": 421
+      }
+    ],
+    "primary_color_family": "tan",
+    "primary_color_name": "深焦糖",
+    "primary_color_rgb": [
+      150,
+      86,
+      73
+    ],
+    "dominant_palette": [
+      [
+        150,
+        86,
+        73
+      ],
+      [
+        155,
+        70,
+        58
+      ],
+      [
+        164,
+        119,
+        103
+      ],
+      [
+        173,
+        118,
+        105
+      ],
+      [
+        125,
+        48,
+        37
+      ]
+    ],
+    "color_confidence": 0.316,
+    "secondary_color_family": "red",
+    "secondary_color_name": "正红",
+    "secondary_color_rgb": [
+      155,
+      70,
+      58
+    ],
+    "secondary_color_confidence": 0.158,
+    "length_tag": "short",
+    "length_ratio": 1.469,
+    "length_confidence": 0.997,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:40.005Z"
+  },
+  {
+    "style_id": "STYLE031",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/lt3aZ",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 456,
+        "y1": 481,
+        "x2": 527,
+        "y2": 570
+      },
+      {
+        "x1": 388,
+        "y1": 415,
+        "x2": 451,
+        "y2": 501
+      },
+      {
+        "x1": 528,
+        "y1": 519,
+        "x2": 593,
+        "y2": 600
+      },
+      {
+        "x1": 608,
+        "y1": 533,
+        "x2": 663,
+        "y2": 601
+      },
+      {
+        "x1": 311,
+        "y1": 151,
+        "x2": 368,
+        "y2": 237
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      222,
+      182,
+      178
+    ],
+    "dominant_palette": [
+      [
+        232,
+        187,
+        186
+      ],
+      [
+        222,
+        182,
+        178
+      ],
+      [
+        208,
+        153,
+        150
+      ],
+      [
+        237,
+        210,
+        207
+      ],
+      [
+        244,
+        208,
+        203
+      ]
+    ],
+    "color_confidence": 0.057,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      232,
+      187,
+      186
+    ],
+    "secondary_color_confidence": 0.073,
+    "length_tag": "short",
+    "length_ratio": 1.257,
+    "length_confidence": 0.761,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:41.848Z"
+  },
+  {
+    "style_id": "STYLE032",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/fAOke",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 473,
+        "y1": 311,
+        "x2": 507,
+        "y2": 363
+      },
+      {
+        "x1": 416,
+        "y1": 151,
+        "x2": 460,
+        "y2": 208
+      },
+      {
+        "x1": 469,
+        "y1": 184,
+        "x2": 510,
+        "y2": 242
+      },
+      {
+        "x1": 537,
+        "y1": 181,
+        "x2": 572,
+        "y2": 238
+      },
+      {
+        "x1": 464,
+        "y1": 121,
+        "x2": 510,
+        "y2": 178
+      },
+      {
+        "x1": 531,
+        "y1": 312,
+        "x2": 560,
+        "y2": 363
+      },
+      {
+        "x1": 573,
+        "y1": 149,
+        "x2": 613,
+        "y2": 201
+      },
+      {
+        "x1": 534,
+        "y1": 122,
+        "x2": 571,
+        "y2": 172
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      248,
+      241,
+      238
+    ],
+    "dominant_palette": [
+      [
+        248,
+        241,
+        238
+      ],
+      [
+        199,
+        145,
+        145
+      ],
+      [
+        241,
+        233,
+        226
+      ],
+      [
+        191,
+        134,
+        136
+      ],
+      [
+        213,
+        155,
+        160
+      ]
+    ],
+    "color_confidence": 0.133,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      199,
+      145,
+      145
+    ],
+    "secondary_color_confidence": 0.013,
+    "length_tag": "medium",
+    "length_ratio": 1.572,
+    "length_confidence": 0.968,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:43.593Z"
+  },
+  {
+    "style_id": "STYLE035",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/PcR6h",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 542,
+        "y1": 351,
+        "x2": 605,
+        "y2": 415
+      },
+      {
+        "x1": 571,
+        "y1": 409,
+        "x2": 634,
+        "y2": 466
+      },
+      {
+        "x1": 517,
+        "y1": 286,
+        "x2": 578,
+        "y2": 346
+      },
+      {
+        "x1": 606,
+        "y1": 462,
+        "x2": 660,
+        "y2": 508
+      },
+      {
+        "x1": 522,
+        "y1": 179,
+        "x2": 577,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "silver",
+    "primary_color_name": "银色",
+    "primary_color_rgb": [
+      195,
+      201,
+      223
+    ],
+    "dominant_palette": [
+      [
+        195,
+        201,
+        223
+      ],
+      [
+        137,
+        151,
+        185
+      ],
+      [
+        138,
+        154,
+        190
+      ],
+      [
+        170,
+        177,
+        210
+      ],
+      [
+        231,
+        235,
+        246
+      ]
+    ],
+    "color_confidence": 0.382,
+    "secondary_color_family": "gray",
+    "secondary_color_name": "灰色",
+    "secondary_color_rgb": [
+      137,
+      151,
+      185
+    ],
+    "secondary_color_confidence": 0.334,
+    "length_tag": "short",
+    "length_ratio": 1.432,
+    "length_confidence": 0.678,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:49.862Z"
+  },
+  {
+    "style_id": "STYLE036",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/xBw4c",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 754,
+        "y1": 382,
+        "x2": 792,
+        "y2": 437
+      },
+      {
+        "x1": 502,
+        "y1": 166,
+        "x2": 553,
+        "y2": 235
+      },
+      {
+        "x1": 230,
+        "y1": 488,
+        "x2": 275,
+        "y2": 560
+      },
+      {
+        "x1": 363,
+        "y1": 215,
+        "x2": 409,
+        "y2": 279
+      },
+      {
+        "x1": 624,
+        "y1": 232,
+        "x2": 670,
+        "y2": 296
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      144,
+      154,
+      138
+    ],
+    "dominant_palette": [
+      [
+        144,
+        154,
+        138
+      ],
+      [
+        228,
+        233,
+        226
+      ],
+      [
+        189,
+        197,
+        187
+      ],
+      [
+        205,
+        211,
+        199
+      ],
+      [
+        149,
+        158,
+        136
+      ]
+    ],
+    "color_confidence": 0.774,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "short",
+    "length_ratio": 1.429,
+    "length_confidence": 0.99,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:51.712Z"
+  },
+  {
+    "style_id": "STYLE037",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/n3LLE",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 221,
+        "y1": 466,
+        "x2": 271,
+        "y2": 541
+      },
+      {
+        "x1": 628,
+        "y1": 208,
+        "x2": 673,
+        "y2": 276
+      },
+      {
+        "x1": 374,
+        "y1": 193,
+        "x2": 418,
+        "y2": 260
+      },
+      {
+        "x1": 502,
+        "y1": 148,
+        "x2": 551,
+        "y2": 213
+      },
+      {
+        "x1": 759,
+        "y1": 365,
+        "x2": 795,
+        "y2": 420
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "亮粉",
+    "primary_color_rgb": [
+      241,
+      170,
+      185
+    ],
+    "dominant_palette": [
+      [
+        241,
+        170,
+        185
+      ],
+      [
+        225,
+        142,
+        159
+      ]
+    ],
+    "color_confidence": 0.927,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "medium",
+    "length_ratio": 1.56,
+    "length_confidence": 0.987,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:53.583Z"
+  },
+  {
+    "style_id": "STYLE038",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/BYQcp",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 457,
+        "y1": 482,
+        "x2": 526,
+        "y2": 569
+      },
+      {
+        "x1": 389,
+        "y1": 419,
+        "x2": 453,
+        "y2": 500
+      },
+      {
+        "x1": 529,
+        "y1": 520,
+        "x2": 594,
+        "y2": 600
+      },
+      {
+        "x1": 607,
+        "y1": 534,
+        "x2": 662,
+        "y2": 604
+      },
+      {
+        "x1": 311,
+        "y1": 152,
+        "x2": 370,
+        "y2": 236
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      193,
+      175,
+      174
+    ],
+    "dominant_palette": [
+      [
+        114,
+        94,
+        91
+      ],
+      [
+        193,
+        175,
+        174
+      ],
+      [
+        204,
+        190,
+        190
+      ],
+      [
+        170,
+        153,
+        152
+      ],
+      [
+        202,
+        188,
+        185
+      ]
+    ],
+    "color_confidence": 0.097,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "深焦糖",
+    "secondary_color_rgb": [
+      114,
+      94,
+      91
+    ],
+    "secondary_color_confidence": 0.164,
+    "length_tag": "short",
+    "length_ratio": 1.227,
+    "length_confidence": 0.805,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:55.230Z"
+  },
+  {
+    "style_id": "STYLE039",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/QvWRk",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 473,
+        "y1": 310,
+        "x2": 507,
+        "y2": 362
+      },
+      {
+        "x1": 464,
+        "y1": 121,
+        "x2": 511,
+        "y2": 179
+      },
+      {
+        "x1": 470,
+        "y1": 184,
+        "x2": 511,
+        "y2": 241
+      },
+      {
+        "x1": 417,
+        "y1": 151,
+        "x2": 460,
+        "y2": 208
+      },
+      {
+        "x1": 538,
+        "y1": 181,
+        "x2": 573,
+        "y2": 240
+      },
+      {
+        "x1": 576,
+        "y1": 149,
+        "x2": 614,
+        "y2": 204
+      },
+      {
+        "x1": 531,
+        "y1": 310,
+        "x2": 562,
+        "y2": 364
+      },
+      {
+        "x1": 535,
+        "y1": 122,
+        "x2": 574,
+        "y2": 178
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      252,
+      237,
+      239
+    ],
+    "dominant_palette": [
+      [
+        252,
+        237,
+        239
+      ],
+      [
+        242,
+        208,
+        218
+      ],
+      [
+        244,
+        215,
+        223
+      ]
+    ],
+    "color_confidence": 0.171,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "medium",
+    "length_ratio": 1.571,
+    "length_confidence": 0.969,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:56.687Z"
+  },
+  {
+    "style_id": "STYLE040",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/djQ5e",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 497,
+        "y1": 819,
+        "x2": 539,
+        "y2": 883
+      },
+      {
+        "x1": 419,
+        "y1": 788,
+        "x2": 455,
+        "y2": 846
+      },
+      {
+        "x1": 316,
+        "y1": 601,
+        "x2": 340,
+        "y2": 659
+      },
+      {
+        "x1": 574,
+        "y1": 772,
+        "x2": 607,
+        "y2": 825
+      },
+      {
+        "x1": 657,
+        "y1": 677,
+        "x2": 686,
+        "y2": 727
+      }
+    ],
+    "primary_color_family": "light_blue",
+    "primary_color_name": "浅蓝",
+    "primary_color_rgb": [
+      184,
+      210,
+      224
+    ],
+    "dominant_palette": [
+      [
+        184,
+        210,
+        224
+      ],
+      [
+        236,
+        247,
+        251
+      ],
+      [
+        200,
+        212,
+        221
+      ],
+      [
+        84,
+        128,
+        155
+      ],
+      [
+        118,
+        158,
+        184
+      ]
+    ],
+    "color_confidence": 0.645,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      236,
+      247,
+      251
+    ],
+    "secondary_color_confidence": 0.091,
+    "length_tag": "medium",
+    "length_ratio": 1.663,
+    "length_confidence": 0.802,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:58.028Z"
+  },
+  {
+    "style_id": "STYLE041",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/5UYJy",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 496,
+        "y1": 807,
+        "x2": 534,
+        "y2": 877
+      },
+      {
+        "x1": 409,
+        "y1": 762,
+        "x2": 446,
+        "y2": 832
+      },
+      {
+        "x1": 594,
+        "y1": 771,
+        "x2": 631,
+        "y2": 831
+      },
+      {
+        "x1": 319,
+        "y1": 669,
+        "x2": 348,
+        "y2": 726
+      },
+      {
+        "x1": 715,
+        "y1": 569,
+        "x2": 746,
+        "y2": 632
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      201,
+      170,
+      167
+    ],
+    "dominant_palette": [
+      [
+        201,
+        170,
+        167
+      ],
+      [
+        182,
+        152,
+        150
+      ],
+      [
+        163,
+        148,
+        146
+      ],
+      [
+        223,
+        191,
+        194
+      ],
+      [
+        157,
+        131,
+        131
+      ]
+    ],
+    "color_confidence": 0.107,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      182,
+      152,
+      150
+    ],
+    "secondary_color_confidence": 0.046,
+    "length_tag": "long",
+    "length_ratio": 1.919,
+    "length_confidence": 0.824,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:58:59.289Z"
+  },
+  {
+    "style_id": "STYLE042",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/jLhog",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 542,
+        "y1": 351,
+        "x2": 606,
+        "y2": 415
+      },
+      {
+        "x1": 571,
+        "y1": 410,
+        "x2": 634,
+        "y2": 467
+      },
+      {
+        "x1": 518,
+        "y1": 284,
+        "x2": 579,
+        "y2": 346
+      },
+      {
+        "x1": 605,
+        "y1": 462,
+        "x2": 661,
+        "y2": 508
+      },
+      {
+        "x1": 523,
+        "y1": 178,
+        "x2": 579,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "light_blue",
+    "primary_color_name": "浅蓝",
+    "primary_color_rgb": [
+      186,
+      208,
+      235
+    ],
+    "dominant_palette": [
+      [
+        186,
+        208,
+        235
+      ],
+      [
+        239,
+        240,
+        242
+      ],
+      [
+        207,
+        213,
+        226
+      ],
+      [
+        166,
+        184,
+        216
+      ]
+    ],
+    "color_confidence": 0.719,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      239,
+      240,
+      242
+    ],
+    "secondary_color_confidence": 0.181,
+    "length_tag": "short",
+    "length_ratio": 1.428,
+    "length_confidence": 0.526,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:00.608Z"
+  },
+  {
+    "style_id": "STYLE044",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/LHApw",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 506,
+        "y1": 148,
+        "x2": 552,
+        "y2": 212
+      },
+      {
+        "x1": 223,
+        "y1": 469,
+        "x2": 270,
+        "y2": 537
+      },
+      {
+        "x1": 375,
+        "y1": 198,
+        "x2": 418,
+        "y2": 257
+      },
+      {
+        "x1": 630,
+        "y1": 212,
+        "x2": 673,
+        "y2": 278
+      },
+      {
+        "x1": 761,
+        "y1": 369,
+        "x2": 796,
+        "y2": 417
+      }
+    ],
+    "primary_color_family": "brown",
+    "primary_color_name": "棕色",
+    "primary_color_rgb": [
+      130,
+      53,
+      6
+    ],
+    "dominant_palette": [
+      [
+        130,
+        53,
+        6
+      ],
+      [
+        180,
+        100,
+        34
+      ],
+      [
+        159,
+        78,
+        18
+      ],
+      [
+        104,
+        23,
+        2
+      ],
+      [
+        79,
+        29,
+        4
+      ]
+    ],
+    "color_confidence": 0.603,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "焦糖",
+    "secondary_color_rgb": [
+      180,
+      100,
+      34
+    ],
+    "secondary_color_confidence": 0.273,
+    "length_tag": "short",
+    "length_ratio": 1.424,
+    "length_confidence": 0.986,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:04.212Z"
+  },
+  {
+    "style_id": "STYLE045",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/dCvha",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 458,
+        "y1": 481,
+        "x2": 527,
+        "y2": 575
+      },
+      {
+        "x1": 388,
+        "y1": 415,
+        "x2": 452,
+        "y2": 510
+      },
+      {
+        "x1": 607,
+        "y1": 531,
+        "x2": 664,
+        "y2": 608
+      },
+      {
+        "x1": 529,
+        "y1": 520,
+        "x2": 594,
+        "y2": 604
+      },
+      {
+        "x1": 311,
+        "y1": 154,
+        "x2": 369,
+        "y2": 236
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      238,
+      235,
+      234
+    ],
+    "dominant_palette": [
+      [
+        238,
+        235,
+        234
+      ],
+      [
+        202,
+        175,
+        172
+      ],
+      [
+        204,
+        199,
+        196
+      ],
+      [
+        163,
+        156,
+        152
+      ],
+      [
+        213,
+        195,
+        191
+      ]
+    ],
+    "color_confidence": 0.461,
+    "secondary_color_family": "rose_gold",
+    "secondary_color_name": "玫瑰金",
+    "secondary_color_rgb": [
+      202,
+      175,
+      172
+    ],
+    "secondary_color_confidence": 0.161,
+    "length_tag": "short",
+    "length_ratio": 1.445,
+    "length_confidence": 0.939,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:06.174Z"
+  },
+  {
+    "style_id": "STYLE046",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/uITF2",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 418,
+        "y1": 152,
+        "x2": 459,
+        "y2": 207
+      },
+      {
+        "x1": 474,
+        "y1": 310,
+        "x2": 507,
+        "y2": 365
+      },
+      {
+        "x1": 468,
+        "y1": 121,
+        "x2": 513,
+        "y2": 178
+      },
+      {
+        "x1": 576,
+        "y1": 149,
+        "x2": 613,
+        "y2": 202
+      },
+      {
+        "x1": 533,
+        "y1": 307,
+        "x2": 561,
+        "y2": 363
+      },
+      {
+        "x1": 471,
+        "y1": 180,
+        "x2": 510,
+        "y2": 239
+      },
+      {
+        "x1": 539,
+        "y1": 181,
+        "x2": 570,
+        "y2": 238
+      },
+      {
+        "x1": 531,
+        "y1": 122,
+        "x2": 572,
+        "y2": 177
+      }
+    ],
+    "primary_color_family": "tan",
+    "primary_color_name": "焦糖",
+    "primary_color_rgb": [
+      174,
+      122,
+      100
+    ],
+    "dominant_palette": [
+      [
+        174,
+        122,
+        100
+      ],
+      [
+        184,
+        133,
+        114
+      ],
+      [
+        249,
+        241,
+        236
+      ],
+      [
+        151,
+        99,
+        81
+      ],
+      [
+        250,
+        241,
+        231
+      ]
+    ],
+    "color_confidence": 0.14,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      184,
+      133,
+      114
+    ],
+    "secondary_color_confidence": 0.026,
+    "length_tag": "medium",
+    "length_ratio": 1.706,
+    "length_confidence": 0.944,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:09.266Z"
+  },
+  {
+    "style_id": "STYLE047",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/lLjJF",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 499,
+        "y1": 821,
+        "x2": 539,
+        "y2": 880
+      },
+      {
+        "x1": 420,
+        "y1": 790,
+        "x2": 456,
+        "y2": 845
+      },
+      {
+        "x1": 572,
+        "y1": 776,
+        "x2": 609,
+        "y2": 831
+      },
+      {
+        "x1": 311,
+        "y1": 604,
+        "x2": 339,
+        "y2": 659
+      },
+      {
+        "x1": 658,
+        "y1": 680,
+        "x2": 686,
+        "y2": 725
+      }
+    ],
+    "primary_color_family": "black",
+    "primary_color_name": "黑色",
+    "primary_color_rgb": [
+      32,
+      32,
+      33
+    ],
+    "dominant_palette": [
+      [
+        32,
+        32,
+        33
+      ],
+      [
+        143,
+        140,
+        141
+      ],
+      [
+        108,
+        96,
+        96
+      ],
+      [
+        175,
+        148,
+        145
+      ],
+      [
+        150,
+        124,
+        123
+      ]
+    ],
+    "color_confidence": 0.487,
+    "secondary_color_family": "gray",
+    "secondary_color_name": "灰色",
+    "secondary_color_rgb": [
+      143,
+      140,
+      141
+    ],
+    "secondary_color_confidence": 0.106,
+    "length_tag": "medium",
+    "length_ratio": 1.577,
+    "length_confidence": 0.903,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:12.184Z"
+  },
+  {
+    "style_id": "STYLE048",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/s6QAb",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 495,
+        "y1": 807,
+        "x2": 536,
+        "y2": 866
+      },
+      {
+        "x1": 592,
+        "y1": 770,
+        "x2": 632,
+        "y2": 826
+      },
+      {
+        "x1": 409,
+        "y1": 765,
+        "x2": 446,
+        "y2": 822
+      },
+      {
+        "x1": 321,
+        "y1": 672,
+        "x2": 349,
+        "y2": 721
+      },
+      {
+        "x1": 716,
+        "y1": 574,
+        "x2": 745,
+        "y2": 630
+      }
+    ],
+    "primary_color_family": "dusty_rose",
+    "primary_color_name": "灰粉",
+    "primary_color_rgb": [
+      217,
+      146,
+      146
+    ],
+    "dominant_palette": [
+      [
+        227,
+        172,
+        173
+      ],
+      [
+        217,
+        146,
+        146
+      ],
+      [
+        217,
+        174,
+        171
+      ],
+      [
+        252,
+        229,
+        230
+      ],
+      [
+        217,
+        141,
+        144
+      ]
+    ],
+    "color_confidence": 0.334,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      227,
+      172,
+      173
+    ],
+    "secondary_color_confidence": 0.491,
+    "length_tag": "medium",
+    "length_ratio": 1.585,
+    "length_confidence": 0.821,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:14.085Z"
+  },
+  {
+    "style_id": "STYLE049",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/YMgUe",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 571,
+        "y1": 410,
+        "x2": 634,
+        "y2": 468
+      },
+      {
+        "x1": 542,
+        "y1": 351,
+        "x2": 606,
+        "y2": 416
+      },
+      {
+        "x1": 516,
+        "y1": 284,
+        "x2": 580,
+        "y2": 346
+      },
+      {
+        "x1": 606,
+        "y1": 462,
+        "x2": 662,
+        "y2": 508
+      },
+      {
+        "x1": 520,
+        "y1": 177,
+        "x2": 577,
+        "y2": 217
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "中粉",
+    "primary_color_rgb": [
+      242,
+      145,
+      191
+    ],
+    "dominant_palette": [
+      [
+        242,
+        145,
+        191
+      ],
+      [
+        251,
+        192,
+        220
+      ],
+      [
+        252,
+        215,
+        233
+      ],
+      [
+        253,
+        229,
+        242
+      ]
+    ],
+    "color_confidence": 0.87,
+    "secondary_color_family": "lilac",
+    "secondary_color_name": "丁香紫",
+    "secondary_color_rgb": [
+      252,
+      215,
+      233
+    ],
+    "secondary_color_confidence": 0.112,
+    "length_tag": "short",
+    "length_ratio": 1.386,
+    "length_confidence": 0.59,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:16.611Z"
+  },
+  {
+    "style_id": "STYLE050",
+    "source": "enhanced",
+    "image_path": "https://qu.ax/0sLdu",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 503,
+        "y1": 158,
+        "x2": 553,
+        "y2": 235
+      },
+      {
+        "x1": 752,
+        "y1": 377,
+        "x2": 792,
+        "y2": 439
+      },
+      {
+        "x1": 226,
+        "y1": 482,
+        "x2": 276,
+        "y2": 562
+      },
+      {
+        "x1": 623,
+        "y1": 223,
+        "x2": 669,
+        "y2": 296
+      },
+      {
+        "x1": 364,
+        "y1": 206,
+        "x2": 410,
+        "y2": 279
+      }
+    ],
+    "primary_color_family": "lavender",
+    "primary_color_name": "薰衣草",
+    "primary_color_rgb": [
+      194,
+      172,
+      215
+    ],
+    "dominant_palette": [
+      [
+        194,
+        172,
+        215
+      ],
+      [
+        219,
+        203,
+        236
+      ],
+      [
+        194,
+        153,
+        157
+      ],
+      [
+        209,
+        169,
+        180
+      ],
+      [
+        190,
+        146,
+        167
+      ]
+    ],
+    "color_confidence": 0.487,
+    "secondary_color_family": "lilac",
+    "secondary_color_name": "丁香紫",
+    "secondary_color_rgb": [
+      219,
+      203,
+      236
+    ],
+    "secondary_color_confidence": 0.115,
+    "length_tag": "medium",
+    "length_ratio": 1.59,
+    "length_confidence": 0.997,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:19.036Z"
+  },
+  {
+    "style_id": "STYLE051",
+    "source": "candidate",
+    "image_path": "https://qu.ax/NQsfS",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 494,
+        "y1": 167,
+        "x2": 540,
+        "y2": 236
+      },
+      {
+        "x1": 611,
+        "y1": 219,
+        "x2": 653,
+        "y2": 289
+      },
+      {
+        "x1": 725,
+        "y1": 354,
+        "x2": 763,
+        "y2": 414
+      },
+      {
+        "x1": 377,
+        "y1": 212,
+        "x2": 417,
+        "y2": 279
+      },
+      {
+        "x1": 259,
+        "y1": 459,
+        "x2": 306,
+        "y2": 540
+      }
+    ],
+    "primary_color_family": "olive",
+    "primary_color_name": "橄榄绿",
+    "primary_color_rgb": [
+      100,
+      91,
+      64
+    ],
+    "dominant_palette": [
+      [
+        100,
+        91,
+        64
+      ],
+      [
+        232,
+        217,
+        188
+      ],
+      [
+        48,
+        46,
+        40
+      ],
+      [
+        159,
+        147,
+        116
+      ],
+      [
+        205,
+        188,
+        160
+      ]
+    ],
+    "color_confidence": 0.129,
+    "secondary_color_family": "cream",
+    "secondary_color_name": "奶白",
+    "secondary_color_rgb": [
+      232,
+      217,
+      188
+    ],
+    "secondary_color_confidence": 0.124,
+    "length_tag": "medium",
+    "length_ratio": 1.665,
+    "length_confidence": 0.989,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:21.109Z"
+  },
+  {
+    "style_id": "STYLE052",
+    "source": "candidate",
+    "image_path": "https://qu.ax/MtzL6",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 466,
+        "y1": 487,
+        "x2": 529,
+        "y2": 577
+      },
+      {
+        "x1": 396,
+        "y1": 427,
+        "x2": 454,
+        "y2": 519
+      },
+      {
+        "x1": 607,
+        "y1": 520,
+        "x2": 661,
+        "y2": 594
+      },
+      {
+        "x1": 533,
+        "y1": 518,
+        "x2": 595,
+        "y2": 603
+      },
+      {
+        "x1": 303,
+        "y1": 152,
+        "x2": 357,
+        "y2": 249
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      244,
+      233,
+      237
+    ],
+    "dominant_palette": [
+      [
+        244,
+        233,
+        237
+      ],
+      [
+        198,
+        170,
+        212
+      ],
+      [
+        228,
+        181,
+        194
+      ],
+      [
+        226,
+        203,
+        227
+      ],
+      [
+        220,
+        209,
+        217
+      ]
+    ],
+    "color_confidence": 0.195,
+    "secondary_color_family": "lavender",
+    "secondary_color_name": "薰衣草",
+    "secondary_color_rgb": [
+      198,
+      170,
+      212
+    ],
+    "secondary_color_confidence": 0.15,
+    "length_tag": "short",
+    "length_ratio": 1.431,
+    "length_confidence": 0.884,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:22.489Z"
+  },
+  {
+    "style_id": "STYLE053",
+    "source": "candidate",
+    "image_path": "https://qu.ax/3hfAS",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 449,
+        "y1": 591,
+        "x2": 512,
+        "y2": 690
+      },
+      {
+        "x1": 523,
+        "y1": 559,
+        "x2": 589,
+        "y2": 663
+      },
+      {
+        "x1": 603,
+        "y1": 491,
+        "x2": 663,
+        "y2": 589
+      },
+      {
+        "x1": 695,
+        "y1": 123,
+        "x2": 747,
+        "y2": 238
+      },
+      {
+        "x1": 369,
+        "y1": 556,
+        "x2": 423,
+        "y2": 639
+      }
+    ],
+    "primary_color_family": "lavender",
+    "primary_color_name": "薰衣草",
+    "primary_color_rgb": [
+      179,
+      177,
+      213
+    ],
+    "dominant_palette": [
+      [
+        179,
+        177,
+        213
+      ],
+      [
+        204,
+        203,
+        220
+      ],
+      [
+        199,
+        197,
+        230
+      ],
+      [
+        151,
+        146,
+        159
+      ],
+      [
+        241,
+        240,
+        243
+      ]
+    ],
+    "color_confidence": 0.68,
+    "secondary_color_family": "silver",
+    "secondary_color_name": "银色",
+    "secondary_color_rgb": [
+      204,
+      203,
+      220
+    ],
+    "secondary_color_confidence": 0.149,
+    "length_tag": "medium",
+    "length_ratio": 1.608,
+    "length_confidence": 0.837,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:24.032Z"
+  },
+  {
+    "style_id": "STYLE054",
+    "source": "candidate",
+    "image_path": "https://qu.ax/mAwzV",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 10,
+    "bboxes": [
+      {
+        "x1": 542,
+        "y1": 125,
+        "x2": 592,
+        "y2": 190
+      },
+      {
+        "x1": 439,
+        "y1": 121,
+        "x2": 487,
+        "y2": 191
+      },
+      {
+        "x1": 471,
+        "y1": 266,
+        "x2": 502,
+        "y2": 327
+      },
+      {
+        "x1": 521,
+        "y1": 166,
+        "x2": 560,
+        "y2": 234
+      },
+      {
+        "x1": 381,
+        "y1": 149,
+        "x2": 422,
+        "y2": 211
+      },
+      {
+        "x1": 514,
+        "y1": 267,
+        "x2": 549,
+        "y2": 328
+      },
+      {
+        "x1": 464,
+        "y1": 172,
+        "x2": 503,
+        "y2": 234
+      },
+      {
+        "x1": 605,
+        "y1": 153,
+        "x2": 646,
+        "y2": 215
+      },
+      {
+        "x1": 260,
+        "y1": 344,
+        "x2": 277,
+        "y2": 420
+      },
+      {
+        "x1": 725,
+        "y1": 336,
+        "x2": 745,
+        "y2": 411
+      }
+    ],
+    "primary_color_family": "beige",
+    "primary_color_name": "米白",
+    "primary_color_rgb": [
+      244,
+      224,
+      217
+    ],
+    "dominant_palette": [
+      [
+        244,
+        224,
+        217
+      ],
+      [
+        248,
+        235,
+        231
+      ],
+      [
+        247,
+        218,
+        210
+      ],
+      [
+        205,
+        106,
+        97
+      ],
+      [
+        162,
+        114,
+        105
+      ]
+    ],
+    "color_confidence": 0.073,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      248,
+      235,
+      231
+    ],
+    "secondary_color_confidence": 0.024,
+    "length_tag": "long",
+    "length_ratio": 1.827,
+    "length_confidence": 0.221,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:26.827Z"
+  },
+  {
+    "style_id": "STYLE055",
+    "source": "candidate",
+    "image_path": "https://qu.ax/vmeEt",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 403,
+        "y1": 790,
+        "x2": 441,
+        "y2": 854
+      },
+      {
+        "x1": 491,
+        "y1": 827,
+        "x2": 531,
+        "y2": 890
+      },
+      {
+        "x1": 575,
+        "y1": 783,
+        "x2": 606,
+        "y2": 843
+      },
+      {
+        "x1": 291,
+        "y1": 582,
+        "x2": 330,
+        "y2": 641
+      },
+      {
+        "x1": 672,
+        "y1": 684,
+        "x2": 700,
+        "y2": 732
+      }
+    ],
+    "primary_color_family": "red_dark",
+    "primary_color_name": "酒红",
+    "primary_color_rgb": [
+      98,
+      30,
+      34
+    ],
+    "dominant_palette": [
+      [
+        98,
+        30,
+        34
+      ],
+      [
+        186,
+        119,
+        120
+      ],
+      [
+        172,
+        91,
+        96
+      ],
+      [
+        139,
+        68,
+        72
+      ],
+      [
+        133,
+        87,
+        87
+      ]
+    ],
+    "color_confidence": 0.059,
+    "secondary_color_family": "mauve",
+    "secondary_color_name": "玫粉",
+    "secondary_color_rgb": [
+      186,
+      119,
+      120
+    ],
+    "secondary_color_confidence": 0.049,
+    "length_tag": "long",
+    "length_ratio": 1.772,
+    "length_confidence": 0.954,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:28.252Z"
+  },
+  {
+    "style_id": "STYLE056",
+    "source": "candidate",
+    "image_path": "https://qu.ax/yJ8Ql",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 402,
+        "x2": 553,
+        "y2": 499
+      },
+      {
+        "x1": 431,
+        "y1": 316,
+        "x2": 493,
+        "y2": 410
+      },
+      {
+        "x1": 339,
+        "y1": 189,
+        "x2": 396,
+        "y2": 290
+      },
+      {
+        "x1": 539,
+        "y1": 474,
+        "x2": 606,
+        "y2": 564
+      },
+      {
+        "x1": 584,
+        "y1": 543,
+        "x2": 642,
+        "y2": 612
+      }
+    ],
+    "primary_color_family": "cream",
+    "primary_color_name": "奶白",
+    "primary_color_rgb": [
+      235,
+      218,
+      176
+    ],
+    "dominant_palette": [
+      [
+        235,
+        218,
+        176
+      ],
+      [
+        238,
+        182,
+        200
+      ],
+      [
+        243,
+        232,
+        231
+      ],
+      [
+        223,
+        201,
+        181
+      ],
+      [
+        139,
+        91,
+        74
+      ]
+    ],
+    "color_confidence": 0.091,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      238,
+      182,
+      200
+    ],
+    "secondary_color_confidence": 0.137,
+    "length_tag": "medium",
+    "length_ratio": 1.525,
+    "length_confidence": 0.78,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:29.477Z"
+  },
+  {
+    "style_id": "STYLE057",
+    "source": "candidate",
+    "image_path": "https://qu.ax/osFIb",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 467,
+        "y1": 445,
+        "x2": 540,
+        "y2": 568
+      },
+      {
+        "x1": 536,
+        "y1": 487,
+        "x2": 605,
+        "y2": 606
+      },
+      {
+        "x1": 595,
+        "y1": 537,
+        "x2": 657,
+        "y2": 637
+      },
+      {
+        "x1": 269,
+        "y1": 186,
+        "x2": 324,
+        "y2": 307
+      },
+      {
+        "x1": 382,
+        "y1": 385,
+        "x2": 468,
+        "y2": 502
+      }
+    ],
+    "primary_color_family": "light_blue",
+    "primary_color_name": "浅蓝",
+    "primary_color_rgb": [
+      179,
+      219,
+      234
+    ],
+    "dominant_palette": [
+      [
+        179,
+        219,
+        234
+      ],
+      [
+        43,
+        157,
+        131
+      ],
+      [
+        190,
+        220,
+        211
+      ],
+      [
+        119,
+        179,
+        172
+      ],
+      [
+        145,
+        147,
+        147
+      ]
+    ],
+    "color_confidence": 0.175,
+    "secondary_color_family": "green",
+    "secondary_color_name": "绿色",
+    "secondary_color_rgb": [
+      43,
+      157,
+      131
+    ],
+    "secondary_color_confidence": 0.132,
+    "length_tag": "long",
+    "length_ratio": 1.755,
+    "length_confidence": 0.922,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:30.770Z"
+  },
+  {
+    "style_id": "STYLE058",
+    "source": "candidate",
+    "image_path": "https://qu.ax/5wiUI",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 496,
+        "y1": 153,
+        "x2": 539,
+        "y2": 231
+      },
+      {
+        "x1": 249,
+        "y1": 444,
+        "x2": 304,
+        "y2": 528
+      },
+      {
+        "x1": 727,
+        "y1": 343,
+        "x2": 765,
+        "y2": 407
+      },
+      {
+        "x1": 376,
+        "y1": 202,
+        "x2": 417,
+        "y2": 273
+      },
+      {
+        "x1": 611,
+        "y1": 207,
+        "x2": 651,
+        "y2": 281
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      225,
+      169,
+      156
+    ],
+    "dominant_palette": [
+      [
+        225,
+        169,
+        156
+      ],
+      [
+        212,
+        143,
+        136
+      ],
+      [
+        203,
+        118,
+        120
+      ],
+      [
+        216,
+        129,
+        137
+      ],
+      [
+        234,
+        165,
+        164
+      ]
+    ],
+    "color_confidence": 0.199,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "中粉",
+    "secondary_color_rgb": [
+      216,
+      129,
+      137
+    ],
+    "secondary_color_confidence": 0.247,
+    "length_tag": "long",
+    "length_ratio": 1.754,
+    "length_confidence": 0.994,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:32.078Z"
+  },
+  {
+    "style_id": "STYLE059",
+    "source": "candidate",
+    "image_path": "https://qu.ax/OP1pK",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 467,
+        "y1": 487,
+        "x2": 530,
+        "y2": 584
+      },
+      {
+        "x1": 395,
+        "y1": 426,
+        "x2": 454,
+        "y2": 524
+      },
+      {
+        "x1": 606,
+        "y1": 523,
+        "x2": 661,
+        "y2": 601
+      },
+      {
+        "x1": 534,
+        "y1": 519,
+        "x2": 593,
+        "y2": 606
+      },
+      {
+        "x1": 296,
+        "y1": 154,
+        "x2": 356,
+        "y2": 236
+      }
+    ],
+    "primary_color_family": "champagne",
+    "primary_color_name": "香槟金",
+    "primary_color_rgb": [
+      228,
+      204,
+      194
+    ],
+    "dominant_palette": [
+      [
+        228,
+        204,
+        194
+      ],
+      [
+        239,
+        223,
+        215
+      ],
+      [
+        242,
+        231,
+        230
+      ],
+      [
+        242,
+        207,
+        198
+      ],
+      [
+        133,
+        94,
+        78
+      ]
+    ],
+    "color_confidence": 0.135,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      239,
+      223,
+      215
+    ],
+    "secondary_color_confidence": 0.092,
+    "length_tag": "medium",
+    "length_ratio": 1.56,
+    "length_confidence": 0.973,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:33.240Z"
+  },
+  {
+    "style_id": "STYLE060",
+    "source": "candidate",
+    "image_path": "https://qu.ax/HvKtC",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 4,
+    "bboxes": [
+      {
+        "x1": 451,
+        "y1": 590,
+        "x2": 515,
+        "y2": 705
+      },
+      {
+        "x1": 524,
+        "y1": 560,
+        "x2": 590,
+        "y2": 686
+      },
+      {
+        "x1": 369,
+        "y1": 557,
+        "x2": 428,
+        "y2": 659
+      },
+      {
+        "x1": 602,
+        "y1": 491,
+        "x2": 661,
+        "y2": 611
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      147,
+      137,
+      150
+    ],
+    "dominant_palette": [
+      [
+        147,
+        137,
+        150
+      ],
+      [
+        200,
+        224,
+        242
+      ],
+      [
+        172,
+        169,
+        197
+      ],
+      [
+        239,
+        245,
+        244
+      ],
+      [
+        57,
+        53,
+        52
+      ]
+    ],
+    "color_confidence": 0.383,
+    "secondary_color_family": "light_blue",
+    "secondary_color_name": "浅蓝",
+    "secondary_color_rgb": [
+      200,
+      224,
+      242
+    ],
+    "secondary_color_confidence": 0.105,
+    "length_tag": "long",
+    "length_ratio": 1.868,
+    "length_confidence": 0.798,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:34.492Z"
+  },
+  {
+    "style_id": "STYLE061",
+    "source": "candidate",
+    "image_path": "https://qu.ax/Blb7w",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 10,
+    "bboxes": [
+      {
+        "x1": 465,
+        "y1": 182,
+        "x2": 501,
+        "y2": 236
+      },
+      {
+        "x1": 541,
+        "y1": 135,
+        "x2": 588,
+        "y2": 193
+      },
+      {
+        "x1": 439,
+        "y1": 133,
+        "x2": 485,
+        "y2": 191
+      },
+      {
+        "x1": 472,
+        "y1": 281,
+        "x2": 501,
+        "y2": 322
+      },
+      {
+        "x1": 518,
+        "y1": 282,
+        "x2": 549,
+        "y2": 324
+      },
+      {
+        "x1": 380,
+        "y1": 161,
+        "x2": 419,
+        "y2": 216
+      },
+      {
+        "x1": 519,
+        "y1": 179,
+        "x2": 558,
+        "y2": 233
+      },
+      {
+        "x1": 605,
+        "y1": 165,
+        "x2": 642,
+        "y2": 217
+      },
+      {
+        "x1": 720,
+        "y1": 351,
+        "x2": 742,
+        "y2": 414
+      },
+      {
+        "x1": 261,
+        "y1": 363,
+        "x2": 280,
+        "y2": 424
+      }
+    ],
+    "primary_color_family": "khaki",
+    "primary_color_name": "卡其",
+    "primary_color_rgb": [
+      158,
+      144,
+      91
+    ],
+    "dominant_palette": [
+      [
+        158,
+        144,
+        91
+      ],
+      [
+        114,
+        97,
+        46
+      ],
+      [
+        243,
+        229,
+        214
+      ],
+      [
+        226,
+        204,
+        179
+      ],
+      [
+        225,
+        87,
+        59
+      ]
+    ],
+    "color_confidence": 0.176,
+    "secondary_color_family": "olive",
+    "secondary_color_name": "橄榄绿",
+    "secondary_color_rgb": [
+      114,
+      97,
+      46
+    ],
+    "secondary_color_confidence": 0.152,
+    "length_tag": "short",
+    "length_ratio": 1.493,
+    "length_confidence": 0.384,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:36.000Z"
+  },
+  {
+    "style_id": "STYLE062",
+    "source": "candidate",
+    "image_path": "https://qu.ax/EbcQq",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 404,
+        "y1": 791,
+        "x2": 442,
+        "y2": 859
+      },
+      {
+        "x1": 490,
+        "y1": 827,
+        "x2": 532,
+        "y2": 897
+      },
+      {
+        "x1": 571,
+        "y1": 782,
+        "x2": 610,
+        "y2": 847
+      },
+      {
+        "x1": 289,
+        "y1": 581,
+        "x2": 331,
+        "y2": 645
+      },
+      {
+        "x1": 671,
+        "y1": 683,
+        "x2": 699,
+        "y2": 731
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      251,
+      249,
+      246
+    ],
+    "dominant_palette": [
+      [
+        251,
+        249,
+        246
+      ]
+    ],
+    "color_confidence": 0.017,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "long",
+    "length_ratio": 1.891,
+    "length_confidence": 0.989,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:37.702Z"
+  },
+  {
+    "style_id": "STYLE063",
+    "source": "candidate",
+    "image_path": "https://qu.ax/beohW",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 489,
+        "y1": 403,
+        "x2": 556,
+        "y2": 488
+      },
+      {
+        "x1": 540,
+        "y1": 471,
+        "x2": 606,
+        "y2": 550
+      },
+      {
+        "x1": 428,
+        "y1": 315,
+        "x2": 491,
+        "y2": 391
+      },
+      {
+        "x1": 344,
+        "y1": 210,
+        "x2": 385,
+        "y2": 284
+      },
+      {
+        "x1": 584,
+        "y1": 542,
+        "x2": 640,
+        "y2": 606
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      238,
+      236,
+      235
+    ],
+    "dominant_palette": [
+      [
+        238,
+        236,
+        235
+      ],
+      [
+        196,
+        23,
+        22
+      ],
+      [
+        201,
+        200,
+        197
+      ],
+      [
+        22,
+        17,
+        15
+      ],
+      [
+        89,
+        12,
+        11
+      ]
+    ],
+    "color_confidence": 0.253,
+    "secondary_color_family": "red",
+    "secondary_color_name": "正红",
+    "secondary_color_rgb": [
+      196,
+      23,
+      22
+    ],
+    "secondary_color_confidence": 0.218,
+    "length_tag": "short",
+    "length_ratio": 1.28,
+    "length_confidence": 0.824,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:39.287Z"
+  },
+  {
+    "style_id": "STYLE064",
+    "source": "candidate",
+    "image_path": "https://qu.ax/LGhda",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 581,
+        "y1": 539,
+        "x2": 660,
+        "y2": 658
+      },
+      {
+        "x1": 455,
+        "y1": 445,
+        "x2": 537,
+        "y2": 587
+      },
+      {
+        "x1": 385,
+        "y1": 385,
+        "x2": 458,
+        "y2": 520
+      },
+      {
+        "x1": 523,
+        "y1": 492,
+        "x2": 603,
+        "y2": 618
+      },
+      {
+        "x1": 274,
+        "y1": 163,
+        "x2": 341,
+        "y2": 310
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      210,
+      170,
+      161
+    ],
+    "dominant_palette": [
+      [
+        210,
+        170,
+        161
+      ],
+      [
+        229,
+        226,
+        224
+      ],
+      [
+        206,
+        208,
+        207
+      ],
+      [
+        219,
+        198,
+        187
+      ],
+      [
+        195,
+        151,
+        144
+      ]
+    ],
+    "color_confidence": 0.309,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      229,
+      226,
+      224
+    ],
+    "secondary_color_confidence": 0.134,
+    "length_tag": "long",
+    "length_ratio": 1.88,
+    "length_confidence": 0.887,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:40.426Z"
+  },
+  {
+    "style_id": "STYLE065",
+    "source": "candidate",
+    "image_path": "https://qu.ax/MjCTw",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 493,
+        "y1": 168,
+        "x2": 539,
+        "y2": 231
+      },
+      {
+        "x1": 610,
+        "y1": 220,
+        "x2": 653,
+        "y2": 281
+      },
+      {
+        "x1": 374,
+        "y1": 215,
+        "x2": 417,
+        "y2": 274
+      },
+      {
+        "x1": 726,
+        "y1": 354,
+        "x2": 762,
+        "y2": 405
+      },
+      {
+        "x1": 261,
+        "y1": 463,
+        "x2": 301,
+        "y2": 528
+      }
+    ],
+    "primary_color_family": "red_pink",
+    "primary_color_name": "玫红",
+    "primary_color_rgb": [
+      203,
+      76,
+      118
+    ],
+    "dominant_palette": [
+      [
+        203,
+        76,
+        118
+      ],
+      [
+        154,
+        40,
+        77
+      ],
+      [
+        233,
+        183,
+        200
+      ],
+      [
+        28,
+        24,
+        25
+      ],
+      [
+        214,
+        134,
+        163
+      ]
+    ],
+    "color_confidence": 0.142,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      233,
+      183,
+      200
+    ],
+    "secondary_color_confidence": 0.143,
+    "length_tag": "short",
+    "length_ratio": 1.47,
+    "length_confidence": 0.991,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:41.706Z"
+  },
+  {
+    "style_id": "STYLE066",
+    "source": "candidate",
+    "image_path": "https://qu.ax/FVf9c",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 396,
+        "y1": 427,
+        "x2": 455,
+        "y2": 521
+      },
+      {
+        "x1": 532,
+        "y1": 516,
+        "x2": 595,
+        "y2": 605
+      },
+      {
+        "x1": 605,
+        "y1": 521,
+        "x2": 661,
+        "y2": 595
+      },
+      {
+        "x1": 468,
+        "y1": 487,
+        "x2": 529,
+        "y2": 562
+      },
+      {
+        "x1": 307,
+        "y1": 148,
+        "x2": 357,
+        "y2": 247
+      }
+    ],
+    "primary_color_family": "beige",
+    "primary_color_name": "米白",
+    "primary_color_rgb": [
+      248,
+      228,
+      220
+    ],
+    "dominant_palette": [
+      [
+        248,
+        228,
+        220
+      ],
+      [
+        251,
+        241,
+        236
+      ],
+      [
+        243,
+        214,
+        205
+      ],
+      [
+        114,
+        70,
+        51
+      ],
+      [
+        244,
+        210,
+        201
+      ]
+    ],
+    "color_confidence": 0.117,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      251,
+      241,
+      236
+    ],
+    "secondary_color_confidence": 0.056,
+    "length_tag": "short",
+    "length_ratio": 1.414,
+    "length_confidence": 0.869,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:43.422Z"
+  },
+  {
+    "style_id": "STYLE067",
+    "source": "candidate",
+    "image_path": "https://qu.ax/XxKjz",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 524,
+        "y1": 560,
+        "x2": 587,
+        "y2": 648
+      },
+      {
+        "x1": 451,
+        "y1": 592,
+        "x2": 511,
+        "y2": 675
+      },
+      {
+        "x1": 603,
+        "y1": 492,
+        "x2": 657,
+        "y2": 577
+      },
+      {
+        "x1": 372,
+        "y1": 557,
+        "x2": 417,
+        "y2": 629
+      },
+      {
+        "x1": 700,
+        "y1": 144,
+        "x2": 745,
+        "y2": 237
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      214,
+      179,
+      171
+    ],
+    "dominant_palette": [
+      [
+        214,
+        179,
+        171
+      ],
+      [
+        231,
+        184,
+        186
+      ],
+      [
+        201,
+        150,
+        146
+      ],
+      [
+        226,
+        200,
+        194
+      ],
+      [
+        243,
+        226,
+        225
+      ]
+    ],
+    "color_confidence": 0.482,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      231,
+      184,
+      186
+    ],
+    "secondary_color_confidence": 0.117,
+    "length_tag": "medium",
+    "length_ratio": 1.658,
+    "length_confidence": 0.845,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:44.865Z"
+  },
+  {
+    "style_id": "STYLE068",
+    "source": "candidate",
+    "image_path": "https://qu.ax/MKJZA",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 439,
+        "y1": 132,
+        "x2": 485,
+        "y2": 188
+      },
+      {
+        "x1": 378,
+        "y1": 162,
+        "x2": 422,
+        "y2": 214
+      },
+      {
+        "x1": 524,
+        "y1": 179,
+        "x2": 560,
+        "y2": 233
+      },
+      {
+        "x1": 544,
+        "y1": 135,
+        "x2": 590,
+        "y2": 188
+      },
+      {
+        "x1": 472,
+        "y1": 281,
+        "x2": 499,
+        "y2": 326
+      },
+      {
+        "x1": 464,
+        "y1": 183,
+        "x2": 501,
+        "y2": 235
+      },
+      {
+        "x1": 518,
+        "y1": 281,
+        "x2": 550,
+        "y2": 329
+      },
+      {
+        "x1": 606,
+        "y1": 165,
+        "x2": 647,
+        "y2": 218
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      231,
+      194,
+      189
+    ],
+    "dominant_palette": [
+      [
+        231,
+        194,
+        189
+      ],
+      [
+        242,
+        204,
+        197
+      ],
+      [
+        233,
+        206,
+        201
+      ],
+      [
+        239,
+        195,
+        193
+      ],
+      [
+        244,
+        222,
+        216
+      ]
+    ],
+    "color_confidence": 0.039,
+    "secondary_color_family": "apricot",
+    "secondary_color_name": "杏色",
+    "secondary_color_rgb": [
+      242,
+      204,
+      197
+    ],
+    "secondary_color_confidence": 0.032,
+    "length_tag": "short",
+    "length_ratio": 1.456,
+    "length_confidence": 0.987,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:46.249Z"
+  },
+  {
+    "style_id": "STYLE069",
+    "source": "candidate",
+    "image_path": "https://qu.ax/tdAci",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 828,
+        "x2": 533,
+        "y2": 897
+      },
+      {
+        "x1": 404,
+        "y1": 795,
+        "x2": 442,
+        "y2": 860
+      },
+      {
+        "x1": 572,
+        "y1": 783,
+        "x2": 609,
+        "y2": 848
+      },
+      {
+        "x1": 288,
+        "y1": 583,
+        "x2": 328,
+        "y2": 644
+      },
+      {
+        "x1": 671,
+        "y1": 685,
+        "x2": 701,
+        "y2": 739
+      }
+    ],
+    "primary_color_family": "dark_green",
+    "primary_color_name": "墨绿",
+    "primary_color_rgb": [
+      65,
+      79,
+      56
+    ],
+    "dominant_palette": [
+      [
+        65,
+        79,
+        56
+      ],
+      [
+        155,
+        146,
+        121
+      ],
+      [
+        156,
+        152,
+        137
+      ],
+      [
+        100,
+        99,
+        78
+      ],
+      [
+        186,
+        174,
+        152
+      ]
+    ],
+    "color_confidence": 0.064,
+    "secondary_color_family": "khaki",
+    "secondary_color_name": "卡其",
+    "secondary_color_rgb": [
+      155,
+      146,
+      121
+    ],
+    "secondary_color_confidence": 0.061,
+    "length_tag": "long",
+    "length_ratio": 1.906,
+    "length_confidence": 0.963,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:47.531Z"
+  },
+  {
+    "style_id": "STYLE070",
+    "source": "candidate",
+    "image_path": "https://qu.ax/sUqtd",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 4,
+    "bboxes": [
+      {
+        "x1": 488,
+        "y1": 402,
+        "x2": 554,
+        "y2": 495
+      },
+      {
+        "x1": 543,
+        "y1": 472,
+        "x2": 605,
+        "y2": 557
+      },
+      {
+        "x1": 431,
+        "y1": 317,
+        "x2": 490,
+        "y2": 400
+      },
+      {
+        "x1": 345,
+        "y1": 204,
+        "x2": 382,
+        "y2": 282
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      245,
+      234,
+      232
+    ],
+    "dominant_palette": [
+      [
+        245,
+        234,
+        232
+      ],
+      [
+        125,
+        98,
+        88
+      ],
+      [
+        218,
+        198,
+        192
+      ],
+      [
+        231,
+        187,
+        193
+      ],
+      [
+        230,
+        217,
+        211
+      ]
+    ],
+    "color_confidence": 0.095,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "深焦糖",
+    "secondary_color_rgb": [
+      125,
+      98,
+      88
+    ],
+    "secondary_color_confidence": 0.103,
+    "length_tag": "short",
+    "length_ratio": 1.433,
+    "length_confidence": 0.648,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:48.592Z"
+  },
+  {
+    "style_id": "STYLE071",
+    "source": "candidate",
+    "image_path": "https://qu.ax/65TlI",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 469,
+        "y1": 445,
+        "x2": 536,
+        "y2": 564
+      },
+      {
+        "x1": 396,
+        "y1": 385,
+        "x2": 459,
+        "y2": 485
+      },
+      {
+        "x1": 535,
+        "y1": 492,
+        "x2": 605,
+        "y2": 600
+      },
+      {
+        "x1": 596,
+        "y1": 537,
+        "x2": 657,
+        "y2": 621
+      },
+      {
+        "x1": 281,
+        "y1": 208,
+        "x2": 326,
+        "y2": 308
+      }
+    ],
+    "primary_color_family": "navy",
+    "primary_color_name": "藏蓝",
+    "primary_color_rgb": [
+      49,
+      31,
+      79
+    ],
+    "dominant_palette": [
+      [
+        49,
+        31,
+        79
+      ],
+      [
+        122,
+        82,
+        134
+      ],
+      [
+        138,
+        142,
+        143
+      ],
+      [
+        100,
+        46,
+        94
+      ],
+      [
+        70,
+        105,
+        140
+      ]
+    ],
+    "color_confidence": 0.371,
+    "secondary_color_family": "purple",
+    "secondary_color_name": "紫色",
+    "secondary_color_rgb": [
+      122,
+      82,
+      134
+    ],
+    "secondary_color_confidence": 0.155,
+    "length_tag": "medium",
+    "length_ratio": 1.611,
+    "length_confidence": 0.895,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:49.696Z"
+  },
+  {
+    "style_id": "STYLE072",
+    "source": "candidate",
+    "image_path": "https://qu.ax/QOtpo",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 495,
+        "y1": 155,
+        "x2": 539,
+        "y2": 232
+      },
+      {
+        "x1": 726,
+        "y1": 342,
+        "x2": 763,
+        "y2": 406
+      },
+      {
+        "x1": 257,
+        "y1": 450,
+        "x2": 305,
+        "y2": 531
+      },
+      {
+        "x1": 377,
+        "y1": 201,
+        "x2": 417,
+        "y2": 272
+      },
+      {
+        "x1": 612,
+        "y1": 205,
+        "x2": 650,
+        "y2": 278
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "亮粉",
+    "primary_color_rgb": [
+      233,
+      180,
+      185
+    ],
+    "dominant_palette": [
+      [
+        233,
+        180,
+        185
+      ],
+      [
+        219,
+        184,
+        180
+      ],
+      [
+        207,
+        154,
+        154
+      ],
+      [
+        230,
+        205,
+        202
+      ],
+      [
+        241,
+        219,
+        220
+      ]
+    ],
+    "color_confidence": 0.637,
+    "secondary_color_family": "rose_gold",
+    "secondary_color_name": "玫瑰金",
+    "secondary_color_rgb": [
+      219,
+      184,
+      180
+    ],
+    "secondary_color_confidence": 0.108,
+    "length_tag": "long",
+    "length_ratio": 1.79,
+    "length_confidence": 0.993,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:50.715Z"
+  },
+  {
+    "style_id": "STYLE073",
+    "source": "candidate",
+    "image_path": "https://qu.ax/mLig9",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 466,
+        "y1": 486,
+        "x2": 528,
+        "y2": 580
+      },
+      {
+        "x1": 395,
+        "y1": 426,
+        "x2": 456,
+        "y2": 520
+      },
+      {
+        "x1": 533,
+        "y1": 516,
+        "x2": 593,
+        "y2": 604
+      },
+      {
+        "x1": 306,
+        "y1": 156,
+        "x2": 357,
+        "y2": 250
+      },
+      {
+        "x1": 607,
+        "y1": 522,
+        "x2": 660,
+        "y2": 597
+      }
+    ],
+    "primary_color_family": "red_dark",
+    "primary_color_name": "酒红",
+    "primary_color_rgb": [
+      137,
+      10,
+      23
+    ],
+    "dominant_palette": [
+      [
+        137,
+        10,
+        23
+      ],
+      [
+        28,
+        50,
+        76
+      ],
+      [
+        243,
+        236,
+        219
+      ],
+      [
+        202,
+        187,
+        164
+      ],
+      [
+        163,
+        47,
+        48
+      ]
+    ],
+    "color_confidence": 0.2,
+    "secondary_color_family": "navy",
+    "secondary_color_name": "藏蓝",
+    "secondary_color_rgb": [
+      28,
+      50,
+      76
+    ],
+    "secondary_color_confidence": 0.11,
+    "length_tag": "short",
+    "length_ratio": 1.494,
+    "length_confidence": 0.951,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:51.724Z"
+  },
+  {
+    "style_id": "STYLE074",
+    "source": "candidate",
+    "image_path": "https://qu.ax/opTSB",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 522,
+        "y1": 560,
+        "x2": 590,
+        "y2": 668
+      },
+      {
+        "x1": 452,
+        "y1": 591,
+        "x2": 512,
+        "y2": 693
+      },
+      {
+        "x1": 697,
+        "y1": 130,
+        "x2": 746,
+        "y2": 237
+      },
+      {
+        "x1": 601,
+        "y1": 492,
+        "x2": 657,
+        "y2": 598
+      },
+      {
+        "x1": 372,
+        "y1": 558,
+        "x2": 422,
+        "y2": 642
+      }
+    ],
+    "primary_color_family": "mauve",
+    "primary_color_name": "玫粉",
+    "primary_color_rgb": [
+      191,
+      119,
+      119
+    ],
+    "dominant_palette": [
+      [
+        191,
+        119,
+        119
+      ],
+      [
+        200,
+        142,
+        139
+      ],
+      [
+        187,
+        96,
+        103
+      ],
+      [
+        214,
+        179,
+        176
+      ],
+      [
+        245,
+        238,
+        238
+      ]
+    ],
+    "color_confidence": 0.369,
+    "secondary_color_family": "dusty_rose",
+    "secondary_color_name": "灰粉",
+    "secondary_color_rgb": [
+      200,
+      142,
+      139
+    ],
+    "secondary_color_confidence": 0.126,
+    "length_tag": "long",
+    "length_ratio": 1.82,
+    "length_confidence": 0.93,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:53.456Z"
+  },
+  {
+    "style_id": "STYLE075",
+    "source": "candidate",
+    "image_path": "https://qu.ax/5IOUQ",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 10,
+    "bboxes": [
+      {
+        "x1": 548,
+        "y1": 137,
+        "x2": 595,
+        "y2": 196
+      },
+      {
+        "x1": 437,
+        "y1": 134,
+        "x2": 486,
+        "y2": 199
+      },
+      {
+        "x1": 377,
+        "y1": 163,
+        "x2": 416,
+        "y2": 219
+      },
+      {
+        "x1": 604,
+        "y1": 167,
+        "x2": 646,
+        "y2": 226
+      },
+      {
+        "x1": 518,
+        "y1": 284,
+        "x2": 549,
+        "y2": 331
+      },
+      {
+        "x1": 522,
+        "y1": 181,
+        "x2": 558,
+        "y2": 239
+      },
+      {
+        "x1": 357,
+        "y1": 410,
+        "x2": 588,
+        "y2": 840
+      },
+      {
+        "x1": 473,
+        "y1": 279,
+        "x2": 501,
+        "y2": 327
+      },
+      {
+        "x1": 824,
+        "y1": 259,
+        "x2": 1023,
+        "y2": 586
+      },
+      {
+        "x1": 467,
+        "y1": 183,
+        "x2": 504,
+        "y2": 234
+      }
+    ],
+    "primary_color_family": "plum",
+    "primary_color_name": "梅子色",
+    "primary_color_rgb": [
+      134,
+      49,
+      81
+    ],
+    "dominant_palette": [
+      [
+        134,
+        49,
+        81
+      ],
+      [
+        19,
+        28,
+        58
+      ],
+      [
+        5,
+        6,
+        19
+      ],
+      [
+        188,
+        60,
+        97
+      ],
+      [
+        186,
+        150,
+        155
+      ]
+    ],
+    "color_confidence": 0.294,
+    "secondary_color_family": "navy",
+    "secondary_color_name": "藏蓝",
+    "secondary_color_rgb": [
+      19,
+      28,
+      58
+    ],
+    "secondary_color_confidence": 0.145,
+    "length_tag": "medium",
+    "length_ratio": 1.559,
+    "length_confidence": 0.968,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:55.136Z"
+  },
+  {
+    "style_id": "STYLE076",
+    "source": "candidate",
+    "image_path": "https://qu.ax/GF7b0",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 828,
+        "x2": 531,
+        "y2": 887
+      },
+      {
+        "x1": 574,
+        "y1": 781,
+        "x2": 609,
+        "y2": 838
+      },
+      {
+        "x1": 404,
+        "y1": 792,
+        "x2": 441,
+        "y2": 849
+      },
+      {
+        "x1": 295,
+        "y1": 584,
+        "x2": 329,
+        "y2": 639
+      },
+      {
+        "x1": 674,
+        "y1": 685,
+        "x2": 699,
+        "y2": 730
+      }
+    ],
+    "primary_color_family": "mauve",
+    "primary_color_name": "玫粉",
+    "primary_color_rgb": [
+      172,
+      122,
+      122
+    ],
+    "dominant_palette": [
+      [
+        172,
+        122,
+        122
+      ],
+      [
+        148,
+        98,
+        94
+      ],
+      [
+        183,
+        136,
+        134
+      ],
+      [
+        254,
+        249,
+        247
+      ]
+    ],
+    "color_confidence": 0.251,
+    "secondary_color_family": null,
+    "secondary_color_name": null,
+    "secondary_color_rgb": null,
+    "secondary_color_confidence": null,
+    "length_tag": "long",
+    "length_ratio": 1.785,
+    "length_confidence": 0.952,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:56.678Z"
+  },
+  {
+    "style_id": "STYLE077",
+    "source": "candidate",
+    "image_path": "https://qu.ax/LhHja",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 487,
+        "y1": 404,
+        "x2": 554,
+        "y2": 515
+      },
+      {
+        "x1": 429,
+        "y1": 316,
+        "x2": 492,
+        "y2": 434
+      },
+      {
+        "x1": 542,
+        "y1": 474,
+        "x2": 603,
+        "y2": 577
+      },
+      {
+        "x1": 346,
+        "y1": 184,
+        "x2": 392,
+        "y2": 278
+      },
+      {
+        "x1": 580,
+        "y1": 541,
+        "x2": 639,
+        "y2": 618
+      }
+    ],
+    "primary_color_family": "red",
+    "primary_color_name": "正红",
+    "primary_color_rgb": [
+      188,
+      9,
+      8
+    ],
+    "dominant_palette": [
+      [
+        188,
+        9,
+        8
+      ],
+      [
+        238,
+        223,
+        214
+      ],
+      [
+        31,
+        23,
+        20
+      ],
+      [
+        225,
+        204,
+        195
+      ],
+      [
+        61,
+        38,
+        31
+      ]
+    ],
+    "color_confidence": 0.13,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      238,
+      223,
+      214
+    ],
+    "secondary_color_confidence": 0.07,
+    "length_tag": "long",
+    "length_ratio": 1.848,
+    "length_confidence": 0.874,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:58.112Z"
+  },
+  {
+    "style_id": "STYLE078",
+    "source": "candidate",
+    "image_path": "https://qu.ax/DNDV8",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 467,
+        "y1": 444,
+        "x2": 538,
+        "y2": 547
+      },
+      {
+        "x1": 594,
+        "y1": 537,
+        "x2": 657,
+        "y2": 622
+      },
+      {
+        "x1": 394,
+        "y1": 385,
+        "x2": 458,
+        "y2": 483
+      },
+      {
+        "x1": 534,
+        "y1": 487,
+        "x2": 605,
+        "y2": 590
+      },
+      {
+        "x1": 280,
+        "y1": 206,
+        "x2": 326,
+        "y2": 312
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      209,
+      161,
+      146
+    ],
+    "dominant_palette": [
+      [
+        209,
+        161,
+        146
+      ],
+      [
+        251,
+        248,
+        244
+      ],
+      [
+        230,
+        205,
+        198
+      ],
+      [
+        239,
+        221,
+        215
+      ],
+      [
+        199,
+        146,
+        131
+      ]
+    ],
+    "color_confidence": 0.596,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      251,
+      248,
+      244
+    ],
+    "secondary_color_confidence": 0.124,
+    "length_tag": "short",
+    "length_ratio": 1.48,
+    "length_confidence": 0.817,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T04:59:59.189Z"
+  },
+  {
+    "style_id": "STYLE079",
+    "source": "candidate",
+    "image_path": "https://qu.ax/9neH6",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 495,
+        "y1": 140,
+        "x2": 540,
+        "y2": 230
+      },
+      {
+        "x1": 249,
+        "y1": 436,
+        "x2": 301,
+        "y2": 525
+      },
+      {
+        "x1": 377,
+        "y1": 190,
+        "x2": 416,
+        "y2": 271
+      },
+      {
+        "x1": 612,
+        "y1": 191,
+        "x2": 651,
+        "y2": 278
+      },
+      {
+        "x1": 727,
+        "y1": 333,
+        "x2": 764,
+        "y2": 404
+      }
+    ],
+    "primary_color_family": "red_dark",
+    "primary_color_name": "酒红",
+    "primary_color_rgb": [
+      94,
+      23,
+      31
+    ],
+    "dominant_palette": [
+      [
+        94,
+        23,
+        31
+      ],
+      [
+        33,
+        23,
+        24
+      ],
+      [
+        63,
+        38,
+        40
+      ],
+      [
+        113,
+        92,
+        92
+      ],
+      [
+        130,
+        67,
+        77
+      ]
+    ],
+    "color_confidence": 0.237,
+    "secondary_color_family": "black",
+    "secondary_color_name": "黑色",
+    "secondary_color_rgb": [
+      33,
+      23,
+      24
+    ],
+    "secondary_color_confidence": 0.167,
+    "length_tag": "long",
+    "length_ratio": 2.115,
+    "length_confidence": 0.959,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:00.393Z"
+  },
+  {
+    "style_id": "STYLE080",
+    "source": "candidate",
+    "image_path": "https://qu.ax/AwhFn",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 390,
+        "y1": 410,
+        "x2": 457,
+        "y2": 535
+      },
+      {
+        "x1": 535,
+        "y1": 504,
+        "x2": 597,
+        "y2": 628
+      },
+      {
+        "x1": 602,
+        "y1": 518,
+        "x2": 663,
+        "y2": 620
+      },
+      {
+        "x1": 469,
+        "y1": 461,
+        "x2": 534,
+        "y2": 588
+      },
+      {
+        "x1": 299,
+        "y1": 133,
+        "x2": 369,
+        "y2": 254
+      }
+    ],
+    "primary_color_family": "beige",
+    "primary_color_name": "米白",
+    "primary_color_rgb": [
+      226,
+      220,
+      207
+    ],
+    "dominant_palette": [
+      [
+        226,
+        220,
+        207
+      ],
+      [
+        216,
+        197,
+        183
+      ],
+      [
+        126,
+        86,
+        79
+      ],
+      [
+        206,
+        201,
+        184
+      ],
+      [
+        241,
+        235,
+        232
+      ]
+    ],
+    "color_confidence": 0.085,
+    "secondary_color_family": "champagne",
+    "secondary_color_name": "香槟金",
+    "secondary_color_rgb": [
+      216,
+      197,
+      183
+    ],
+    "secondary_color_confidence": 0.062,
+    "length_tag": "long",
+    "length_ratio": 2.077,
+    "length_confidence": 0.899,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:01.904Z"
+  },
+  {
+    "style_id": "STYLE081",
+    "source": "candidate",
+    "image_path": "https://qu.ax/7tErD",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 448,
+        "y1": 588,
+        "x2": 514,
+        "y2": 693
+      },
+      {
+        "x1": 525,
+        "y1": 557,
+        "x2": 590,
+        "y2": 668
+      },
+      {
+        "x1": 370,
+        "y1": 556,
+        "x2": 422,
+        "y2": 642
+      },
+      {
+        "x1": 700,
+        "y1": 129,
+        "x2": 746,
+        "y2": 235
+      },
+      {
+        "x1": 603,
+        "y1": 492,
+        "x2": 662,
+        "y2": 598
+      }
+    ],
+    "primary_color_family": "dusty_rose",
+    "primary_color_name": "灰粉",
+    "primary_color_rgb": [
+      198,
+      149,
+      148
+    ],
+    "dominant_palette": [
+      [
+        229,
+        183,
+        190
+      ],
+      [
+        198,
+        149,
+        148
+      ],
+      [
+        208,
+        175,
+        171
+      ],
+      [
+        213,
+        136,
+        152
+      ],
+      [
+        183,
+        123,
+        125
+      ]
+    ],
+    "color_confidence": 0.203,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      229,
+      183,
+      190
+    ],
+    "secondary_color_confidence": 0.34,
+    "length_tag": "long",
+    "length_ratio": 1.751,
+    "length_confidence": 0.925,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:03.383Z"
+  },
+  {
+    "style_id": "STYLE082",
+    "source": "candidate",
+    "image_path": "https://qu.ax/ZeZDl",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 10,
+    "bboxes": [
+      {
+        "x1": 517,
+        "y1": 180,
+        "x2": 560,
+        "y2": 233
+      },
+      {
+        "x1": 464,
+        "y1": 182,
+        "x2": 503,
+        "y2": 234
+      },
+      {
+        "x1": 541,
+        "y1": 138,
+        "x2": 589,
+        "y2": 189
+      },
+      {
+        "x1": 379,
+        "y1": 165,
+        "x2": 423,
+        "y2": 213
+      },
+      {
+        "x1": 440,
+        "y1": 135,
+        "x2": 486,
+        "y2": 188
+      },
+      {
+        "x1": 472,
+        "y1": 282,
+        "x2": 500,
+        "y2": 325
+      },
+      {
+        "x1": 517,
+        "y1": 283,
+        "x2": 550,
+        "y2": 329
+      },
+      {
+        "x1": 604,
+        "y1": 170,
+        "x2": 647,
+        "y2": 218
+      },
+      {
+        "x1": 261,
+        "y1": 364,
+        "x2": 301,
+        "y2": 428
+      },
+      {
+        "x1": 723,
+        "y1": 354,
+        "x2": 743,
+        "y2": 410
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "亮粉",
+    "primary_color_rgb": [
+      245,
+      200,
+      201
+    ],
+    "dominant_palette": [
+      [
+        245,
+        200,
+        201
+      ],
+      [
+        245,
+        223,
+        218
+      ],
+      [
+        249,
+        230,
+        228
+      ],
+      [
+        238,
+        210,
+        206
+      ],
+      [
+        245,
+        210,
+        206
+      ]
+    ],
+    "color_confidence": 0.052,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      245,
+      223,
+      218
+    ],
+    "secondary_color_confidence": 0.022,
+    "length_tag": "short",
+    "length_ratio": 1.459,
+    "length_confidence": 0.767,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:04.792Z"
+  },
+  {
+    "style_id": "STYLE083",
+    "source": "candidate",
+    "image_path": "https://qu.ax/Jbkqx",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 13,
+    "bboxes": [
+      {
+        "x1": 479,
+        "y1": 946,
+        "x2": 581,
+        "y2": 1012
+      },
+      {
+        "x1": 386,
+        "y1": 497,
+        "x2": 496,
+        "y2": 563
+      },
+      {
+        "x1": 414,
+        "y1": 725,
+        "x2": 533,
+        "y2": 776
+      },
+      {
+        "x1": 455,
+        "y1": 623,
+        "x2": 562,
+        "y2": 678
+      },
+      {
+        "x1": 58,
+        "y1": 461,
+        "x2": 107,
+        "y2": 539
+      },
+      {
+        "x1": 322,
+        "y1": 858,
+        "x2": 411,
+        "y2": 891
+      },
+      {
+        "x1": 571,
+        "y1": 783,
+        "x2": 610,
+        "y2": 840
+      },
+      {
+        "x1": 961,
+        "y1": 799,
+        "x2": 994,
+        "y2": 892
+      },
+      {
+        "x1": 630,
+        "y1": 728,
+        "x2": 710,
+        "y2": 807
+      },
+      {
+        "x1": 405,
+        "y1": 795,
+        "x2": 444,
+        "y2": 849
+      },
+      {
+        "x1": 672,
+        "y1": 684,
+        "x2": 701,
+        "y2": 728
+      },
+      {
+        "x1": 497,
+        "y1": 821,
+        "x2": 606,
+        "y2": 890
+      },
+      {
+        "x1": 494,
+        "y1": 821,
+        "x2": 546,
+        "y2": 887
+      }
+    ],
+    "primary_color_family": "red_pink",
+    "primary_color_name": "玫红",
+    "primary_color_rgb": [
+      212,
+      90,
+      130
+    ],
+    "dominant_palette": [
+      [
+        212,
+        90,
+        130
+      ],
+      [
+        225,
+        101,
+        148
+      ],
+      [
+        205,
+        207,
+        211
+      ],
+      [
+        223,
+        122,
+        158
+      ],
+      [
+        236,
+        227,
+        230
+      ]
+    ],
+    "color_confidence": 0.232,
+    "secondary_color_family": "hot_pink",
+    "secondary_color_name": "桃红",
+    "secondary_color_rgb": [
+      225,
+      101,
+      148
+    ],
+    "secondary_color_confidence": 0.191,
+    "length_tag": "long",
+    "length_ratio": 1.983,
+    "length_confidence": 0.801,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:06.042Z"
+  },
+  {
+    "style_id": "STYLE084",
+    "source": "candidate",
+    "image_path": "https://qu.ax/ySdvn",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 488,
+        "y1": 403,
+        "x2": 553,
+        "y2": 508
+      },
+      {
+        "x1": 537,
+        "y1": 470,
+        "x2": 607,
+        "y2": 569
+      },
+      {
+        "x1": 431,
+        "y1": 315,
+        "x2": 488,
+        "y2": 413
+      },
+      {
+        "x1": 577,
+        "y1": 541,
+        "x2": 641,
+        "y2": 616
+      },
+      {
+        "x1": 342,
+        "y1": 190,
+        "x2": 389,
+        "y2": 291
+      }
+    ],
+    "primary_color_family": "white",
+    "primary_color_name": "白色",
+    "primary_color_rgb": [
+      245,
+      230,
+      229
+    ],
+    "dominant_palette": [
+      [
+        245,
+        230,
+        229
+      ],
+      [
+        228,
+        205,
+        199
+      ],
+      [
+        238,
+        197,
+        199
+      ],
+      [
+        240,
+        222,
+        217
+      ],
+      [
+        184,
+        107,
+        105
+      ]
+    ],
+    "color_confidence": 0.061,
+    "secondary_color_family": "champagne",
+    "secondary_color_name": "香槟金",
+    "secondary_color_rgb": [
+      228,
+      205,
+      199
+    ],
+    "secondary_color_confidence": 0.057,
+    "length_tag": "medium",
+    "length_ratio": 1.626,
+    "length_confidence": 0.736,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:07.286Z"
+  },
+  {
+    "style_id": "STYLE085",
+    "source": "candidate",
+    "image_path": "https://qu.ax/mFd6T",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 396,
+        "y1": 383,
+        "x2": 459,
+        "y2": 491
+      },
+      {
+        "x1": 468,
+        "y1": 442,
+        "x2": 538,
+        "y2": 559
+      },
+      {
+        "x1": 536,
+        "y1": 488,
+        "x2": 607,
+        "y2": 602
+      },
+      {
+        "x1": 264,
+        "y1": 186,
+        "x2": 325,
+        "y2": 311
+      },
+      {
+        "x1": 597,
+        "y1": 537,
+        "x2": 658,
+        "y2": 631
+      }
+    ],
+    "primary_color_family": "khaki",
+    "primary_color_name": "卡其",
+    "primary_color_rgb": [
+      158,
+      157,
+      81
+    ],
+    "dominant_palette": [
+      [
+        158,
+        157,
+        81
+      ],
+      [
+        202,
+        164,
+        141
+      ],
+      [
+        182,
+        119,
+        59
+      ],
+      [
+        195,
+        153,
+        81
+      ],
+      [
+        185,
+        71,
+        68
+      ]
+    ],
+    "color_confidence": 0.165,
+    "secondary_color_family": "rose_gold",
+    "secondary_color_name": "玫瑰金",
+    "secondary_color_rgb": [
+      202,
+      164,
+      141
+    ],
+    "secondary_color_confidence": 0.144,
+    "length_tag": "medium",
+    "length_ratio": 1.66,
+    "length_confidence": 0.983,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:08.585Z"
+  },
+  {
+    "style_id": "STYLE086",
+    "source": "candidate",
+    "image_path": "https://qu.ax/PNGzY",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 727,
+        "y1": 350,
+        "x2": 764,
+        "y2": 406
+      },
+      {
+        "x1": 495,
+        "y1": 162,
+        "x2": 538,
+        "y2": 232
+      },
+      {
+        "x1": 259,
+        "y1": 458,
+        "x2": 307,
+        "y2": 528
+      },
+      {
+        "x1": 613,
+        "y1": 216,
+        "x2": 652,
+        "y2": 279
+      },
+      {
+        "x1": 376,
+        "y1": 210,
+        "x2": 417,
+        "y2": 273
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "亮粉",
+    "primary_color_rgb": [
+      231,
+      174,
+      179
+    ],
+    "dominant_palette": [
+      [
+        231,
+        174,
+        179
+      ],
+      [
+        229,
+        160,
+        146
+      ],
+      [
+        236,
+        165,
+        144
+      ],
+      [
+        209,
+        140,
+        154
+      ],
+      [
+        217,
+        144,
+        137
+      ]
+    ],
+    "color_confidence": 0.375,
+    "secondary_color_family": "rose_gold",
+    "secondary_color_name": "玫瑰金",
+    "secondary_color_rgb": [
+      229,
+      160,
+      146
+    ],
+    "secondary_color_confidence": 0.187,
+    "length_tag": "medium",
+    "length_ratio": 1.551,
+    "length_confidence": 0.995,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:09.954Z"
+  },
+  {
+    "style_id": "STYLE087",
+    "source": "candidate",
+    "image_path": "https://qu.ax/dJrUR",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 466,
+        "y1": 487,
+        "x2": 531,
+        "y2": 578
+      },
+      {
+        "x1": 393,
+        "y1": 426,
+        "x2": 457,
+        "y2": 517
+      },
+      {
+        "x1": 535,
+        "y1": 514,
+        "x2": 602,
+        "y2": 603
+      },
+      {
+        "x1": 609,
+        "y1": 522,
+        "x2": 663,
+        "y2": 594
+      },
+      {
+        "x1": 306,
+        "y1": 152,
+        "x2": 356,
+        "y2": 248
+      }
+    ],
+    "primary_color_family": "navy",
+    "primary_color_name": "藏蓝",
+    "primary_color_rgb": [
+      52,
+      42,
+      113
+    ],
+    "dominant_palette": [
+      [
+        52,
+        42,
+        113
+      ],
+      [
+        64,
+        102,
+        156
+      ],
+      [
+        178,
+        165,
+        213
+      ],
+      [
+        132,
+        147,
+        159
+      ],
+      [
+        108,
+        88,
+        149
+      ]
+    ],
+    "color_confidence": 0.341,
+    "secondary_color_family": "blue",
+    "secondary_color_name": "蓝色",
+    "secondary_color_rgb": [
+      64,
+      102,
+      156
+    ],
+    "secondary_color_confidence": 0.219,
+    "length_tag": "short",
+    "length_ratio": 1.382,
+    "length_confidence": 0.899,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:11.434Z"
+  },
+  {
+    "style_id": "STYLE088",
+    "source": "candidate",
+    "image_path": "https://qu.ax/52Rfo",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 524,
+        "y1": 559,
+        "x2": 589,
+        "y2": 673
+      },
+      {
+        "x1": 449,
+        "y1": 591,
+        "x2": 515,
+        "y2": 697
+      },
+      {
+        "x1": 369,
+        "y1": 558,
+        "x2": 424,
+        "y2": 645
+      },
+      {
+        "x1": 603,
+        "y1": 492,
+        "x2": 662,
+        "y2": 600
+      },
+      {
+        "x1": 700,
+        "y1": 144,
+        "x2": 747,
+        "y2": 238
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      207,
+      167,
+      152
+    ],
+    "dominant_palette": [
+      [
+        207,
+        167,
+        152
+      ],
+      [
+        230,
+        221,
+        212
+      ],
+      [
+        219,
+        198,
+        187
+      ],
+      [
+        235,
+        232,
+        227
+      ],
+      [
+        166,
+        127,
+        109
+      ]
+    ],
+    "color_confidence": 0.532,
+    "secondary_color_family": "beige",
+    "secondary_color_name": "米白",
+    "secondary_color_rgb": [
+      230,
+      221,
+      212
+    ],
+    "secondary_color_confidence": 0.148,
+    "length_tag": "medium",
+    "length_ratio": 1.659,
+    "length_confidence": 0.866,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:12.967Z"
+  },
+  {
+    "style_id": "STYLE089",
+    "source": "candidate",
+    "image_path": "https://qu.ax/3meva",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 10,
+    "bboxes": [
+      {
+        "x1": 382,
+        "y1": 155,
+        "x2": 422,
+        "y2": 213
+      },
+      {
+        "x1": 464,
+        "y1": 177,
+        "x2": 502,
+        "y2": 233
+      },
+      {
+        "x1": 544,
+        "y1": 127,
+        "x2": 590,
+        "y2": 189
+      },
+      {
+        "x1": 603,
+        "y1": 160,
+        "x2": 643,
+        "y2": 217
+      },
+      {
+        "x1": 522,
+        "y1": 171,
+        "x2": 559,
+        "y2": 232
+      },
+      {
+        "x1": 441,
+        "y1": 128,
+        "x2": 485,
+        "y2": 186
+      },
+      {
+        "x1": 473,
+        "y1": 270,
+        "x2": 500,
+        "y2": 324
+      },
+      {
+        "x1": 519,
+        "y1": 273,
+        "x2": 549,
+        "y2": 328
+      },
+      {
+        "x1": 258,
+        "y1": 355,
+        "x2": 271,
+        "y2": 413
+      },
+      {
+        "x1": 728,
+        "y1": 345,
+        "x2": 745,
+        "y2": 410
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      132,
+      136,
+      148
+    ],
+    "dominant_palette": [
+      [
+        132,
+        136,
+        148
+      ],
+      [
+        59,
+        63,
+        86
+      ],
+      [
+        200,
+        200,
+        211
+      ],
+      [
+        127,
+        66,
+        74
+      ],
+      [
+        98,
+        113,
+        100
+      ]
+    ],
+    "color_confidence": 0.272,
+    "secondary_color_family": "navy",
+    "secondary_color_name": "藏蓝",
+    "secondary_color_rgb": [
+      59,
+      63,
+      86
+    ],
+    "secondary_color_confidence": 0.146,
+    "length_tag": "medium",
+    "length_ratio": 1.677,
+    "length_confidence": 0.25,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:15.413Z"
+  },
+  {
+    "style_id": "STYLE090",
+    "source": "candidate",
+    "image_path": "https://qu.ax/9Nr43",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 575,
+        "y1": 783,
+        "x2": 611,
+        "y2": 853
+      },
+      {
+        "x1": 494,
+        "y1": 829,
+        "x2": 533,
+        "y2": 904
+      },
+      {
+        "x1": 406,
+        "y1": 793,
+        "x2": 443,
+        "y2": 862
+      },
+      {
+        "x1": 292,
+        "y1": 582,
+        "x2": 331,
+        "y2": 647
+      },
+      {
+        "x1": 673,
+        "y1": 685,
+        "x2": 700,
+        "y2": 742
+      }
+    ],
+    "primary_color_family": "brown",
+    "primary_color_name": "深棕",
+    "primary_color_rgb": [
+      65,
+      32,
+      22
+    ],
+    "dominant_palette": [
+      [
+        65,
+        32,
+        22
+      ],
+      [
+        136,
+        87,
+        74
+      ],
+      [
+        216,
+        162,
+        146
+      ],
+      [
+        108,
+        63,
+        51
+      ],
+      [
+        196,
+        140,
+        126
+      ]
+    ],
+    "color_confidence": 0.527,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "深焦糖",
+    "secondary_color_rgb": [
+      136,
+      87,
+      74
+    ],
+    "secondary_color_confidence": 0.147,
+    "length_tag": "long",
+    "length_ratio": 2.137,
+    "length_confidence": 0.998,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:19.007Z"
+  },
+  {
+    "style_id": "STYLE091",
+    "source": "candidate",
+    "image_path": "https://qu.ax/IHajl",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 488,
+        "y1": 405,
+        "x2": 553,
+        "y2": 493
+      },
+      {
+        "x1": 542,
+        "y1": 472,
+        "x2": 607,
+        "y2": 554
+      },
+      {
+        "x1": 430,
+        "y1": 317,
+        "x2": 490,
+        "y2": 397
+      },
+      {
+        "x1": 581,
+        "y1": 546,
+        "x2": 640,
+        "y2": 612
+      },
+      {
+        "x1": 344,
+        "y1": 203,
+        "x2": 386,
+        "y2": 289
+      }
+    ],
+    "primary_color_family": "red_dark",
+    "primary_color_name": "酒红",
+    "primary_color_rgb": [
+      125,
+      33,
+      44
+    ],
+    "dominant_palette": [
+      [
+        230,
+        185,
+        195
+      ],
+      [
+        125,
+        33,
+        44
+      ],
+      [
+        153,
+        53,
+        72
+      ],
+      [
+        190,
+        79,
+        103
+      ],
+      [
+        245,
+        223,
+        227
+      ]
+    ],
+    "color_confidence": 0.211,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      230,
+      185,
+      195
+    ],
+    "secondary_color_confidence": 0.329,
+    "length_tag": "short",
+    "length_ratio": 1.331,
+    "length_confidence": 0.747,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:22.254Z"
+  },
+  {
+    "style_id": "STYLE092",
+    "source": "candidate",
+    "image_path": "https://qu.ax/nxlmX",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 468,
+        "y1": 443,
+        "x2": 537,
+        "y2": 545
+      },
+      {
+        "x1": 536,
+        "y1": 487,
+        "x2": 606,
+        "y2": 585
+      },
+      {
+        "x1": 396,
+        "y1": 383,
+        "x2": 458,
+        "y2": 479
+      },
+      {
+        "x1": 279,
+        "y1": 206,
+        "x2": 325,
+        "y2": 315
+      },
+      {
+        "x1": 598,
+        "y1": 537,
+        "x2": 657,
+        "y2": 621
+      }
+    ],
+    "primary_color_family": "gray",
+    "primary_color_name": "灰色",
+    "primary_color_rgb": [
+      140,
+      137,
+      136
+    ],
+    "dominant_palette": [
+      [
+        140,
+        137,
+        136
+      ],
+      [
+        192,
+        181,
+        164
+      ],
+      [
+        108,
+        100,
+        99
+      ],
+      [
+        217,
+        213,
+        202
+      ],
+      [
+        159,
+        146,
+        120
+      ]
+    ],
+    "color_confidence": 0.235,
+    "secondary_color_family": "tan",
+    "secondary_color_name": "深焦糖",
+    "secondary_color_rgb": [
+      108,
+      100,
+      99
+    ],
+    "secondary_color_confidence": 0.145,
+    "length_tag": "short",
+    "length_ratio": 1.495,
+    "length_confidence": 0.815,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:24.303Z"
+  },
+  {
+    "style_id": "STYLE093",
+    "source": "candidate",
+    "image_path": "https://qu.ax/8iLcp",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 494,
+        "y1": 169,
+        "x2": 540,
+        "y2": 231
+      },
+      {
+        "x1": 611,
+        "y1": 219,
+        "x2": 654,
+        "y2": 280
+      },
+      {
+        "x1": 726,
+        "y1": 354,
+        "x2": 763,
+        "y2": 406
+      },
+      {
+        "x1": 375,
+        "y1": 215,
+        "x2": 418,
+        "y2": 272
+      },
+      {
+        "x1": 262,
+        "y1": 462,
+        "x2": 305,
+        "y2": 527
+      }
+    ],
+    "primary_color_family": "blue",
+    "primary_color_name": "蓝色",
+    "primary_color_rgb": [
+      67,
+      109,
+      161
+    ],
+    "dominant_palette": [
+      [
+        67,
+        109,
+        161
+      ],
+      [
+        129,
+        164,
+        207
+      ],
+      [
+        140,
+        145,
+        151
+      ],
+      [
+        160,
+        148,
+        112
+      ],
+      [
+        101,
+        91,
+        63
+      ]
+    ],
+    "color_confidence": 0.135,
+    "secondary_color_family": "sky_blue",
+    "secondary_color_name": "天蓝",
+    "secondary_color_rgb": [
+      129,
+      164,
+      207
+    ],
+    "secondary_color_confidence": 0.089,
+    "length_tag": "short",
+    "length_ratio": 1.416,
+    "length_confidence": 0.997,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:27.199Z"
+  },
+  {
+    "style_id": "STYLE094",
+    "source": "candidate",
+    "image_path": "https://qu.ax/syVaO",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 464,
+        "y1": 485,
+        "x2": 529,
+        "y2": 586
+      },
+      {
+        "x1": 530,
+        "y1": 518,
+        "x2": 594,
+        "y2": 612
+      },
+      {
+        "x1": 396,
+        "y1": 428,
+        "x2": 455,
+        "y2": 526
+      },
+      {
+        "x1": 603,
+        "y1": 523,
+        "x2": 660,
+        "y2": 602
+      },
+      {
+        "x1": 306,
+        "y1": 148,
+        "x2": 359,
+        "y2": 249
+      }
+    ],
+    "primary_color_family": "purple",
+    "primary_color_name": "紫色",
+    "primary_color_rgb": [
+      109,
+      90,
+      128
+    ],
+    "dominant_palette": [
+      [
+        109,
+        90,
+        128
+      ],
+      [
+        77,
+        110,
+        161
+      ],
+      [
+        62,
+        59,
+        107
+      ],
+      [
+        151,
+        115,
+        129
+      ],
+      [
+        115,
+        172,
+        213
+      ]
+    ],
+    "color_confidence": 0.175,
+    "secondary_color_family": "blue",
+    "secondary_color_name": "蓝色",
+    "secondary_color_rgb": [
+      77,
+      110,
+      161
+    ],
+    "secondary_color_confidence": 0.106,
+    "length_tag": "medium",
+    "length_ratio": 1.536,
+    "length_confidence": 0.932,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:29.155Z"
+  },
+  {
+    "style_id": "STYLE095",
+    "source": "candidate",
+    "image_path": "https://qu.ax/6Sqkh",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 451,
+        "y1": 589,
+        "x2": 517,
+        "y2": 708
+      },
+      {
+        "x1": 526,
+        "y1": 564,
+        "x2": 591,
+        "y2": 689
+      },
+      {
+        "x1": 608,
+        "y1": 493,
+        "x2": 661,
+        "y2": 630
+      },
+      {
+        "x1": 695,
+        "y1": 108,
+        "x2": 756,
+        "y2": 237
+      },
+      {
+        "x1": 389,
+        "y1": 591,
+        "x2": 430,
+        "y2": 663
+      }
+    ],
+    "primary_color_family": "khaki",
+    "primary_color_name": "卡其",
+    "primary_color_rgb": [
+      163,
+      146,
+      104
+    ],
+    "dominant_palette": [
+      [
+        163,
+        146,
+        104
+      ],
+      [
+        203,
+        163,
+        145
+      ],
+      [
+        204,
+        155,
+        79
+      ],
+      [
+        177,
+        129,
+        83
+      ],
+      [
+        210,
+        187,
+        165
+      ]
+    ],
+    "color_confidence": 0.137,
+    "secondary_color_family": "rose_gold",
+    "secondary_color_name": "玫瑰金",
+    "secondary_color_rgb": [
+      203,
+      163,
+      145
+    ],
+    "secondary_color_confidence": 0.117,
+    "length_tag": "long",
+    "length_ratio": 1.931,
+    "length_confidence": 0.878,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:31.586Z"
+  },
+  {
+    "style_id": "STYLE096",
+    "source": "candidate",
+    "image_path": "https://qu.ax/8OrdE",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 8,
+    "bboxes": [
+      {
+        "x1": 379,
+        "y1": 165,
+        "x2": 421,
+        "y2": 212
+      },
+      {
+        "x1": 464,
+        "y1": 184,
+        "x2": 503,
+        "y2": 233
+      },
+      {
+        "x1": 440,
+        "y1": 135,
+        "x2": 485,
+        "y2": 184
+      },
+      {
+        "x1": 544,
+        "y1": 137,
+        "x2": 591,
+        "y2": 187
+      },
+      {
+        "x1": 473,
+        "y1": 285,
+        "x2": 501,
+        "y2": 326
+      },
+      {
+        "x1": 607,
+        "y1": 169,
+        "x2": 647,
+        "y2": 217
+      },
+      {
+        "x1": 522,
+        "y1": 181,
+        "x2": 560,
+        "y2": 233
+      },
+      {
+        "x1": 519,
+        "y1": 285,
+        "x2": 549,
+        "y2": 328
+      }
+    ],
+    "primary_color_family": "red_pink",
+    "primary_color_name": "玫红",
+    "primary_color_rgb": [
+      189,
+      84,
+      101
+    ],
+    "dominant_palette": [
+      [
+        189,
+        84,
+        101
+      ],
+      [
+        249,
+        234,
+        236
+      ],
+      [
+        161,
+        46,
+        69
+      ],
+      [
+        234,
+        184,
+        191
+      ],
+      [
+        174,
+        51,
+        71
+      ]
+    ],
+    "color_confidence": 0.182,
+    "secondary_color_family": "white",
+    "secondary_color_name": "白色",
+    "secondary_color_rgb": [
+      249,
+      234,
+      236
+    ],
+    "secondary_color_confidence": 0.135,
+    "length_tag": "short",
+    "length_ratio": 1.367,
+    "length_confidence": 0.97,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:33.988Z"
+  },
+  {
+    "style_id": "STYLE097",
+    "source": "candidate",
+    "image_path": "https://qu.ax/XMSFb",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 828,
+        "x2": 533,
+        "y2": 932
+      },
+      {
+        "x1": 403,
+        "y1": 793,
+        "x2": 442,
+        "y2": 891
+      },
+      {
+        "x1": 573,
+        "y1": 780,
+        "x2": 606,
+        "y2": 886
+      },
+      {
+        "x1": 284,
+        "y1": 581,
+        "x2": 333,
+        "y2": 686
+      },
+      {
+        "x1": 670,
+        "y1": 683,
+        "x2": 702,
+        "y2": 775
+      }
+    ],
+    "primary_color_family": "pink",
+    "primary_color_name": "中粉",
+    "primary_color_rgb": [
+      212,
+      132,
+      143
+    ],
+    "dominant_palette": [
+      [
+        212,
+        132,
+        143
+      ],
+      [
+        94,
+        24,
+        30
+      ],
+      [
+        189,
+        120,
+        127
+      ],
+      [
+        179,
+        98,
+        108
+      ],
+      [
+        141,
+        66,
+        76
+      ]
+    ],
+    "color_confidence": 0.176,
+    "secondary_color_family": "red_dark",
+    "secondary_color_name": "酒红",
+    "secondary_color_rgb": [
+      94,
+      24,
+      30
+    ],
+    "secondary_color_confidence": 0.068,
+    "length_tag": "long",
+    "length_ratio": 2.506,
+    "length_confidence": 0.911,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:35.753Z"
+  },
+  {
+    "style_id": "STYLE098",
+    "source": "candidate",
+    "image_path": "https://qu.ax/VUTaZ",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 492,
+        "y1": 404,
+        "x2": 554,
+        "y2": 499
+      },
+      {
+        "x1": 543,
+        "y1": 470,
+        "x2": 606,
+        "y2": 559
+      },
+      {
+        "x1": 431,
+        "y1": 316,
+        "x2": 487,
+        "y2": 410
+      },
+      {
+        "x1": 344,
+        "y1": 188,
+        "x2": 388,
+        "y2": 289
+      },
+      {
+        "x1": 581,
+        "y1": 542,
+        "x2": 641,
+        "y2": 613
+      }
+    ],
+    "primary_color_family": "red_pink",
+    "primary_color_name": "玫红",
+    "primary_color_rgb": [
+      195,
+      81,
+      116
+    ],
+    "dominant_palette": [
+      [
+        195,
+        81,
+        116
+      ],
+      [
+        241,
+        183,
+        196
+      ],
+      [
+        159,
+        48,
+        85
+      ],
+      [
+        190,
+        99,
+        163
+      ],
+      [
+        105,
+        7,
+        22
+      ]
+    ],
+    "color_confidence": 0.221,
+    "secondary_color_family": "pink",
+    "secondary_color_name": "亮粉",
+    "secondary_color_rgb": [
+      241,
+      183,
+      196
+    ],
+    "secondary_color_confidence": 0.183,
+    "length_tag": "medium",
+    "length_ratio": 1.615,
+    "length_confidence": 0.649,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:37.657Z"
+  },
+  {
+    "style_id": "STYLE099",
+    "source": "candidate",
+    "image_path": "https://qu.ax/0lU5d",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 470,
+        "y1": 443,
+        "x2": 536,
+        "y2": 567
+      },
+      {
+        "x1": 395,
+        "y1": 384,
+        "x2": 455,
+        "y2": 494
+      },
+      {
+        "x1": 597,
+        "y1": 537,
+        "x2": 658,
+        "y2": 631
+      },
+      {
+        "x1": 538,
+        "y1": 490,
+        "x2": 604,
+        "y2": 608
+      },
+      {
+        "x1": 271,
+        "y1": 199,
+        "x2": 324,
+        "y2": 309
+      }
+    ],
+    "primary_color_family": "champagne",
+    "primary_color_name": "香槟金",
+    "primary_color_rgb": [
+      202,
+      189,
+      178
+    ],
+    "dominant_palette": [
+      [
+        202,
+        189,
+        178
+      ],
+      [
+        162,
+        152,
+        144
+      ],
+      [
+        27,
+        16,
+        14
+      ],
+      [
+        220,
+        213,
+        204
+      ],
+      [
+        202,
+        174,
+        167
+      ]
+    ],
+    "color_confidence": 0.144,
+    "secondary_color_family": "gray",
+    "secondary_color_name": "灰色",
+    "secondary_color_rgb": [
+      162,
+      152,
+      144
+    ],
+    "secondary_color_confidence": 0.135,
+    "length_tag": "long",
+    "length_ratio": 1.877,
+    "length_confidence": 0.972,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:39.194Z"
+  },
+  {
+    "style_id": "STYLE100",
+    "source": "candidate",
+    "image_path": "https://qu.ax/lgDXH",
+    "image_width": 1024,
+    "image_height": 1024,
+    "nail_count": 5,
+    "bboxes": [
+      {
+        "x1": 495,
+        "y1": 168,
+        "x2": 539,
+        "y2": 234
+      },
+      {
+        "x1": 376,
+        "y1": 218,
+        "x2": 418,
+        "y2": 275
+      },
+      {
+        "x1": 728,
+        "y1": 354,
+        "x2": 763,
+        "y2": 408
+      },
+      {
+        "x1": 260,
+        "y1": 463,
+        "x2": 305,
+        "y2": 531
+      },
+      {
+        "x1": 611,
+        "y1": 224,
+        "x2": 652,
+        "y2": 280
+      }
+    ],
+    "primary_color_family": "rose_gold",
+    "primary_color_name": "玫瑰金",
+    "primary_color_rgb": [
+      208,
+      172,
+      158
+    ],
+    "dominant_palette": [
+      [
+        208,
+        172,
+        158
+      ],
+      [
+        227,
+        191,
+        174
+      ],
+      [
+        220,
+        193,
+        177
+      ],
+      [
+        169,
+        153,
+        152
+      ],
+      [
+        161,
+        125,
+        87
+      ]
+    ],
+    "color_confidence": 0.244,
+    "secondary_color_family": "apricot",
+    "secondary_color_name": "杏色",
+    "secondary_color_rgb": [
+      227,
+      191,
+      174
+    ],
+    "secondary_color_confidence": 0.077,
+    "length_tag": "medium",
+    "length_ratio": 1.505,
+    "length_confidence": 0.994,
+    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
+    "extracted_at": "2026-06-04T05:00:40.686Z"
+  }
+]

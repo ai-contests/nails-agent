@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer, index, primaryKey } from 'drizzle-orm/sqlite-core';
-import { nailStyles } from './styles.ts';
-import { userSessions } from './sessions.ts';
+import { nailStyles } from './styles';
+import { userSessions } from './sessions';
 
 // data-model §6.1 behavior_events
 export const behaviorEvents = sqliteTable(

@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, real, index } from 'drizzle-orm/sqlite-core';
-import { nailStyles } from './styles.ts';
+import { nailStyles } from './styles';
 
 // data-model §7.3 style_heat_snapshots
 export const styleHeatSnapshots = sqliteTable(

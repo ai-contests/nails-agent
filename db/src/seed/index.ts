@@ -322,7 +322,7 @@ function main() {
     });
 
     // Sample style interactions based on preferences (no style_view generated as it is not active user behavior)
-    const clickCount = 1 + Math.floor(Math.random() * 5); // 1 to 5 clicks
+    const clickCount = 8 + Math.floor(Math.random() * 8); // 8 to 15 clicks
     const clickedIds = getWeightedSample(listedIds, styleFeaturesMap, handShape, clickCount);
 
     for (const sid of clickedIds) {

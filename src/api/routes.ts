@@ -28,9 +28,7 @@ const jsonResponse = (data: unknown, status = 200) => {
 // ==========================================
 
 // 1. Get Main Recommendation Feed
-router.get('/api/recommendations/main', async (req) => {
-  const url = new URL(req.url);
-  const sessionId = url.searchParams.get('sessionId');
+router.get('/api/recommendations/main', async () => {
 
   // Find active snapshot
   const snapshot = await db
@@ -64,22 +62,6 @@ router.get('/api/recommendations/main', async (req) => {
     .where(eq(schema.recommendationItems.snapshot_id, snapshot.snapshot_id))
     .orderBy(schema.recommendationItems.rank_no);
 
-  // Write style_view event asynchronously for main feed
-  if (sessionId && items.length > 0) {
-    const eventPromise = async () => {
-      for (const item of items.slice(0, 10)) { // Log views for top 10 items
-        await db.insert(schema.behaviorEvents).values({
-          event_id: generateId('EV'),
-          session_id: sessionId,
-          style_id: item.style.style_id,
-          event_type: 'style_view',
-          source_page: 'main',
-          created_at: new Date().toISOString(),
-        });
-      }
-    };
-    eventPromise().catch(err => console.error('Error logging style_view events:', err));
-  }
 
   return jsonResponse({
     snapshotId: snapshot.snapshot_id,
@@ -263,7 +245,7 @@ router.post('/api/tryon-jobs', async (req) => {
     created_at: now,
   });
 
-  // Log tryon_start event
+  // Log tryon_start event immediately as user active behavior
   await db.insert(schema.behaviorEvents).values({
     event_id: generateId('EV'),
     session_id: sessionId,
@@ -271,7 +253,7 @@ router.post('/api/tryon-jobs', async (req) => {
     event_type: 'tryon_start',
     source_page: 'detail',
     created_at: now,
-  });
+  }).catch(err => console.error('Error logging tryon_start event:', err));
 
   // Run ComfyCloud workflow in background
   const runWorkflowPromise = async () => {
@@ -313,15 +295,6 @@ router.post('/api/tryon-jobs', async (req) => {
               finished_at: new Date().toISOString(),
             })
             .where(eq(schema.tryonJobs.tryon_job_id, tryonJobId));
-
-          await db.insert(schema.behaviorEvents).values({
-            event_id: generateId('EV'),
-            session_id: sessionId,
-            style_id: styleId,
-            event_type: 'tryon_success',
-            source_page: 'detail',
-            created_at: new Date().toISOString(),
-          });
         }
       } else {
         throw new Error(`Job ended with status ${jobResult.status}`);
@@ -336,15 +309,6 @@ router.post('/api/tryon-jobs', async (req) => {
           finished_at: new Date().toISOString(),
         })
         .where(eq(schema.tryonJobs.tryon_job_id, tryonJobId));
-
-      await db.insert(schema.behaviorEvents).values({
-        event_id: generateId('EV'),
-        session_id: sessionId,
-        style_id: styleId,
-        event_type: 'tryon_failed',
-        source_page: 'detail',
-        created_at: new Date().toISOString(),
-      });
     }
   };
 

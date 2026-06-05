@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
-import { nailStyles } from './styles.ts';
+import { nailStyles } from './styles';
 
 // data-model §8.1 agent_runs
 export const agentRuns = sqliteTable('agent_runs', {

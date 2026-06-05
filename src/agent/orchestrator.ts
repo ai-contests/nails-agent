@@ -1,6 +1,7 @@
 import * as tools from './tools.js';
 import { callLlmModel, ChatMessage } from '../services/llm.js';
 import { executeAgentToolCalls, parseAgentToolCallPlanResponse } from './agentToolRegistry.js';
+import { evaluateReviewOutcome } from './reviewEvaluator.js';
 
 export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_12h') {
   console.log(`[Agent Cycle] Starting run, trigger: ${triggerType}`);
@@ -18,20 +19,22 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
       historyRounds: 5,
     });
 
-    // Phase 2: Review due pending items
+    // Phase 2: Review due pending items — uses real after_metrics computed from behavior_events.
     console.log('[Agent Cycle] Reviewing past pending actions');
     const reviewCtx = await tools.getDueReviewContext(runId);
     for (const review of reviewCtx.pendingReviews) {
-      // Mock review evaluation: check if conversion rate is above 0.5
-      const outcomeScore = Math.random();
-      const lesson = outcomeScore > 0.5
-        ? `Action in decision ${review.decision_id} succeeded (score: ${outcomeScore.toFixed(2)}). Next time similar trends can be promoted.`
-        : `Action in decision ${review.decision_id} showed poor performance (score: ${outcomeScore.toFixed(2)}). Use caution in next iterations.`;
-      
+      const { beforeMetrics, afterMetrics, expectedMetrics } = review.parsed;
+      const outcome = evaluateReviewOutcome(expectedMetrics, beforeMetrics, afterMetrics);
+
       await tools.writeStrategyMemory({
         pendingReviewId: review.pending_review_id,
-        outcomeScore,
-        lesson,
+        outcome: outcome.outcome,
+        outcomeScore: outcome.outcomeScore,
+        beforeMetrics,
+        afterMetrics,
+        metricDelta: outcome.metricDelta,
+        evaluations: outcome.evaluations,
+        lesson: outcome.lesson,
       });
     }
 

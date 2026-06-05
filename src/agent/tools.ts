@@ -1,4 +1,4 @@
-import { openDb, schema } from '../../db/src/client.js';
+import { openDb, schema } from '../../db/src/client';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import {
   buildExecutionPlanForProposal,
@@ -12,6 +12,12 @@ import {
   type RecommendationRankItem,
   type StyleStatusChange,
 } from './operationRules.js';
+import {
+  type BaselineMetrics,
+  type ExpectedMetric,
+  computeConversionScore,
+  emptyBaseline,
+} from './reviewEvaluator.js';
 
 const { sqlite, db } = openDb();
 
@@ -239,9 +245,57 @@ export async function rollupBehaviorWindow(input: RollupInput) {
   };
 }
 
+/**
+ * Aggregate raw behavior_events for a given style (or all listed styles when styleId is null)
+ * inside an [start, end] window. Returns counts that feed BaselineMetrics for the review.
+ *
+ * `null` styleId case is used by global recommendation adjustments where the "target" is
+ * the whole listed catalog.
+ */
+export async function aggregateBehaviorMetrics(
+  styleId: string | null,
+  windowStart: string,
+  windowEnd: string,
+): Promise<BaselineMetrics> {
+  const filters = [
+    sql`${schema.behaviorEvents.created_at} >= ${windowStart}`,
+    sql`${schema.behaviorEvents.created_at} <= ${windowEnd}`,
+  ];
+  if (styleId) filters.push(eq(schema.behaviorEvents.style_id, styleId));
+
+  const events = await db
+    .select()
+    .from(schema.behaviorEvents)
+    .where(and(...filters));
+
+  const acc = emptyBaseline();
+  for (const event of events) {
+    if (event.event_type === 'style_click') acc.click_count++;
+    else if (event.event_type === 'tryon_start' || event.event_type === 'tryon_success') acc.tryon_count++;
+    else if (event.event_type === 'favorite_add') acc.favorite_count++;
+  }
+  acc.conversion_score = Number(computeConversionScore(acc).toFixed(4));
+  return acc;
+}
+
+/**
+ * Capture the baseline metrics for the same-length window immediately BEFORE `referenceTime`.
+ * Used at proposal execution time so that review can compare like-for-like.
+ */
+export async function captureBaselineForReview(
+  styleId: string | null,
+  referenceTime: Date,
+  windowHours: number,
+): Promise<{ windowStart: string; windowEnd: string; metrics: BaselineMetrics }> {
+  const windowEnd = referenceTime.toISOString();
+  const windowStart = new Date(referenceTime.getTime() - windowHours * 60 * 60 * 1000).toISOString();
+  const metrics = await aggregateBehaviorMetrics(styleId, windowStart, windowEnd);
+  return { windowStart, windowEnd, metrics };
+}
+
 export async function getDueReviewContext(agentRunId: string) {
   const now = new Date().toISOString();
-  
+
   const pendingReviews = await db
     .select()
     .from(schema.agentPendingReviews)
@@ -252,10 +306,76 @@ export async function getDueReviewContext(agentRunId: string) {
       )
     );
 
+  // Enrich each pending review with real after_metrics computed from behavior_events.
+  const enriched = [] as Array<typeof pendingReviews[number] & {
+    parsed: {
+      beforeMetrics: BaselineMetrics;
+      afterMetrics: BaselineMetrics;
+      expectedMetrics: ExpectedMetric[];
+      targetStyleIds: string[];
+    };
+  }>;
+
+  for (const review of pendingReviews) {
+    const beforeJson = safeJson(review.before_metrics, {} as Record<string, unknown>);
+    const expectedJson = safeJson(review.expected_effect, {} as Record<string, unknown>);
+
+    const expectedMetrics = (expectedJson['expectedMetrics'] as ExpectedMetric[] | undefined) ?? [];
+    const beforeMetrics: BaselineMetrics = (beforeJson['metrics'] as BaselineMetrics | undefined)
+      ?? emptyBaseline();
+
+    // Target styles: prefer the explicit pending_review.style_id; otherwise read decision items.
+    let targetStyleIds: string[] = [];
+    if (review.style_id) {
+      targetStyleIds = [review.style_id];
+    } else {
+      const items = await db
+        .select()
+        .from(schema.agentDecisionItems)
+        .where(eq(schema.agentDecisionItems.decision_id, review.decision_id));
+      targetStyleIds = items.map(i => i.style_id).filter((s): s is string => !!s);
+    }
+
+    let afterMetrics: BaselineMetrics;
+    if (targetStyleIds.length === 0) {
+      // Global recommendation review — aggregate across all listed styles in the after-window.
+      afterMetrics = await aggregateBehaviorMetrics(null, review.review_window_start, review.review_window_end);
+    } else if (targetStyleIds.length === 1) {
+      afterMetrics = await aggregateBehaviorMetrics(targetStyleIds[0]!, review.review_window_start, review.review_window_end);
+    } else {
+      const parts = await Promise.all(
+        targetStyleIds.map(sid => aggregateBehaviorMetrics(sid, review.review_window_start, review.review_window_end)),
+      );
+      afterMetrics = parts.reduce((acc, p) => ({
+        click_count: acc.click_count + p.click_count,
+        tryon_count: acc.tryon_count + p.tryon_count,
+        favorite_count: acc.favorite_count + p.favorite_count,
+        conversion_score: 0,
+      }), emptyBaseline());
+      afterMetrics.conversion_score = Number(computeConversionScore(afterMetrics).toFixed(4));
+    }
+
+    enriched.push({
+      ...review,
+      parsed: {
+        beforeMetrics,
+        afterMetrics,
+        expectedMetrics,
+        targetStyleIds,
+      },
+    });
+  }
+
   return {
     agentRunId,
-    pendingReviews,
+    pendingReviews: enriched,
   };
+}
+
+function safeJson<T>(text: string | null | undefined, fallback: T): T {
+  if (!text) return fallback;
+  try { return JSON.parse(text) as T; }
+  catch { return fallback; }
 }
 
 export async function getOperationContext(agentRunId: string, historyRounds = 5) {
@@ -1007,6 +1127,10 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
     });
     decisionIds.push(decisionId);
 
+    const reviewWindowHours = proposal.review_window_hours ?? 24;
+    const reviewEnd = new Date(Date.now() + reviewWindowHours * 60 * 60 * 1000).toISOString();
+    const expectedMetrics = (proposal.expectedMetrics as unknown as ExpectedMetric[]) ?? [];
+
     if (proposal.executionTool === 'decide_style_status') {
       for (const change of proposalStatusChanges) {
         const before = stylesBeforeChange.get(change.styleId);
@@ -1023,8 +1147,9 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
           created_at: now,
         });
 
+        const baseline = await captureBaselineForReview(change.styleId, new Date(now), reviewWindowHours);
+
         const pendingReviewId = generateId('REV');
-        const reviewEnd = new Date(Date.now() + (proposal.review_window_hours ?? 24) * 60 * 60 * 1000).toISOString();
         await db.insert(schema.agentPendingReviews).values({
           pending_review_id: pendingReviewId,
           decision_id: decisionId,
@@ -1035,11 +1160,15 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
             originalStatus: before?.status ?? null,
             rankBefore: currentRankByStyleId.get(change.styleId) ?? null,
             previousSnapshotId: currentSnapshot.snapshot_id,
+            metrics: baseline.metrics,
+            metricsWindow: { start: baseline.windowStart, end: baseline.windowEnd },
           }),
           expected_effect: JSON.stringify({
             newStatus: change.newStatus,
             rankAfter: finalRankByStyleId.get(change.styleId) ?? null,
             snapshotId,
+            expectedMetrics,
+            rollbackCondition: proposal.rollback_condition,
           }),
           review_window_start: now,
           review_window_end: reviewEnd,
@@ -1049,8 +1178,10 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
         pendingReviewIds.push(pendingReviewId);
       }
     } else {
+      // Global recommendation review: baseline is aggregate across all listed styles.
+      const baseline = await captureBaselineForReview(null, new Date(now), reviewWindowHours);
+
       const pendingReviewId = generateId('REV');
-      const reviewEnd = new Date(Date.now() + (proposal.review_window_hours ?? 24) * 60 * 60 * 1000).toISOString();
       await db.insert(schema.agentPendingReviews).values({
         pending_review_id: pendingReviewId,
         decision_id: decisionId,
@@ -1059,10 +1190,14 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
         before_metrics: JSON.stringify({
           timestamp: now,
           previousSnapshotId: currentSnapshot.snapshot_id,
+          metrics: baseline.metrics,
+          metricsWindow: { start: baseline.windowStart, end: baseline.windowEnd },
         }),
         expected_effect: JSON.stringify({
           snapshotId,
           executionPayload: recommendationPayload || null,
+          expectedMetrics,
+          rollbackCondition: proposal.rollback_condition,
         }),
         review_window_start: now,
         review_window_end: reviewEnd,
@@ -1093,8 +1228,14 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
 
 export interface WriteStrategyMemoryInput {
   pendingReviewId: string;
+  outcome: 'positive' | 'neutral' | 'negative';
   outcomeScore: number;
+  beforeMetrics: BaselineMetrics;
+  afterMetrics: BaselineMetrics;
+  metricDelta: Partial<Record<string, number>>;
+  evaluations?: unknown[];
   lesson: string;
+  nextSuggestion?: string;
 }
 
 export async function writeStrategyMemory(input: WriteStrategyMemoryInput) {
@@ -1111,7 +1252,7 @@ export async function writeStrategyMemory(input: WriteStrategyMemoryInput) {
   }
 
   const memoryId = generateId('MEM');
-  
+
   await db.insert(schema.strategyMemories).values({
     memory_id: memoryId,
     memory_type: 'strategy_result',
@@ -1119,8 +1260,8 @@ export async function writeStrategyMemory(input: WriteStrategyMemoryInput) {
     source_decision_id: pendingReview.decision_id,
     action_type: pendingReview.review_type,
     style_id: pendingReview.style_id,
-    before_metrics: pendingReview.before_metrics,
-    after_metrics: JSON.stringify({ outcomeScore: input.outcomeScore }),
+    before_metrics: JSON.stringify(input.beforeMetrics),
+    after_metrics: JSON.stringify(input.afterMetrics),
     outcome_score: input.outcomeScore,
     lesson: input.lesson,
     created_at: now,
@@ -1130,13 +1271,21 @@ export async function writeStrategyMemory(input: WriteStrategyMemoryInput) {
     .set({
       status: 'completed',
       memory_id: memoryId,
-      result_metrics: JSON.stringify({ outcomeScore: input.outcomeScore }),
+      result_metrics: JSON.stringify({
+        outcome: input.outcome,
+        outcomeScore: input.outcomeScore,
+        beforeMetrics: input.beforeMetrics,
+        afterMetrics: input.afterMetrics,
+        metricDelta: input.metricDelta,
+        evaluations: input.evaluations ?? [],
+        nextSuggestion: input.nextSuggestion ?? null,
+      }),
       result_summary: input.lesson,
       updated_at: now,
     })
     .where(eq(schema.agentPendingReviews.pending_review_id, input.pendingReviewId));
 
-  return { memoryId, status: 'completed' };
+  return { memoryId, outcome: input.outcome, status: 'completed' };
 }
 
 export interface CompleteAgentRunInput {

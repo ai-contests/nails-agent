@@ -65,6 +65,8 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
           score: r.item.score,
         })))}
         - Candidates in Pool: ${JSON.stringify(opCtx.candidates.map(c => ({ id: c.style_id, tags: c.color_tags })))}
+        - Rising Tag Trends (deterministic detector, growth-ranked): ${JSON.stringify(opCtx.tagTrendActions.trends)}
+        - Pre-matched Candidate Actions (deterministic matcher, prefer these for list_candidate proposals): ${JSON.stringify(opCtx.tagTrendActions.actions)}
         - Strategy Memories: ${JSON.stringify(opCtx.memories)}
 
         Output exactly one JSON object:

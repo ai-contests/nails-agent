@@ -19,6 +19,11 @@ import {
   emptyBaseline,
 } from './reviewEvaluator.js';
 import { computeGrowth, indexHistoryByKey } from './trendAnalyzer.js';
+import {
+  rankCandidateActionsFromTagTrends,
+  type CandidateMatch,
+  type TagTrend,
+} from './tagTrendMatcher.js';
 
 const { sqlite, db } = openDb();
 
@@ -469,11 +474,44 @@ export async function getOperationContext(agentRunId: string, historyRounds = 5)
     .from(schema.nailStyles)
     .where(eq(schema.nailStyles.status, 'candidate'));
 
+  const listedForSaturation = await db
+    .select()
+    .from(schema.nailStyles)
+    .where(eq(schema.nailStyles.status, 'listed'));
+
   const memories = await db
     .select()
     .from(schema.strategyMemories)
     .orderBy(desc(schema.strategyMemories.created_at))
     .limit(10);
+
+  // Tag trend → candidate matcher: deterministic "rising tag → up to 3 actionable
+  // candidate styles" mapping. LLM sees these as concrete suggestions so it can
+  // emit recordActionProposal(list_candidate) without having to do the matching
+  // itself. tagHeat rows from drizzle may have nullable fields — sanitize.
+  const tagHeatForMatcher = tagHeat.map(t => ({
+    tag_type: t.tag_type,
+    tag_value: t.tag_value,
+    heat_score: t.heat_score ?? 0,
+    growth_score: t.growth_score ?? 0,
+    click_count: t.click_count ?? 0,
+    tryon_count: t.tryon_count ?? 0,
+    favorite_count: t.favorite_count ?? 0,
+    style_count: t.style_count ?? 0,
+  }));
+  const candidatesForMatcher = candidates.map(c => ({
+    style_id: c.style_id,
+    color_tags: c.color_tags ?? '[]',
+    length_tags: c.length_tags ?? '[]',
+    is_available_for_tryon: c.is_available_for_tryon,
+  }));
+  const listedForMatcher = listedForSaturation.map(s => ({
+    style_id: s.style_id,
+    color_tags: s.color_tags ?? '[]',
+    length_tags: s.length_tags ?? '[]',
+  }));
+  const tagTrendActions: { trends: TagTrend[]; actions: CandidateMatch[] } =
+    rankCandidateActionsFromTagTrends(tagHeatForMatcher, candidatesForMatcher, listedForMatcher);
 
   return {
     agentRunId,
@@ -485,6 +523,7 @@ export async function getOperationContext(agentRunId: string, historyRounds = 5)
     activeRecommendationItems,
     candidates,
     memories,
+    tagTrendActions,
   };
 }
 

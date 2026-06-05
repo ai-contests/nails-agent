@@ -54,20 +54,25 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
       {
         role: 'user',
         content: `
-        Analyze the following context:
-        - Style Heat Metrics (recent 12h): ${JSON.stringify(opCtx.styleHeat.slice(0, 10))}
-        - Tag Heat Metrics: ${JSON.stringify(opCtx.tagHeat)}
-        - Historical Style Heat Metrics (latest 5 prior windows): ${JSON.stringify((opCtx.historicalStyleHeat || []).slice(0, 30))}
-        - Historical Tag Heat Metrics (latest 5 prior windows): ${JSON.stringify((opCtx.historicalTagHeat || []).slice(0, 30))}
-        - Current Active Recommendation Ranks: ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 50).map(r => ({
-          styleId: r.item.style_id,
-          rankNo: r.item.rank_no,
-          score: r.item.score,
-        })))}
-        - Candidates in Pool: ${JSON.stringify(opCtx.candidates.map(c => ({ id: c.style_id, tags: c.color_tags })))}
-        - Rising Tag Trends (deterministic detector, growth-ranked): ${JSON.stringify(opCtx.tagTrendActions.trends)}
-        - Pre-matched Candidate Actions (deterministic matcher, prefer these for list_candidate proposals): ${JSON.stringify(opCtx.tagTrendActions.actions)}
-        - Strategy Memories: ${JSON.stringify(opCtx.memories)}
+        Analyze the following nail platform data:
+
+        TOP STYLE HEAT (top 8, recent 12h):
+        ${JSON.stringify(opCtx.styleHeat
+          .sort((a, b) => (b.heat_score ?? 0) - (a.heat_score ?? 0))
+          .slice(0, 8)
+          .map(s => ({ id: s.style_id, heat: s.heat_score, growth: s.growth_score, conv: s.conversion_score })))}
+
+        TAG HEAT:
+        ${JSON.stringify(opCtx.tagHeat.map(t => ({ tag: t.tag_type + ':' + t.tag_value, heat: t.heat_score, growth: t.growth_score })))}
+
+        ACTIVE RECOMMENDATIONS (top 10 ranks):
+        ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 10).map(r => ({ id: r.item.style_id, rank: r.item.rank_no })))}
+
+        RISING TAG TRENDS + PRE-MATCHED CANDIDATES (use these for list_candidate proposals):
+        ${JSON.stringify({ trends: opCtx.tagTrendActions.trends.slice(0, 3), actions: opCtx.tagTrendActions.actions.slice(0, 3).map(a => ({ styleId: a.styleId, reason: a.reason, score: a.finalScore })) })}
+
+        STRATEGY MEMORIES (recent lessons):
+        ${JSON.stringify(opCtx.memories.slice(0, 5).map(m => ({ type: m.action_type, score: m.outcome_score, lesson: m.lesson.slice(0, 120) })))}
 
         Output exactly one JSON object:
         {

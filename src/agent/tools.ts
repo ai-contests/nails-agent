@@ -643,7 +643,7 @@ export async function recordActionProposal(input: RecordProposalInput) {
     hypothesis: input.hypothesis,
     expected_metrics: JSON.stringify(input.expectedMetrics),
     rollback_condition: input.rollbackCondition,
-    review_window_hours: input.reviewWindowHours ?? 24,
+    review_window_hours: input.reviewWindowHours ?? 2,
     confidence: input.confidence || null,
     status: 'pending_check',
     execution_tool: input.executionTool || null,
@@ -1335,7 +1335,7 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
       });
     }
 
-    const reviewWindowHours = proposal.review_window_hours ?? 24;
+    const reviewWindowHours = proposal.review_window_hours ?? 2;
     const reviewEnd = new Date(Date.now() + reviewWindowHours * 60 * 60 * 1000).toISOString();
     const expectedMetrics = (proposal.expectedMetrics as unknown as ExpectedMetric[]) ?? [];
 

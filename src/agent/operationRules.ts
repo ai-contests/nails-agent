@@ -201,7 +201,7 @@ export interface BuildExecutionPlanInput extends ProposalGuardInput {
 }
 
 export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput): ExecutionPlan {
-  const reviewWindowHours = proposal.reviewWindowHours ?? 24;
+  const reviewWindowHours = proposal.reviewWindowHours ?? 2;
   const targetMetrics = extractTargetMetrics(proposal.expectedMetrics);
   const reason = proposal.intendedAction;
 

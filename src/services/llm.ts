@@ -87,8 +87,11 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
     max_tokens: maxTokens,
   };
 
-  if (enableThinking !== undefined) {
-    body.enable_thinking = enableThinking;
+  // enable_thinking is only supported by certain models (e.g. Qwen3 with thinking mode).
+  // MiniMax and other models silently return choices:null when this field is present.
+  // Only add it when explicitly true.
+  if (enableThinking === true) {
+    body.enable_thinking = true;
   }
 
   if (responseFormat) {
@@ -98,25 +101,51 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
     body.response_format = { type: 'json_object' };
   }
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
+  const maxRetries = 3;
+  let lastError: Error | null = null;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`ModelScope API error: ${response.status} - ${errorText}`);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      // Retry on 5xx (transient server errors)
+      if (response.status >= 500) {
+        const errorText = await response.text();
+        lastError = new Error(`ModelScope API error: ${response.status} - ${errorText}`);
+        if (attempt < maxRetries) {
+          const delay = attempt * 2000;
+          console.warn(`[LLM] Attempt ${attempt}/${maxRetries} failed (${response.status}), retrying in ${delay}ms…`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        throw lastError;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`ModelScope API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json() as { choices?: { message?: { content?: string } }[] } | null;
+      if (!data || !Array.isArray(data.choices) || data.choices.length === 0) {
+        throw new Error(`ModelScope API returned unexpected response shape: ${JSON.stringify(data)}`);
+      }
+      return data.choices[0]?.message?.content || '';
+    } catch (error) {
+      if (attempt === maxRetries) {
+        console.error('Error calling ModelScope LLM model:', error);
+        throw error;
+      }
+      lastError = error as Error;
     }
-
-    const data = await response.json() as { choices: { message: { content: string } }[] };
-    return data.choices[0]?.message.content || '';
-  } catch (error) {
-    console.error('Error calling ModelScope LLM model:', error);
-    throw error;
   }
+
+  throw lastError ?? new Error('LLM call failed after retries');
 }

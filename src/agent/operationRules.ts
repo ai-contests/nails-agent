@@ -267,6 +267,174 @@ export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput)
 }
 
 /**
+ * Cross-proposal conflict detection (P6).
+ *
+ * The single-proposal guards in evaluateProposalGuards check each proposal in
+ * isolation. They cannot catch:
+ *   - same style targeted by both a list_candidate and an unlist_to_candidate
+ *   - same style promoted by one proposal and unlisted by another
+ *   - same style appearing in two adjust_recommendation proposals with
+ *     contradictory target ranks (one says promote to 3, another says demote
+ *     to 20)
+ *
+ * detectProposalConflicts inspects the entire approved batch and returns a
+ * structured list of conflicts. The batch executor uses this to reject the
+ * later-arriving proposal (deterministic by id order) without aborting the
+ * whole batch.
+ */
+export interface ConflictProposalSummary {
+  proposalId: string;
+  proposalType: string;
+  /** For adjust_recommendation, the per-style adjustment requests. */
+  recommendationChanges?: RecommendationChangeRequest[];
+  /** For decide_style_status, the per-style status changes. */
+  statusChanges?: { styleId: string; newStatus: 'listed' | 'candidate' }[];
+}
+
+export interface ProposalConflict {
+  type:
+    | 'status_self_contradiction'      // same style → both list and unlist
+    | 'status_vs_recommendation'       // same style being unlisted AND adjusted in rank
+    | 'rank_direction_clash'           // two adjust proposals push same style in opposite directions
+    | 'duplicate_target';              // same style targeted by ≥2 status-change proposals with same direction
+  styleId: string;
+  proposalIds: string[];
+  detail: string;
+}
+
+export interface ConflictDetectionResult {
+  conflicts: ProposalConflict[];
+  /** Proposal IDs to reject (later-arriving in input order for each conflict). */
+  rejectedProposalIds: Set<string>;
+}
+
+export function detectProposalConflicts(
+  proposals: ConflictProposalSummary[],
+): ConflictDetectionResult {
+  const conflicts: ProposalConflict[] = [];
+  const rejected = new Set<string>();
+
+  // Index per-style: which proposals touch it, with role.
+  type StyleTouch = {
+    proposalId: string;
+    proposalType: string;
+    role: 'list' | 'unlist' | 'promote' | 'demote';
+    targetRank?: number;
+    rankDirection?: 'up' | 'down';
+  };
+  const touches = new Map<string, StyleTouch[]>();
+
+  const addTouch = (styleId: string, touch: StyleTouch) => {
+    const list = touches.get(styleId) ?? [];
+    list.push(touch);
+    touches.set(styleId, list);
+  };
+
+  for (const p of proposals) {
+    if (p.statusChanges) {
+      for (const change of p.statusChanges) {
+        addTouch(change.styleId, {
+          proposalId: p.proposalId,
+          proposalType: p.proposalType,
+          role: change.newStatus === 'listed' ? 'list' : 'unlist',
+        });
+      }
+    }
+    if (p.recommendationChanges) {
+      for (const change of p.recommendationChanges) {
+        addTouch(change.styleId, {
+          proposalId: p.proposalId,
+          proposalType: p.proposalType,
+          role: change.action === 'promote' ? 'promote' : 'demote',
+          targetRank: change.targetRank,
+          rankDirection: change.action === 'promote' ? 'up' : 'down',
+        });
+      }
+    }
+  }
+
+  for (const [styleId, list] of touches.entries()) {
+    if (list.length < 2) continue;
+
+    const hasList = list.find(t => t.role === 'list');
+    const hasUnlist = list.find(t => t.role === 'unlist');
+    const hasPromote = list.find(t => t.role === 'promote');
+    const hasDemote = list.find(t => t.role === 'demote');
+    const recTouches = list.filter(t => t.role === 'promote' || t.role === 'demote');
+
+    // 1. list + unlist on same style
+    if (hasList && hasUnlist) {
+      conflicts.push({
+        type: 'status_self_contradiction',
+        styleId,
+        proposalIds: [hasList.proposalId, hasUnlist.proposalId],
+        detail: `style ${styleId} is in both list and unlist proposals`,
+      });
+      // Reject the later-arriving one (by id order in input).
+      const later = [hasList, hasUnlist].sort((a, b) =>
+        proposals.findIndex(p => p.proposalId === a.proposalId) -
+        proposals.findIndex(p => p.proposalId === b.proposalId),
+      )[1]!;
+      rejected.add(later.proposalId);
+    }
+
+    // 2. unlist + any rank adjustment
+    if (hasUnlist && recTouches.length > 0) {
+      for (const rec of recTouches) {
+        conflicts.push({
+          type: 'status_vs_recommendation',
+          styleId,
+          proposalIds: [hasUnlist.proposalId, rec.proposalId],
+          detail: `style ${styleId} would be unlisted by ${hasUnlist.proposalId} but ${rec.role}d by ${rec.proposalId}`,
+        });
+        // Rank adjustment is wasted if style is gone; reject the rank one.
+        rejected.add(rec.proposalId);
+      }
+    }
+
+    // 3. promote + demote on same style across different proposals
+    if (hasPromote && hasDemote) {
+      conflicts.push({
+        type: 'rank_direction_clash',
+        styleId,
+        proposalIds: [hasPromote.proposalId, hasDemote.proposalId],
+        detail: `style ${styleId} is being both promoted and demoted in the same batch`,
+      });
+      const later = [hasPromote, hasDemote].sort((a, b) =>
+        proposals.findIndex(p => p.proposalId === a.proposalId) -
+        proposals.findIndex(p => p.proposalId === b.proposalId),
+      )[1]!;
+      rejected.add(later.proposalId);
+    }
+
+    // 4. duplicate same-direction status touches (≥2 list or ≥2 unlist)
+    const lists = list.filter(t => t.role === 'list');
+    const unlists = list.filter(t => t.role === 'unlist');
+    if (lists.length >= 2) {
+      conflicts.push({
+        type: 'duplicate_target',
+        styleId,
+        proposalIds: lists.map(t => t.proposalId),
+        detail: `style ${styleId} appears in ${lists.length} list_candidate proposals`,
+      });
+      // Keep the first, reject the rest.
+      lists.slice(1).forEach(t => rejected.add(t.proposalId));
+    }
+    if (unlists.length >= 2) {
+      conflicts.push({
+        type: 'duplicate_target',
+        styleId,
+        proposalIds: unlists.map(t => t.proposalId),
+        detail: `style ${styleId} appears in ${unlists.length} unlist_to_candidate proposals`,
+      });
+      unlists.slice(1).forEach(t => rejected.add(t.proposalId));
+    }
+  }
+
+  return { conflicts, rejectedProposalIds: rejected };
+}
+
+/**
  * Apply fine-grained per-style recommendation adjustments to the current rank list.
  *
  * For each change:

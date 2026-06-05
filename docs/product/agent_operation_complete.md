@@ -356,22 +356,27 @@ WHERE pr.decision_id = ?;
 
 > 前置：`bun run db:setup` 已跑过，nails.db 有 100 styles + 50 sessions + 611 events。
 
-### 6.1 跑出闭环的"假装真实"序列
+### 6.1 跑出闭环的标准序列
 
-由于 mock 数据是静态的（见 §7 已知问题），需要这样跑：
+**生产/在线 demo 模式**（推荐）：
 
 ```bash
-# Step 1: 跑预热 3-5 轮（不展示），让 growth_score 有信号
+# Step 1: 部署 C 端到 Vercel，让评委或队友访问产生真实 events
+# Step 2: 用 cron 或手动每 12h 跑一次 cycle
+bun run -e "import {runOperationCycle} from './src/agent/orchestrator'; await runOperationCycle('scheduled_12h');"
+# 第一轮 growth_score=0 没决策，第 2-3 轮开始有 trend，第 3 轮起复盘真实生效
+```
+
+**纯本地无外部用户 demo 模式**：
+
+```bash
+# Step 1: 跑预热 3-5 轮，让历史窗口充满
 for i in 1 2 3 4; do
   bun run -e "import {runOperationCycle} from './src/agent/orchestrator'; await runOperationCycle('manual_demo');"
 done
 
-# Step 2: ⚠️ 关键缺失：注入一批"假装的"用户反馈
-# 当前没有 mockBehaviorSimulator，建议补一个脚本：
-#   - 找最新 active snapshot 的 top-10 styles
-#   - 给每个生成 5-15 条 style_click + 2-5 条 favorite_add + 1-3 条 tryon_start
-#   - created_at 散布在 [last_cycle_end, now] 区间
-# 没有这个 step，下一轮复盘永远是 negative
+# Step 2: 手动操作 C 端制造 events（or 跑 mockBehaviorSimulator 若已实现）
+# 关键：要针对最新 active snapshot 的 top styles 产生反馈，否则复盘是 0 delta
 
 # Step 3: 跑展示轮
 bun run -e "import {runOperationCycle} from './src/agent/orchestrator'; const r = await runOperationCycle('manual_demo'); console.log(r);"
@@ -399,13 +404,15 @@ bun run -e "import {runOperationCycle} from './src/agent/orchestrator'; const r 
 
 ## 7. 已知限制（不要藏）
 
-### 7.1 演示场景的根本限制
+### 7.1 演示场景需要真实交互通道
 
-**Mock 数据下没有"用户行为对 Agent 决策的反馈回流"。**
+Seed 是冷启动基线（第 0 轮数据），真闭环依赖后续轮次有新行为补回。
 
-- behavior_events 是种子数据，Agent promote/list 后没人会因此多点一次
-- 复盘 metric_delta ≈ 0，outcome 容易判 negative
-- **必须**写 `mockBehaviorSimulator` 在 cycle 间注入反馈才能跑出"学习"叙事
+- **生产部署场景**：自然回流（真用户访问 C 端 → 新 events → 下轮聚合）。Agent 的 promote/list 决策直接影响真用户看到什么，从而影响下轮 metric_delta。**无需 mock，正常跑就是闭环。**
+- **本地演示 + 评委线上访问**（推荐）：部署到 Vercel，评审窗口期评委自己玩，行为自然回流。
+- **本地演示无外部用户**：需要 (a) 队友/演示者手动操作 C 端制造 events，或 (b) 写 `mockBehaviorSimulator` 脚本在 cycle 间注入"针对最新推荐的假反馈"。
+
+PRD §3 demo 评测窗口的策略对应：**优先选生产部署 + 评委访问**这条路。
 
 ### 7.2 跨 proposal 冲突未检测
 
@@ -459,10 +466,10 @@ bun run -e "import {runOperationCycle} from './src/agent/orchestrator'; const r 
 
 ## 9. 下一阶段（按优先级）
 
-1. **P5 mock 行为模拟器**（demo 必须）：30-50 行脚本，cycle 间注入"假反馈"
-2. **P6 跨 proposal 冲突检测**：phase 7 前置检查，~30 行
-3. **P7 negative memory hard guard**：phase 6 加规则，~30 行
-4. **P8 删除单点执行死代码**：~100 行 net delete
+1. **P6 跨 proposal 冲突检测**：phase 7 前置检查，~30 行（最高优先级，工程健壮性）
+2. **P7 negative memory hard guard**：phase 6 加规则，~30 行（让 strategy_memories 真正发挥作用）
+3. **P8 删除单点执行死代码**：~100 行 net delete
+4. **P5（可选）mock 行为模拟器**：仅当 demo 无法部署且现场无人操作 C 端时才需要
 5. **B 端实现 §5 的 5 个画面**：前端工作量约 1-2 天
 
-完成 P5-P7 后真的可以宣称"闭环跑通"了。
+完成 P6 + P7 后工程健壮性达标；P5 看部署策略决定是否需要。

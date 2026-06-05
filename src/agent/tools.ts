@@ -3,12 +3,14 @@ import { eq, and, sql, desc } from 'drizzle-orm';
 import {
   applyRecommendationAdjustments,
   buildExecutionPlanForProposal,
+  detectProposalConflicts,
   evaluateProposalGuards,
   type ExecutionPayload,
   rebuildRanksForStatusChange,
   rebuildRanksForStatusChanges,
   selectRecentHistoryRows,
   type AdjustRecommendationExecutionPayload,
+  type ConflictProposalSummary,
   type DecideStyleStatusExecutionPayload,
   type RecommendationChangeRequest,
   type RecommendationRankItem,
@@ -1033,6 +1035,57 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
       status: 'skipped',
     };
   }
+
+  // P6: cross-proposal conflict detection. Single-proposal guards cannot see
+  // contradictions across the batch (e.g. promote(X) + unlist(X) in same run).
+  // Reject the later-arriving proposal of each conflicting pair; record the
+  // rejection on the row so the B-end can show why.
+  const conflictSummaries: ConflictProposalSummary[] = proposals.map(p => ({
+    proposalId: p.proposal_id,
+    proposalType: p.proposal_type,
+    recommendationChanges: p.executionTool === 'adjust_recommendation'
+      ? (p.executionPayload as AdjustRecommendationExecutionPayload).changes
+      : undefined,
+    statusChanges: p.executionTool === 'decide_style_status'
+      ? (p.executionPayload as DecideStyleStatusExecutionPayload).changes
+        .map(c => ({ styleId: c.styleId, newStatus: c.newStatus }))
+      : undefined,
+  }));
+  const conflictResult = detectProposalConflicts(conflictSummaries);
+  if (conflictResult.rejectedProposalIds.size > 0) {
+    const rejectedAt = new Date().toISOString();
+    for (const rejectedId of conflictResult.rejectedProposalIds) {
+      await db.update(schema.agentActionProposals)
+        .set({
+          status: 'rejected',
+          check_result: JSON.stringify({
+            passed: false,
+            rulesChecked: [{ rule: 'cross_proposal_conflict', status: 'failed' }],
+            conflicts: conflictResult.conflicts.filter(c => c.proposalIds.includes(rejectedId)),
+            timestamp: rejectedAt,
+          }),
+          updated_at: rejectedAt,
+        })
+        .where(eq(schema.agentActionProposals.proposal_id, rejectedId));
+    }
+  }
+  const survivingProposals = proposals.filter(p => !conflictResult.rejectedProposalIds.has(p.proposal_id));
+
+  if (survivingProposals.length === 0) {
+    return {
+      executedCount: 0,
+      snapshotId: null,
+      decisionIds: [] as string[],
+      pendingReviewIds: [] as string[],
+      status: 'skipped',
+      rejectedByConflict: Array.from(conflictResult.rejectedProposalIds),
+      conflicts: conflictResult.conflicts,
+    };
+  }
+
+  // From here on `proposals` is the surviving list (alias for minimal diff below).
+  proposals.length = 0;
+  proposals.push(...survivingProposals);
 
   return runInSqliteTransaction(sqlite, async () => {
   const now = new Date().toISOString();

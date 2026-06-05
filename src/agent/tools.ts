@@ -1212,6 +1212,35 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
         : 'unlist_to_candidate';
     const decisionId = generateId('DEC');
 
+    // Collect evidence links to persist after the decision row is in place.
+    // P4: explicit lineage from decision → source_proposal, before/after
+    // snapshots, and every affected style. Diversity-related findings and
+    // tag heat snapshots can be added by future iterations once the LLM
+    // emits explicit refs.
+    const evidenceToWrite: Array<{ source_type: string; source_id: string; role: string; note?: string }> = [];
+    evidenceToWrite.push({ source_type: 'action_proposal', source_id: proposal.proposal_id, role: 'source' });
+    evidenceToWrite.push({ source_type: 'recommendation_snapshot', source_id: currentSnapshot.snapshot_id, role: 'before' });
+    evidenceToWrite.push({ source_type: 'recommendation_snapshot', source_id: snapshotId, role: 'after' });
+    if (proposal.executionTool === 'adjust_recommendation' && recommendationPayload) {
+      for (const change of recommendationPayload.changes) {
+        evidenceToWrite.push({
+          source_type: 'style',
+          source_id: change.styleId,
+          role: 'target',
+          note: `${change.action}${change.targetRank != null ? ` → rank ${change.targetRank}` : ''}`,
+        });
+      }
+    } else if (proposal.executionTool === 'decide_style_status' && statusPayload) {
+      for (const change of statusPayload.changes) {
+        evidenceToWrite.push({
+          source_type: 'style',
+          source_id: change.styleId,
+          role: 'target',
+          note: `${change.action} → ${change.newStatus}`,
+        });
+      }
+    }
+
     await db.insert(schema.agentDecisions).values({
       decision_id: decisionId,
       agent_run_id: input.agentRunId,
@@ -1239,6 +1268,19 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
       executed_at: now,
     });
     decisionIds.push(decisionId);
+
+    // P4: persist explicit evidence links for this decision.
+    for (const link of evidenceToWrite) {
+      await db.insert(schema.agentEvidenceLinks).values({
+        evidence_link_id: generateId('EVL'),
+        decision_id: decisionId,
+        source_type: link.source_type,
+        source_id: link.source_id,
+        role: link.role,
+        note: link.note ?? null,
+        created_at: now,
+      });
+    }
 
     const reviewWindowHours = proposal.review_window_hours ?? 24;
     const reviewEnd = new Date(Date.now() + reviewWindowHours * 60 * 60 * 1000).toISOString();

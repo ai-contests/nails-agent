@@ -32,6 +32,7 @@ data/*
 data/extraction/*
 !data/extraction/manifest.json
 !data/seed_hands/
+db/data/
 
 # ─── scripts/ ────────────────────────────────────────────────────
 # 本地 Python 工具集（试戴管线 / 手模生成 / 批量 runner）。

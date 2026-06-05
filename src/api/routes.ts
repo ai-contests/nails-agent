@@ -1,10 +1,11 @@
 import { Router } from './router.js';
 import { openDb, schema } from '../../db/src/client.js';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { analyzeHandImage } from '../services/handCV.js';
 import { buildTryonWorkflow, submitPrompt, pollJob, downloadView, extractOutputs, uploadImage } from '../services/comfycloud.js';
 import { runOperationCycle } from '../agent/orchestrator.js';
 import { callLlmModel, ChatMessage } from '../services/llm.js';
+import { mergeRankedStyles } from './recommendationLogic.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -14,6 +15,7 @@ export const router = new Router();
 
 // Helper to generate IDs
 const generateId = (prefix: string) => `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+type NailStyleRow = typeof schema.nailStyles.$inferSelect;
 
 // Helper to return JSON response
 const jsonResponse = (data: unknown, status = 200) => {
@@ -22,6 +24,42 @@ const jsonResponse = (data: unknown, status = 200) => {
     headers: { 'Content-Type': 'application/json' },
   });
 };
+
+async function getGlobalRecommendationFallback(limit: number): Promise<NailStyleRow[]> {
+  const snapshot = await db
+    .select()
+    .from(schema.recommendationSnapshots)
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    )
+    .get();
+
+  if (snapshot) {
+    const ranked = await db
+      .select({ style: schema.nailStyles })
+      .from(schema.recommendationItems)
+      .innerJoin(schema.nailStyles, eq(schema.recommendationItems.style_id, schema.nailStyles.style_id))
+      .where(
+        and(
+          eq(schema.recommendationItems.snapshot_id, snapshot.snapshot_id),
+          eq(schema.nailStyles.status, 'listed')
+        )
+      )
+      .orderBy(schema.recommendationItems.rank_no)
+      .limit(limit);
+
+    return ranked.map(row => row.style);
+  }
+
+  return db
+    .select()
+    .from(schema.nailStyles)
+    .where(eq(schema.nailStyles.status, 'listed'))
+    .limit(limit);
+}
 
 // ==========================================
 // C-SIDE ROUTES
@@ -429,23 +467,53 @@ router.get('/api/similar-hand-recommendations', async (req) => {
     .where(eq(schema.userHandProfiles.session_id, sessionId))
     .get();
 
+  const limit = 30;
+
   if (!profile || profile.hand_shape === 'unknown') {
-    // Fallback: return top 15 recommendations
-    const fallbackStyles = await db
-      .select()
-      .from(schema.nailStyles)
-      .where(eq(schema.nailStyles.status, 'listed'))
-      .limit(15);
+    const fallbackStyles = await getGlobalRecommendationFallback(limit);
     return jsonResponse({ handShape: 'unknown', items: fallbackStyles });
   }
 
-  // Simple召回: find listed styles matching matching tag profiles
-  // For demo, we just return listed styles matching some basic filter or simple shuffle
-  const matchingStyles = await db
-    .select()
-    .from(schema.nailStyles)
-    .where(eq(schema.nailStyles.status, 'listed'))
-    .limit(15);
+  const behaviorRows = await db
+    .select({
+      style: schema.nailStyles,
+      eventType: schema.behaviorEvents.event_type,
+      createdAt: schema.behaviorEvents.created_at,
+    })
+    .from(schema.userHandProfiles)
+    .innerJoin(schema.behaviorEvents, eq(schema.userHandProfiles.session_id, schema.behaviorEvents.session_id))
+    .innerJoin(schema.nailStyles, eq(schema.behaviorEvents.style_id, schema.nailStyles.style_id))
+    .where(
+      and(
+        eq(schema.userHandProfiles.hand_shape, profile.hand_shape),
+        sql`${schema.userHandProfiles.session_id} != ${sessionId}`,
+        eq(schema.nailStyles.status, 'listed'),
+        sql`${schema.behaviorEvents.event_type} IN ('favorite_add', 'tryon_success', 'style_click')`
+      )
+    );
+
+  const scoreByStyle = new Map<string, { style: NailStyleRow; score: number; lastEventAt: string }>();
+  for (const row of behaviorRows) {
+    const current = scoreByStyle.get(row.style.style_id) || {
+      style: row.style,
+      score: 0,
+      lastEventAt: row.createdAt,
+    };
+    const eventScore =
+      row.eventType === 'favorite_add' ? 3 :
+      row.eventType === 'tryon_success' ? 2 :
+      1;
+    current.score += eventScore;
+    if (row.createdAt > current.lastEventAt) current.lastEventAt = row.createdAt;
+    scoreByStyle.set(row.style.style_id, current);
+  }
+
+  const behaviorRanked = [...scoreByStyle.values()]
+    .sort((a, b) => b.score - a.score || b.lastEventAt.localeCompare(a.lastEventAt))
+    .map(row => row.style);
+
+  const fallbackStyles = await getGlobalRecommendationFallback(limit);
+  const matchingStyles = mergeRankedStyles(behaviorRanked, fallbackStyles, limit);
 
   return jsonResponse({
     handShape: profile.hand_shape,
@@ -670,4 +738,3 @@ router.get('/api/admin/chat/sessions/:id/messages', async (_req, params) => {
     })),
   });
 });
-

@@ -22,9 +22,20 @@ interface StrategyMemoryItem {
   lesson: string;
 }
 
+interface RecommendationContextItem {
+  item: {
+    style_id: string;
+    rank_no: number;
+    score: number;
+  };
+}
+
 interface OperationContext {
   styleHeat: StyleHeatItem[];
   tagHeat: TagHeatItem[];
+  historicalStyleHeat?: StyleHeatItem[];
+  historicalTagHeat?: TagHeatItem[];
+  activeRecommendationItems?: RecommendationContextItem[];
   candidates: CandidateItem[];
   memories: StrategyMemoryItem[];
 }
@@ -74,7 +85,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
 
     // Phase 3: Load operation context
     console.log('[Agent Cycle] Loading current context');
-    const opCtx = await tools.getOperationContext(runId);
+    const opCtx = await tools.getOperationContext(runId, 5);
 
     // Phase 4 & 5: Self Diagnosis & Record Findings
     console.log('[Agent Cycle] Performing self-diagnosis using LLM...');
@@ -83,7 +94,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
     const promptMessages: ChatMessage[] = [
       {
         role: 'system',
-        content: 'You are Nails-Agent, an AI Operations Manager for a nail design platform. Your goal is to analyze current performance statistics and recommend operational actions (e.g. promoting styles, listing candidates, demoting poor styles).'
+        content: 'You are Nails-Agent, an AI Operations Manager for a nail design platform. Return strict JSON only. The top-level object must contain only "findings" and "proposals" arrays.'
       },
       {
         role: 'user',
@@ -91,12 +102,41 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
         Analyze the following context:
         - Style Heat Metrics (recent 12h): ${JSON.stringify(opCtx.styleHeat.slice(0, 10))}
         - Tag Heat Metrics: ${JSON.stringify(opCtx.tagHeat)}
+        - Historical Style Heat Metrics (latest 5 prior windows): ${JSON.stringify((opCtx.historicalStyleHeat || []).slice(0, 30))}
+        - Historical Tag Heat Metrics (latest 5 prior windows): ${JSON.stringify((opCtx.historicalTagHeat || []).slice(0, 30))}
+        - Current Active Recommendation Ranks: ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 50).map(r => ({
+          styleId: r.item.style_id,
+          rankNo: r.item.rank_no,
+          score: r.item.score,
+        })))}
         - Candidates in Pool: ${JSON.stringify(opCtx.candidates.map(c => ({ id: c.style_id, tags: c.color_tags })))}
         - Strategy Memories: ${JSON.stringify(opCtx.memories)}
 
-        Output a JSON object with:
-        1. "findings": A list of findings, each having targetType ("style", "tag", "candidate"), targetId, findingType ("opportunity", "anomaly"), title, summary, score.
-        2. "proposals": A list of proposed actions, each having proposalType ("adjust_recommendation", "list_candidate", "unlist_to_candidate"), targetType, targetIds, intendedAction, hypothesis, expectedMetrics, rollbackCondition, confidence.
+        Output exactly one JSON object:
+        {
+          "findings": [
+            {
+              "targetType": "style" | "tag" | "candidate",
+              "targetId": "string",
+              "findingType": "opportunity" | "anomaly",
+              "title": "string",
+              "summary": "string",
+              "score": 0.0
+            }
+          ],
+          "proposals": [
+            {
+              "proposalType": "adjust_recommendation" | "list_candidate" | "unlist_to_candidate",
+              "targetType": "style" | "candidate",
+              "targetIds": ["string"],
+              "intendedAction": "string",
+              "hypothesis": "string",
+              "expectedMetrics": [{ "metric": "string", "target": 0.0 }],
+              "rollbackCondition": "string",
+              "confidence": 0.0
+            }
+          ]
+        }
         `
       }
     ];
@@ -184,8 +224,9 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
         // Adjust recommendations (mocking new rank positions)
         const mockRanks = opCtx.styleHeat
           .sort((a, b) => b.heat_score - a.heat_score)
+          .filter(item => !!item.style_id)
           .map((item, idx) => ({
-            styleId: item.style_id ?? '',
+            styleId: item.style_id as string,
             rankNo: idx + 1,
             score: item.heat_score,
             reason: `Sorted rank based on heat score of ${item.heat_score}`
@@ -196,8 +237,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
           ranks: mockRanks,
         });
       } else if (proposals.proposalType === 'list_candidate' && proposals.targetIds.length > 0) {
-        const targetId = proposals.targetIds[0];
-        if (targetId) {
+        for (const targetId of proposals.targetIds) {
           await tools.decideStyleStatus({
             agentRunId: runId,
             proposalId,
@@ -206,8 +246,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
           });
         }
       } else if (proposals.proposalType === 'unlist_to_candidate' && proposals.targetIds.length > 0) {
-        const targetId = proposals.targetIds[0];
-        if (targetId) {
+        for (const targetId of proposals.targetIds) {
           await tools.decideStyleStatus({
             agentRunId: runId,
             proposalId,
@@ -312,4 +351,3 @@ function runRuleBasedEngine(opCtx: OperationContext) {
 
   return { findings, proposals };
 }
-

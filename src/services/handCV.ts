@@ -1,8 +1,8 @@
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { resolve } from 'node:path';
-
-const execAsync = promisify(exec);
 
 export interface HandProfileResult {
   handShape: 'slender_long' | 'short_wide' | 'square_palm' | 'narrow_palm' | 'unknown';
@@ -13,60 +13,110 @@ export interface HandProfileResult {
   rawMetrics: Record<string, unknown>;
 }
 
-export async function analyzeHandImage(imagePath: string): Promise<HandProfileResult> {
-  console.log(`[HandCV] Analyzing hand image: ${imagePath}`);
-  
-  try {
-    const scriptPath = resolve(process.cwd(), 'scripts', 'analyze_hand.py');
-    const command = `python3 "${scriptPath}" "${imagePath}"`;
-    const { stdout } = await execAsync(command);
-    const parsed = JSON.parse(stdout.trim());
-    
-    if (parsed && !parsed.error) {
-      console.log(`[HandCV] Real CV analysis succeeded: shape=${parsed.handShape}, skin=${parsed.skinTone}`);
-      return {
-        handShape: parsed.handShape,
-        handShapeConfidence: parsed.handShapeConfidence,
-        skinTone: parsed.skinTone,
-        skinToneConfidence: parsed.skinToneConfidence,
-        skinRgb: parsed.skinRgb,
-        rawMetrics: parsed.rawMetrics || {},
-      };
-    } else {
-      console.warn(`[HandCV] Python analysis returned error: ${parsed?.error || 'Unknown error'}`);
-    }
-  } catch (err) {
-    console.error('[HandCV] Failed to execute hand analysis script:', err);
-  }
-
-  // Deterministic mapping based on filename length or random fallback
-  console.log('[HandCV] Falling back to mock deterministic parameters');
-  const shapes: HandProfileResult['handShape'][] = ['slender_long', 'short_wide', 'square_palm', 'narrow_palm'];
-  const tones: HandProfileResult['skinTone'][] = ['cool_fair', 'warm_fair', 'natural', 'warm_yellow', 'wheat', 'deep'];
-  
-  const seed = imagePath.length;
-  const handShape = shapes[seed % shapes.length] || 'unknown';
-  const skinTone = tones[seed % tones.length] || 'unknown';
-  
-  // Mock skin RGB
-  const skinRgb: [number, number, number] = [240, 210, 195];
-
-  return {
-    handShape,
-    handShapeConfidence: 0.92,
-    skinTone,
-    skinToneConfidence: 0.88,
-    skinRgb,
-    rawMetrics: {
-      aspectRatio: 1.45,
-      palmWidth: 85,
-      fingerLength: 95,
-      colorClustering: {
-        dominantColors: [[240, 210, 195], [210, 180, 160]]
-      },
-      fallbackReason: 'Python process error or no hand detected'
-    }
-  };
+interface PythonAnalyzerPayload {
+  ok?: boolean;
+  error?: string | null;
+  hand_shape?: unknown;
+  hand_shape_confidence?: unknown;
+  skin_tone?: unknown;
+  skin_confidence?: unknown;
+  skin_tone_confidence?: unknown;
+  median_rgb?: unknown;
+  metrics?: unknown;
+  color_metrics?: unknown;
 }
 
+const execFileAsync = promisify(execFile);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DEFAULT_CLI_PATH = resolve(__dirname, 'hand_analysis_cli.py');
+const DEFAULT_ANALYZER_ROOT = '/Users/zhouxing/code/meituan/demo_v1';
+const DEFAULT_ANALYZER_PYTHON = '/Users/zhouxing/code/meituan/demo_v1/.venv/bin/python';
 
+const HAND_SHAPES = new Set<HandProfileResult['handShape']>([
+  'slender_long',
+  'short_wide',
+  'square_palm',
+  'narrow_palm',
+  'unknown',
+]);
+
+const SKIN_TONES = new Set<HandProfileResult['skinTone']>([
+  'cool_fair',
+  'warm_fair',
+  'natural',
+  'warm_yellow',
+  'wheat',
+  'deep',
+  'unknown',
+]);
+
+function toNumber(value: unknown, fallback = 0): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function toHandShape(value: unknown): HandProfileResult['handShape'] {
+  return typeof value === 'string' && HAND_SHAPES.has(value as HandProfileResult['handShape'])
+    ? value as HandProfileResult['handShape']
+    : 'unknown';
+}
+
+function toSkinTone(value: unknown): HandProfileResult['skinTone'] {
+  return typeof value === 'string' && SKIN_TONES.has(value as HandProfileResult['skinTone'])
+    ? value as HandProfileResult['skinTone']
+    : 'unknown';
+}
+
+function toSkinRgb(value: unknown): [number, number, number] {
+  if (!Array.isArray(value) || value.length < 3) return [0, 0, 0];
+  return [
+    Math.round(toNumber(value[0])),
+    Math.round(toNumber(value[1])),
+    Math.round(toNumber(value[2])),
+  ];
+}
+
+export async function analyzeHandImage(imagePath: string): Promise<HandProfileResult> {
+  const pythonBin = process.env['HAND_ANALYZER_PYTHON'] || (existsSync(DEFAULT_ANALYZER_PYTHON) ? DEFAULT_ANALYZER_PYTHON : 'python3');
+  const cliPath = process.env['HAND_ANALYZER_CLI'] || DEFAULT_CLI_PATH;
+  const analyzerRoot = process.env['HAND_ANALYZER_ROOT'] || DEFAULT_ANALYZER_ROOT;
+
+  try {
+    const { stdout } = await execFileAsync(pythonBin, [cliPath, imagePath], {
+      env: {
+        ...process.env,
+        HAND_ANALYZER_ROOT: analyzerRoot,
+      },
+      timeout: Number(process.env['HAND_ANALYZER_TIMEOUT_MS'] || 15000),
+      maxBuffer: 1024 * 1024,
+    });
+    const payload = JSON.parse(stdout.trim()) as PythonAnalyzerPayload;
+
+    return {
+      handShape: toHandShape(payload.hand_shape),
+      handShapeConfidence: toNumber(payload.hand_shape_confidence),
+      skinTone: toSkinTone(payload.skin_tone),
+      skinToneConfidence: toNumber(payload.skin_confidence ?? payload.skin_tone_confidence),
+      skinRgb: toSkinRgb(payload.median_rgb),
+      rawMetrics: {
+        ok: payload.ok === true,
+        imagePath,
+        metrics: typeof payload.metrics === 'object' && payload.metrics !== null ? payload.metrics : {},
+        colorMetrics: typeof payload.color_metrics === 'object' && payload.color_metrics !== null ? payload.color_metrics : {},
+      },
+    };
+  } catch (error: unknown) {
+    const err = error as Error;
+    return {
+      handShape: 'unknown',
+      handShapeConfidence: 0,
+      skinTone: 'unknown',
+      skinToneConfidence: 0,
+      skinRgb: [0, 0, 0],
+      rawMetrics: {
+        ok: false,
+        imagePath,
+        error: err.message || String(error),
+      },
+    };
+  }
+}

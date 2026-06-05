@@ -1,5 +1,10 @@
 import { openDb, schema } from '../../db/src/client.js';
 import { eq, and, sql, desc } from 'drizzle-orm';
+import {
+  evaluateProposalGuards,
+  rebuildRanksForStatusChange,
+  selectRecentHistoryRows,
+} from './operationRules.js';
 
 const { db } = openDb();
 
@@ -227,7 +232,7 @@ export async function getDueReviewContext(agentRunId: string) {
   };
 }
 
-export async function getOperationContext(agentRunId: string) {
+export async function getOperationContext(agentRunId: string, historyRounds = 5) {
   const styleHeat = await db
     .select()
     .from(schema.styleHeatSnapshots)
@@ -237,6 +242,44 @@ export async function getOperationContext(agentRunId: string) {
     .select()
     .from(schema.tagHeatSnapshots)
     .where(eq(schema.tagHeatSnapshots.agent_run_id, agentRunId));
+
+  const recentStyleHeatRows = await db
+    .select()
+    .from(schema.styleHeatSnapshots)
+    .orderBy(desc(schema.styleHeatSnapshots.window_end))
+    .limit(1000);
+
+  const recentTagHeatRows = await db
+    .select()
+    .from(schema.tagHeatSnapshots)
+    .orderBy(desc(schema.tagHeatSnapshots.window_end))
+    .limit(1000);
+
+  const historicalStyleHeat = selectRecentHistoryRows(recentStyleHeatRows, agentRunId, historyRounds);
+  const historicalTagHeat = selectRecentHistoryRows(recentTagHeatRows, agentRunId, historyRounds);
+
+  const activeRecommendationSnapshot = await db
+    .select()
+    .from(schema.recommendationSnapshots)
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    )
+    .get();
+
+  const activeRecommendationItems = activeRecommendationSnapshot
+    ? await db
+      .select({
+        item: schema.recommendationItems,
+        style: schema.nailStyles,
+      })
+      .from(schema.recommendationItems)
+      .innerJoin(schema.nailStyles, eq(schema.recommendationItems.style_id, schema.nailStyles.style_id))
+      .where(eq(schema.recommendationItems.snapshot_id, activeRecommendationSnapshot.snapshot_id))
+      .orderBy(schema.recommendationItems.rank_no)
+    : [];
 
   const candidates = await db
     .select()
@@ -253,6 +296,10 @@ export async function getOperationContext(agentRunId: string) {
     agentRunId,
     styleHeat,
     tagHeat,
+    historicalStyleHeat,
+    historicalTagHeat,
+    activeRecommendationSnapshot,
+    activeRecommendationItems,
     candidates,
     memories,
   };
@@ -393,24 +440,61 @@ export async function validateActionProposal(proposalId: string) {
     throw new Error(`Proposal ${proposalId} not found`);
   }
 
+  const targetIds = JSON.parse(proposal.target_ids || '[]') as string[];
+  const expectedMetrics = JSON.parse(proposal.expected_metrics || '[]') as Record<string, unknown>[];
+  const targetStyles: { style_id: string; status: string }[] = [];
+  for (const targetId of targetIds) {
+    const style = await db
+      .select()
+      .from(schema.nailStyles)
+      .where(eq(schema.nailStyles.style_id, targetId))
+      .get();
+    if (style) {
+      targetStyles.push({ style_id: style.style_id, status: style.status });
+    }
+  }
+
+  const activeGlobalSnapshot = await db
+    .select()
+    .from(schema.recommendationSnapshots)
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    )
+    .get();
+
+  const guardResult = evaluateProposalGuards(
+    {
+      proposalType: proposal.proposal_type,
+      targetIds,
+      intendedAction: proposal.intended_action,
+      hypothesis: proposal.hypothesis,
+      expectedMetrics,
+      rollbackCondition: proposal.rollback_condition,
+      confidence: proposal.confidence,
+    },
+    targetStyles,
+    !!activeGlobalSnapshot,
+  );
+
   const checkResult = {
-    passed: true,
-    rulesChecked: [
-      { rule: 'target_exists', status: 'passed' },
-      { rule: 'evidence_sufficiency', status: 'passed' },
-    ],
+    passed: guardResult.passed,
+    rulesChecked: guardResult.rulesChecked,
     timestamp: new Date().toISOString(),
   };
+  const status = guardResult.passed ? 'approved' : 'rejected';
 
   await db.update(schema.agentActionProposals)
     .set({
-      status: 'approved',
+      status,
       check_result: JSON.stringify(checkResult),
       updated_at: new Date().toISOString(),
     })
     .where(eq(schema.agentActionProposals.proposal_id, proposalId));
 
-  return { proposalId, status: 'approved', checkResult };
+  return { proposalId, status, checkResult };
 }
 
 // ==========================================
@@ -453,7 +537,12 @@ export async function adjustRecommendation(input: AdjustRecommendationInput) {
   // Archive old snapshots & Activate new snapshot
   await db.update(schema.recommendationSnapshots)
     .set({ status: 'archived' })
-    .where(eq(schema.recommendationSnapshots.status, 'active'));
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    );
 
   await db.update(schema.recommendationSnapshots)
     .set({ status: 'active', activated_at: now })
@@ -515,16 +604,91 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
     .where(eq(schema.nailStyles.style_id, input.styleId))
     .get();
 
-  const originalStatus = style ? style.status : 'unknown';
+  if (!style) {
+    throw new Error(`Style ${input.styleId} not found`);
+  }
+
+  const currentSnapshot = await db
+    .select()
+    .from(schema.recommendationSnapshots)
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    )
+    .get();
+
+  if (!currentSnapshot) {
+    throw new Error('No active global_main recommendation snapshot found');
+  }
+
+  const currentRecommendationItems = await db
+    .select()
+    .from(schema.recommendationItems)
+    .where(eq(schema.recommendationItems.snapshot_id, currentSnapshot.snapshot_id))
+    .orderBy(schema.recommendationItems.rank_no);
+
+  const currentRanks = currentRecommendationItems.map(item => ({
+    styleId: item.style_id,
+    rankNo: item.rank_no,
+    score: item.score,
+    reason: item.reason,
+  }));
+  const rankBefore = currentRanks.find(item => item.styleId === input.styleId)?.rankNo ?? null;
+  const rebuiltRanks = rebuildRanksForStatusChange(currentRanks, input.styleId, input.newStatus);
+  const rankAfter = rebuiltRanks.find(item => item.styleId === input.styleId)?.rankNo ?? null;
+
+  const originalStatus = style.status;
 
   // Update nailStyles
   await db.update(schema.nailStyles)
     .set({
       status: input.newStatus,
+      source_type: input.newStatus === 'listed' && !style.source_type ? 'agent_listed' : style.source_type,
+      is_available_for_tryon: input.newStatus === 'listed' ? true : style.is_available_for_tryon,
       listed_at: input.newStatus === 'listed' ? now : null,
       updated_at: now,
     })
     .where(eq(schema.nailStyles.style_id, input.styleId));
+
+  const rebuiltSnapshotId = generateId('RECS');
+  await db.insert(schema.recommendationSnapshots).values({
+    snapshot_id: rebuiltSnapshotId,
+    snapshot_type: 'global_main',
+    generated_by: 'agent',
+    agent_run_id: input.agentRunId,
+    status: 'building',
+    created_at: now,
+  });
+
+  for (const item of rebuiltRanks) {
+    await db.insert(schema.recommendationItems).values({
+      item_id: generateId('RECI'),
+      snapshot_id: rebuiltSnapshotId,
+      style_id: item.styleId,
+      rank_no: item.rankNo,
+      score: item.score,
+      reason: item.reason || 'Inherited from previous active snapshot after Agent status change',
+      score_detail: JSON.stringify({
+        source: 'agent_status_rebuild',
+        previousSnapshotId: currentSnapshot.snapshot_id,
+      }),
+    });
+  }
+
+  await db.update(schema.recommendationSnapshots)
+    .set({ status: 'archived' })
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    );
+
+  await db.update(schema.recommendationSnapshots)
+    .set({ status: 'active', activated_at: now })
+    .where(eq(schema.recommendationSnapshots.snapshot_id, rebuiltSnapshotId));
 
   // Write decision
   const decisionId = generateId('DEC');
@@ -536,8 +700,14 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
     target_type: 'style',
     target_id: input.styleId,
     title: `Modify status of style ${input.styleId}`,
-    summary: `Change status of ${input.styleId} from ${originalStatus} to ${input.newStatus}`,
+    summary: `Change status of ${input.styleId} from ${originalStatus} to ${input.newStatus} and rebuild global_main snapshot ${rebuiltSnapshotId}`,
     status: 'executed',
+    execution_result: JSON.stringify({
+      previousSnapshotId: currentSnapshot.snapshot_id,
+      snapshotId: rebuiltSnapshotId,
+      rankBefore,
+      rankAfter,
+    }),
     requires_review: true,
     created_at: now,
     executed_at: now,
@@ -552,6 +722,8 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
     item_action_type: input.newStatus === 'listed' ? 'list' : 'unlist',
     from_status: originalStatus,
     to_status: input.newStatus,
+    rank_before: rankBefore,
+    rank_after: rankAfter,
     reason: `Agent operational decision to update status to ${input.newStatus}`,
     created_at: now,
   });
@@ -570,14 +742,23 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
     style_id: input.styleId,
     review_type: input.newStatus === 'listed' ? 'candidate_listing' : 'style_unlist',
     status: 'pending',
-    before_metrics: JSON.stringify({ originalStatus }),
+    before_metrics: JSON.stringify({
+      originalStatus,
+      rankBefore,
+      previousSnapshotId: currentSnapshot.snapshot_id,
+    }),
+    expected_effect: JSON.stringify({
+      newStatus: input.newStatus,
+      rankAfter,
+      snapshotId: rebuiltSnapshotId,
+    }),
     review_window_start: now,
     review_window_end: reviewEnd,
     created_at: now,
     updated_at: now,
   });
 
-  return { decisionId, pendingReviewId, status: 'executed' };
+  return { decisionId, pendingReviewId, snapshotId: rebuiltSnapshotId, status: 'executed' };
 }
 
 // ==========================================
@@ -668,4 +849,3 @@ export async function recordProposalInputFromDb(proposalId: string) {
     expectedMetrics: JSON.parse(proposal.expected_metrics) as Record<string, unknown>[],
   };
 }
-

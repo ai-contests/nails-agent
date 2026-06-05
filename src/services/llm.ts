@@ -1,8 +1,64 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const MODELSCOPE_API_URL = 'https://api-inference.modelscope.cn/v1/chat/completions';
-const MODEL_NAME = 'MiniMax/MiniMax-M2.5';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = resolve(__dirname, '../..');
+
+function loadRootEnv(): void {
+  const envPath = resolve(PROJECT_ROOT, '.env');
+  if (!existsSync(envPath)) return;
+
+  const lines = readFileSync(envPath, 'utf8').split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIndex = trimmed.indexOf('=');
+    if (eqIndex <= 0) continue;
+
+    const key = trimmed.slice(0, eqIndex).trim();
+    const rawValue = trimmed.slice(eqIndex + 1).trim();
+    const value = rawValue.replace(/^(['"])(.*)\1$/, '$2');
+    process.env[key] ??= value;
+  }
+}
+
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
+}
+
+function optionalEnv(name: string): string | undefined {
+  const value = process.env[name];
+  if (!value) return undefined;
+  return value.replace(/^(['"])(.*)\1$/, '$2').trim();
+}
+
+function optionalBooleanEnv(name: string): boolean | undefined {
+  const value = optionalEnv(name);
+  if (!value) return undefined;
+
+  const normalized = value.toLowerCase();
+  if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
+  if (['false', '0', 'no', 'off'].includes(normalized)) return false;
+
+  throw new Error(`${name} must be true or false`);
+}
+
+function optionalPositiveIntegerEnv(name: string): number | undefined {
+  const value = optionalEnv(name);
+  if (!value) return undefined;
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+
+  return parsed;
+}
+
+loadRootEnv();
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -10,25 +66,46 @@ export interface ChatMessage {
 }
 
 export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
-  const apiKey = process.env['MODELSCOPE_API_KEY'] || process.env['NVIDIA_API_KEY'];
+  const apiKey = requiredEnv('MODELSCOPE_API_KEY');
+  const apiUrl = requiredEnv('MODELSCOPE_API_URL');
+  const model = requiredEnv('MODELSCOPE_MODEL');
+  const enableThinking = optionalBooleanEnv('MODELSCOPE_ENABLE_THINKING');
+  const maxTokens = optionalPositiveIntegerEnv('MODELSCOPE_MAX_TOKENS') ?? 1024;
+  const responseFormat = optionalEnv('MODELSCOPE_RESPONSE_FORMAT');
 
-  if (!apiKey) {
-    throw new Error('API key is missing. Please set MODELSCOPE_API_KEY or NVIDIA_API_KEY environment variable.');
+  const body: {
+    model: string;
+    messages: ChatMessage[];
+    temperature: number;
+    max_tokens: number;
+    enable_thinking?: boolean;
+    response_format?: { type: 'json_object' };
+  } = {
+    model,
+    messages,
+    temperature: 0.2,
+    max_tokens: maxTokens,
+  };
+
+  if (enableThinking !== undefined) {
+    body.enable_thinking = enableThinking;
+  }
+
+  if (responseFormat) {
+    if (responseFormat !== 'json_object') {
+      throw new Error('MODELSCOPE_RESPONSE_FORMAT must be json_object');
+    }
+    body.response_format = { type: 'json_object' };
   }
 
   try {
-    const response = await fetch(MODELSCOPE_API_URL, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model: MODEL_NAME,
-        messages,
-        temperature: 0.2,
-        max_tokens: 1024,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -39,8 +116,7 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
     const data = await response.json() as { choices: { message: { content: string } }[] };
     return data.choices[0]?.message.content || '';
   } catch (error) {
-    console.error('Error calling ModelScope MiniMax model:', error);
+    console.error('Error calling ModelScope LLM model:', error);
     throw error;
   }
 }
-

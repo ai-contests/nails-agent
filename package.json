@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun --bun next build",
     "start": "next start",
     "bun:dev": "bun run src/api/server.ts",
     "db:generate": "drizzle-kit generate",
@@ -26,11 +26,17 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@tailwindcss/postcss": "^4.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.4",
+    "lucide-react": "^1.17.0",
     "next": "^16.2.7",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

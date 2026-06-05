@@ -1,11 +1,11 @@
-import { Router } from './router.js';
-import { openDb, schema } from '../../db/src/client.js';
+import { Router } from './router';
+import { openDb, schema } from '../../db/src/client';
 import { eq, and, desc, sql } from 'drizzle-orm';
-import { analyzeHandImage } from '../services/handCV.js';
-import { buildTryonWorkflow, submitPrompt, pollJob, downloadView, extractOutputs, uploadImage } from '../services/comfycloud.js';
-import { runOperationCycle } from '../agent/orchestrator.js';
-import { callLlmModel, ChatMessage } from '../services/llm.js';
-import { mergeRankedStyles } from './recommendationLogic.js';
+import { analyzeHandImage } from '../services/handCV';
+import { buildTryonWorkflow, submitPrompt, pollJob, downloadView, extractOutputs, uploadImage } from '../services/comfycloud';
+import { runOperationCycle } from '../agent/orchestrator';
+import { callLlmModel, ChatMessage } from '../services/llm';
+import { mergeRankedStyles } from './recommendationLogic';
 import fs from 'fs';
 import path from 'path';
 

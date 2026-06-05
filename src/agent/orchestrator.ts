@@ -1,7 +1,7 @@
-import * as tools from './tools.js';
-import { callLlmModel, ChatMessage } from '../services/llm.js';
-import { executeAgentToolCalls, parseAgentToolCallPlanResponse } from './agentToolRegistry.js';
-import { evaluateReviewOutcome } from './reviewEvaluator.js';
+import * as tools from './tools';
+import { callLlmModel, ChatMessage } from '../services/llm';
+import { executeAgentToolCalls, parseAgentToolCallPlanResponse } from './agentToolRegistry';
+import { evaluateReviewOutcome } from './reviewEvaluator';
 
 export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_12h') {
   console.log(`[Agent Cycle] Starting run, trigger: ${triggerType}`);

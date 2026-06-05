@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import * as tools from './tools.js';
-import { ProposalSchema } from './agentPlanSchema.js';
+import * as tools from './tools';
+import { ProposalSchema } from './agentPlanSchema';
 
 const DiscoverOpportunityArgumentsSchema = z.object({
   targetType: z.enum(['style', 'tag', 'candidate', 'global']),

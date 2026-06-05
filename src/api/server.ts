@@ -1,4 +1,4 @@
-import { router } from './routes.js';
+import { router } from './routes';
 import path from 'path';
 import fs from 'fs';
 

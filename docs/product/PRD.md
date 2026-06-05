@@ -98,8 +98,12 @@
 
 ```
 C 端
-├── 主推荐页 (/)
-│   └── 款式卡片 (style_id, image, color_tag, length_tag) → 试戴 / 收藏
+├── 品牌主页 (/)
+│   ├── 品牌心智与核心流程引导 (How It Works)
+│   ├── 试戴效果动态演示 (Interactive Before/After Slider)
+│   └── CTA 分流 (前往 AI 试戴 / 浏览图鉴)
+├── 款式图鉴页 (/gallery)
+│   └── 瀑布流展示 (款式卡片: style_id, image, color_tag, length_tag) → 试戴 / 收藏
 ├── 款式详情页 (/styles/:style_id)
 │   ├── 大图（enhanced_image_url）
 │   ├── color_tags / length_tags

@@ -15,19 +15,19 @@ import {
   type RecommendationChangeRequest,
   type RecommendationRankItem,
   type StyleStatusChange,
-} from './operationRules.js';
+} from './operationRules';
 import {
   type BaselineMetrics,
   type ExpectedMetric,
   computeConversionScore,
   emptyBaseline,
-} from './reviewEvaluator.js';
-import { computeGrowth, indexHistoryByKey } from './trendAnalyzer.js';
+} from './reviewEvaluator';
+import { computeGrowth, indexHistoryByKey } from './trendAnalyzer';
 import {
   rankCandidateActionsFromTagTrends,
   type CandidateMatch,
   type TagTrend,
-} from './tagTrendMatcher.js';
+} from './tagTrendMatcher';
 
 const { sqlite, db } = openDb();
 

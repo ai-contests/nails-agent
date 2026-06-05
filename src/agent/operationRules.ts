@@ -10,6 +10,7 @@ export interface ProposalGuardInput {
   hypothesis: string;
   expectedMetrics: unknown[];
   rollbackCondition: string;
+  reviewWindowHours?: number | null;
   confidence?: number | null;
 }
 
@@ -28,6 +29,51 @@ export interface RecommendationRankItem {
   rankNo: number;
   score: number;
   reason?: string;
+}
+
+export interface StyleStatusChange {
+  styleId: string;
+  newStatus: 'listed' | 'candidate';
+}
+
+export type ExecutionToolName = 'adjust_recommendation' | 'decide_style_status';
+
+export interface ExecutionExperiment {
+  experimentType: 'recommendation_boost' | 'style_status_change';
+  reviewWindowHours: number;
+  targetMetrics: string[];
+}
+
+export interface AdjustRecommendationExecutionPayload {
+  strategyType: 'promote';
+  changes: { styleId: string; action: 'promote'; reason: string }[];
+  experiment: ExecutionExperiment;
+  summary: string;
+  requiresReview: boolean;
+  evidenceRefs: string[];
+}
+
+export interface DecideStyleStatusExecutionPayload {
+  strategyType: 'list' | 'unlist';
+  changes: {
+    styleId: string;
+    action: 'list' | 'unlist';
+    newStatus: 'listed' | 'candidate';
+    reason: string;
+  }[];
+  experiment: ExecutionExperiment;
+  summary: string;
+  requiresReview: boolean;
+  evidenceRefs: string[];
+}
+
+export type ExecutionPayload =
+  | AdjustRecommendationExecutionPayload
+  | DecideStyleStatusExecutionPayload;
+
+export interface ExecutionPlan {
+  executionTool: ExecutionToolName | null;
+  executionPayload: ExecutionPayload | null;
 }
 
 export function selectRecentHistoryRows<T extends HeatHistoryRow>(
@@ -121,6 +167,80 @@ export function evaluateProposalGuards(
   };
 }
 
+function extractTargetMetrics(expectedMetrics: unknown[]): string[] {
+  const metrics: string[] = [];
+
+  for (const metric of expectedMetrics) {
+    if (
+      typeof metric === 'object'
+      && metric !== null
+      && 'metric' in metric
+      && typeof metric.metric === 'string'
+      && !metrics.includes(metric.metric)
+    ) {
+      metrics.push(metric.metric);
+    }
+  }
+
+  return metrics;
+}
+
+export function buildExecutionPlanForProposal(proposal: ProposalGuardInput): ExecutionPlan {
+  const reviewWindowHours = proposal.reviewWindowHours ?? 24;
+  const targetMetrics = extractTargetMetrics(proposal.expectedMetrics);
+  const reason = proposal.intendedAction;
+
+  if (proposal.proposalType === 'adjust_recommendation') {
+    return {
+      executionTool: 'adjust_recommendation',
+      executionPayload: {
+        strategyType: 'promote',
+        changes: proposal.targetIds.map(styleId => ({
+          styleId,
+          action: 'promote',
+          reason,
+        })),
+        experiment: {
+          experimentType: 'recommendation_boost',
+          reviewWindowHours,
+          targetMetrics,
+        },
+        summary: `Promote ${proposal.targetIds.length} style(s) in the main recommendation snapshot.`,
+        requiresReview: true,
+        evidenceRefs: [],
+      },
+    };
+  }
+
+  if (proposal.proposalType === 'list_candidate' || proposal.proposalType === 'unlist_to_candidate') {
+    const newStatus = proposal.proposalType === 'list_candidate' ? 'listed' : 'candidate';
+    const action = proposal.proposalType === 'list_candidate' ? 'list' : 'unlist';
+
+    return {
+      executionTool: 'decide_style_status',
+      executionPayload: {
+        strategyType: action,
+        changes: proposal.targetIds.map(styleId => ({
+          styleId,
+          action,
+          newStatus,
+          reason,
+        })),
+        experiment: {
+          experimentType: 'style_status_change',
+          reviewWindowHours,
+          targetMetrics,
+        },
+        summary: `Change ${proposal.targetIds.length} style(s) to ${newStatus}.`,
+        requiresReview: true,
+        evidenceRefs: [],
+      },
+    };
+  }
+
+  return { executionTool: null, executionPayload: null };
+}
+
 export function rebuildRanksForStatusChange(
   currentItems: RecommendationRankItem[],
   changedStyleId: string,
@@ -137,6 +257,33 @@ export function rebuildRanksForStatusChange(
       score: 0.5,
       reason: 'Agent listed candidate and inserted it after top 10',
     });
+  }
+
+  return nextItems.map((item, index) => ({
+    ...item,
+    rankNo: index + 1,
+  }));
+}
+
+export function rebuildRanksForStatusChanges(
+  currentItems: RecommendationRankItem[],
+  changes: StyleStatusChange[],
+): RecommendationRankItem[] {
+  const changedStyleIds = new Set(changes.map(change => change.styleId));
+  const nextItems = currentItems.filter(item => !changedStyleIds.has(item.styleId));
+  let listedInsertions = 0;
+
+  for (const change of changes) {
+    if (change.newStatus !== 'listed') continue;
+
+    const insertAt = Math.min(10 + listedInsertions, nextItems.length);
+    nextItems.splice(insertAt, 0, {
+      styleId: change.styleId,
+      rankNo: insertAt + 1,
+      score: 0.5,
+      reason: 'Agent listed candidate and inserted it after top 10',
+    });
+    listedInsertions += 1;
   }
 
   return nextItems.map((item, index) => ({

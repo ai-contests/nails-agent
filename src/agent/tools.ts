@@ -1,12 +1,38 @@
 import { openDb, schema } from '../../db/src/client.js';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import {
+  buildExecutionPlanForProposal,
   evaluateProposalGuards,
+  type ExecutionPayload,
   rebuildRanksForStatusChange,
+  rebuildRanksForStatusChanges,
   selectRecentHistoryRows,
+  type AdjustRecommendationExecutionPayload,
+  type DecideStyleStatusExecutionPayload,
+  type RecommendationRankItem,
+  type StyleStatusChange,
 } from './operationRules.js';
 
-const { db } = openDb();
+const { sqlite, db } = openDb();
+
+export interface SqliteTransactionConnection {
+  exec(statement: string): unknown;
+}
+
+export async function runInSqliteTransaction<T>(
+  sqliteDb: SqliteTransactionConnection,
+  work: () => Promise<T> | T,
+): Promise<T> {
+  sqliteDb.exec('BEGIN IMMEDIATE');
+  try {
+    const result = await work();
+    sqliteDb.exec('COMMIT');
+    return result;
+  } catch (error) {
+    sqliteDb.exec('ROLLBACK');
+    throw error;
+  }
+}
 
 // Helper to generate IDs
 const generateId = (prefix: string) => `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -473,15 +499,31 @@ export async function validateActionProposal(proposalId: string) {
       hypothesis: proposal.hypothesis,
       expectedMetrics,
       rollbackCondition: proposal.rollback_condition,
+      reviewWindowHours: proposal.review_window_hours,
       confidence: proposal.confidence,
     },
     targetStyles,
     !!activeGlobalSnapshot,
   );
 
+  const executionPlan = guardResult.passed
+    ? buildExecutionPlanForProposal({
+      proposalType: proposal.proposal_type,
+      targetIds,
+      intendedAction: proposal.intended_action,
+      hypothesis: proposal.hypothesis,
+      expectedMetrics,
+      rollbackCondition: proposal.rollback_condition,
+      reviewWindowHours: proposal.review_window_hours,
+      confidence: proposal.confidence,
+    })
+    : { executionTool: null, executionPayload: null };
+
   const checkResult = {
     passed: guardResult.passed,
     rulesChecked: guardResult.rulesChecked,
+    executionTool: executionPlan.executionTool,
+    executionPayload: executionPlan.executionPayload,
     timestamp: new Date().toISOString(),
   };
   const status = guardResult.passed ? 'approved' : 'rejected';
@@ -490,11 +532,19 @@ export async function validateActionProposal(proposalId: string) {
     .set({
       status,
       check_result: JSON.stringify(checkResult),
+      execution_tool: executionPlan.executionTool,
+      execution_payload: executionPlan.executionPayload ? JSON.stringify(executionPlan.executionPayload) : null,
       updated_at: new Date().toISOString(),
     })
     .where(eq(schema.agentActionProposals.proposal_id, proposalId));
 
-  return { proposalId, status, checkResult };
+  return {
+    proposalId,
+    status,
+    checkResult,
+    executionTool: executionPlan.executionTool,
+    executionPayload: executionPlan.executionPayload,
+  };
 }
 
 // ==========================================
@@ -761,6 +811,282 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
   return { decisionId, pendingReviewId, snapshotId: rebuiltSnapshotId, status: 'executed' };
 }
 
+export interface ExecuteApprovedProposalBatchInput {
+  agentRunId: string;
+  proposalIds: string[];
+  heatRanks?: RecommendationRankItem[];
+}
+
+export async function executeApprovedProposalBatch(input: ExecuteApprovedProposalBatchInput) {
+  const proposals: Array<NonNullable<Awaited<ReturnType<typeof recordProposalInputFromDb>>>> = [];
+  for (const proposalId of input.proposalIds) {
+    const proposal = await recordProposalInputFromDb(proposalId);
+    if (proposal && proposal.status === 'approved' && proposal.executionTool && proposal.executionPayload) {
+      proposals.push(proposal);
+    }
+  }
+
+  if (proposals.length === 0) {
+    return {
+      executedCount: 0,
+      snapshotId: null,
+      decisionIds: [] as string[],
+      pendingReviewIds: [] as string[],
+      status: 'skipped',
+    };
+  }
+
+  return runInSqliteTransaction(sqlite, async () => {
+  const now = new Date().toISOString();
+  const currentSnapshot = await db
+    .select()
+    .from(schema.recommendationSnapshots)
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    )
+    .get();
+
+  if (!currentSnapshot) {
+    throw new Error('No active global_main recommendation snapshot found');
+  }
+
+  const currentRecommendationItems = await db
+    .select()
+    .from(schema.recommendationItems)
+    .where(eq(schema.recommendationItems.snapshot_id, currentSnapshot.snapshot_id))
+    .orderBy(schema.recommendationItems.rank_no);
+
+  const currentRanks = currentRecommendationItems.map(item => ({
+    styleId: item.style_id,
+    rankNo: item.rank_no,
+    score: item.score,
+    reason: item.reason,
+  }));
+  const currentRankByStyleId = new Map(currentRanks.map(item => [item.styleId, item.rankNo]));
+
+  const hasRecommendationAdjustment = proposals.some(proposal => proposal.executionTool === 'adjust_recommendation');
+  const heatRankStyleIds = new Set((input.heatRanks || []).map(item => item.styleId));
+  const baseRanks = hasRecommendationAdjustment && input.heatRanks && input.heatRanks.length > 0
+    ? [
+      ...input.heatRanks,
+      ...currentRanks.filter(item => !heatRankStyleIds.has(item.styleId)),
+    ].map((item, index) => ({ ...item, rankNo: index + 1 }))
+    : currentRanks;
+
+  const statusChanges: StyleStatusChange[] = [];
+  const statusChangeReasons = new Map<string, string>();
+  const statusChangeProposalByStyleId = new Map<string, string>();
+  const statusChangePayloadByProposalId = new Map<string, DecideStyleStatusExecutionPayload>();
+  const recommendationPayloadByProposalId = new Map<string, AdjustRecommendationExecutionPayload>();
+
+  for (const proposal of proposals) {
+    if (proposal.executionTool === 'adjust_recommendation') {
+      recommendationPayloadByProposalId.set(
+        proposal.proposal_id,
+        proposal.executionPayload as AdjustRecommendationExecutionPayload,
+      );
+    } else if (proposal.executionTool === 'decide_style_status') {
+      const payload = proposal.executionPayload as DecideStyleStatusExecutionPayload;
+      statusChangePayloadByProposalId.set(proposal.proposal_id, payload);
+      for (const change of payload.changes) {
+        statusChanges.push({ styleId: change.styleId, newStatus: change.newStatus });
+        statusChangeReasons.set(change.styleId, change.reason);
+        statusChangeProposalByStyleId.set(change.styleId, proposal.proposal_id);
+      }
+    }
+  }
+
+  const finalRanks = rebuildRanksForStatusChanges(baseRanks, statusChanges);
+  const finalRankByStyleId = new Map(finalRanks.map(item => [item.styleId, item.rankNo]));
+
+  const stylesBeforeChange = new Map<string, { status: string; source_type: string | null; is_available_for_tryon: boolean | null }>();
+  for (const change of statusChanges) {
+    const style = await db
+      .select()
+      .from(schema.nailStyles)
+      .where(eq(schema.nailStyles.style_id, change.styleId))
+      .get();
+
+    if (!style) {
+      throw new Error(`Style ${change.styleId} not found`);
+    }
+
+    stylesBeforeChange.set(change.styleId, {
+      status: style.status,
+      source_type: style.source_type,
+      is_available_for_tryon: style.is_available_for_tryon,
+    });
+
+    await db.update(schema.nailStyles)
+      .set({
+        status: change.newStatus,
+        source_type: change.newStatus === 'listed' && !style.source_type ? 'agent_listed' : style.source_type,
+        is_available_for_tryon: change.newStatus === 'listed' ? true : style.is_available_for_tryon,
+        listed_at: change.newStatus === 'listed' ? now : null,
+        updated_at: now,
+      })
+      .where(eq(schema.nailStyles.style_id, change.styleId));
+  }
+
+  const snapshotId = generateId('RECS');
+  await db.insert(schema.recommendationSnapshots).values({
+    snapshot_id: snapshotId,
+    snapshot_type: 'global_main',
+    generated_by: 'agent',
+    agent_run_id: input.agentRunId,
+    status: 'building',
+    created_at: now,
+  });
+
+  for (const item of finalRanks) {
+    await db.insert(schema.recommendationItems).values({
+      item_id: generateId('RECI'),
+      snapshot_id: snapshotId,
+      style_id: item.styleId,
+      rank_no: item.rankNo,
+      score: item.score,
+      reason: item.reason || 'Agent batch execution final rank',
+      score_detail: JSON.stringify({
+        source: 'agent_batch_execution',
+        previousSnapshotId: currentSnapshot.snapshot_id,
+      }),
+    });
+  }
+
+  await db.update(schema.recommendationSnapshots)
+    .set({ status: 'archived' })
+    .where(
+      and(
+        eq(schema.recommendationSnapshots.snapshot_type, 'global_main'),
+        eq(schema.recommendationSnapshots.status, 'active')
+      )
+    );
+
+  await db.update(schema.recommendationSnapshots)
+    .set({ status: 'active', activated_at: now })
+    .where(eq(schema.recommendationSnapshots.snapshot_id, snapshotId));
+
+  const decisionIds: string[] = [];
+  const pendingReviewIds: string[] = [];
+
+  for (const proposal of proposals) {
+    const proposalStatusChanges = statusChanges.filter(change => statusChangeProposalByStyleId.get(change.styleId) === proposal.proposal_id);
+    const recommendationPayload = recommendationPayloadByProposalId.get(proposal.proposal_id);
+    const statusPayload = statusChangePayloadByProposalId.get(proposal.proposal_id);
+    const actionType = proposal.executionTool === 'adjust_recommendation'
+      ? 'promote_recommendation'
+      : proposalStatusChanges[0]?.newStatus === 'listed'
+        ? 'list_candidate'
+        : 'unlist_to_candidate';
+    const decisionId = generateId('DEC');
+
+    await db.insert(schema.agentDecisions).values({
+      decision_id: decisionId,
+      agent_run_id: input.agentRunId,
+      action_type: actionType,
+      target_type: proposal.executionTool === 'adjust_recommendation' ? 'recommendation_snapshot' : 'style',
+      target_id: proposal.executionTool === 'adjust_recommendation' ? snapshotId : proposalStatusChanges[0]?.styleId ?? null,
+      title: proposal.executionTool === 'adjust_recommendation'
+        ? 'Adjust main recommendations page'
+        : `Modify status for ${proposalStatusChanges.length} style(s)`,
+      summary: proposal.executionTool === 'adjust_recommendation'
+        ? `Agent batch generated recommendation snapshot ${snapshotId}.`
+        : `Agent batch changed ${proposalStatusChanges.length} style status value(s) and generated snapshot ${snapshotId}.`,
+      status: 'executed',
+      execution_result: JSON.stringify({
+        previousSnapshotId: currentSnapshot.snapshot_id,
+        snapshotId,
+        executionPayload: recommendationPayload || statusPayload || null,
+      }),
+      requires_review: true,
+      created_at: now,
+      executed_at: now,
+    });
+    decisionIds.push(decisionId);
+
+    if (proposal.executionTool === 'decide_style_status') {
+      for (const change of proposalStatusChanges) {
+        const before = stylesBeforeChange.get(change.styleId);
+        await db.insert(schema.agentDecisionItems).values({
+          decision_item_id: generateId('DECI'),
+          decision_id: decisionId,
+          style_id: change.styleId,
+          item_action_type: change.newStatus === 'listed' ? 'list' : 'unlist',
+          from_status: before?.status ?? null,
+          to_status: change.newStatus,
+          rank_before: currentRankByStyleId.get(change.styleId) ?? null,
+          rank_after: finalRankByStyleId.get(change.styleId) ?? null,
+          reason: statusChangeReasons.get(change.styleId) || 'Agent batch status change',
+          created_at: now,
+        });
+
+        const pendingReviewId = generateId('REV');
+        const reviewEnd = new Date(Date.now() + (proposal.review_window_hours ?? 24) * 60 * 60 * 1000).toISOString();
+        await db.insert(schema.agentPendingReviews).values({
+          pending_review_id: pendingReviewId,
+          decision_id: decisionId,
+          style_id: change.styleId,
+          review_type: change.newStatus === 'listed' ? 'candidate_listing' : 'style_unlist',
+          status: 'pending',
+          before_metrics: JSON.stringify({
+            originalStatus: before?.status ?? null,
+            rankBefore: currentRankByStyleId.get(change.styleId) ?? null,
+            previousSnapshotId: currentSnapshot.snapshot_id,
+          }),
+          expected_effect: JSON.stringify({
+            newStatus: change.newStatus,
+            rankAfter: finalRankByStyleId.get(change.styleId) ?? null,
+            snapshotId,
+          }),
+          review_window_start: now,
+          review_window_end: reviewEnd,
+          created_at: now,
+          updated_at: now,
+        });
+        pendingReviewIds.push(pendingReviewId);
+      }
+    } else {
+      const pendingReviewId = generateId('REV');
+      const reviewEnd = new Date(Date.now() + (proposal.review_window_hours ?? 24) * 60 * 60 * 1000).toISOString();
+      await db.insert(schema.agentPendingReviews).values({
+        pending_review_id: pendingReviewId,
+        decision_id: decisionId,
+        review_type: 'recommendation_change',
+        status: 'pending',
+        before_metrics: JSON.stringify({
+          timestamp: now,
+          previousSnapshotId: currentSnapshot.snapshot_id,
+        }),
+        expected_effect: JSON.stringify({
+          snapshotId,
+          executionPayload: recommendationPayload || null,
+        }),
+        review_window_start: now,
+        review_window_end: reviewEnd,
+        created_at: now,
+        updated_at: now,
+      });
+      pendingReviewIds.push(pendingReviewId);
+    }
+
+    await db.update(schema.agentActionProposals)
+      .set({ status: 'executed', decision_id: decisionId, updated_at: now })
+      .where(eq(schema.agentActionProposals.proposal_id, proposal.proposal_id));
+  }
+
+  return {
+    executedCount: proposals.length,
+    snapshotId,
+    decisionIds,
+    pendingReviewIds,
+    status: 'executed',
+  };
+  });
+}
+
 // ==========================================
 // 5. REVIEW & RUN TOOLS
 // ==========================================
@@ -847,5 +1173,7 @@ export async function recordProposalInputFromDb(proposalId: string) {
     proposalType: proposal.proposal_type,
     targetIds: JSON.parse(proposal.target_ids) as string[],
     expectedMetrics: JSON.parse(proposal.expected_metrics) as Record<string, unknown>[],
+    executionTool: proposal.execution_tool,
+    executionPayload: proposal.execution_payload ? JSON.parse(proposal.execution_payload) as ExecutionPayload : null,
   };
 }

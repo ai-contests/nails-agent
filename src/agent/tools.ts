@@ -18,6 +18,7 @@ import {
   computeConversionScore,
   emptyBaseline,
 } from './reviewEvaluator.js';
+import { computeGrowth, indexHistoryByKey } from './trendAnalyzer.js';
 
 const { sqlite, db } = openDb();
 
@@ -133,13 +134,31 @@ export async function rollupBehaviorWindow(input: RollupInput) {
 
   const styleSnapshotIds: string[] = [];
 
+  // Pull recent historical style heat for the same styles to compute real growth_score.
+  // We pull a reasonably-large window and let trendAnalyzer pick the freshest N.
+  const recentStyleHistoryRows = await db
+    .select()
+    .from(schema.styleHeatSnapshots)
+    .where(sql`${schema.styleHeatSnapshots.agent_run_id} != ${input.agentRunId}`)
+    .orderBy(desc(schema.styleHeatSnapshots.window_end))
+    .limit(2000);
+  const styleHistoryIndex = indexHistoryByKey(
+    recentStyleHistoryRows.filter((r): r is typeof r & { style_id: string } => !!r.style_id),
+    r => r.style_id,
+  );
+
   // Write style heat snapshots
   for (const [styleId, stats] of styleStats.entries()) {
     const heatSnapshotId = generateId('SH');
     const heatScore = stats.clicks * 1.0 + stats.tryons * 2.0 + stats.favorites * 3.0;
-    
-    const growthScore = heatScore; // Default if no history
-    
+
+    const growth = computeGrowth(
+      heatScore,
+      styleHistoryIndex.get(styleId) ?? [],
+      { historyRounds: input.historyRounds },
+    );
+    const growthScore = growth.growthScore;
+
     const clickDiv = Math.max(stats.clicks, 1);
     const conversionScore = (stats.tryons / clickDiv) * 0.6 + (stats.favorites / clickDiv) * 0.4;
 
@@ -188,10 +207,28 @@ export async function rollupBehaviorWindow(input: RollupInput) {
     processTags(lengths, 'length');
   }
 
+  // Pull recent historical tag heat to compute real growth_score per tag.
+  const recentTagHistoryRows = await db
+    .select()
+    .from(schema.tagHeatSnapshots)
+    .where(sql`${schema.tagHeatSnapshots.agent_run_id} != ${input.agentRunId}`)
+    .orderBy(desc(schema.tagHeatSnapshots.window_end))
+    .limit(2000);
+  const tagHistoryIndex = indexHistoryByKey(
+    recentTagHistoryRows,
+    r => `${r.tag_type}:${r.tag_value}`,
+  );
+
   for (const tagVal of tagStats.values()) {
     const tagSnapshotId = generateId('TH');
     const heatScore = tagVal.clicks * 1.0 + tagVal.tryons * 2.0 + tagVal.favorites * 3.0;
-    const growthScore = heatScore;
+    const tagKey = `${tagVal.type}:${tagVal.value}`;
+    const growth = computeGrowth(
+      heatScore,
+      tagHistoryIndex.get(tagKey) ?? [],
+      { historyRounds: input.historyRounds },
+    );
+    const growthScore = growth.growthScore;
     const clickDiv = Math.max(tagVal.clicks, 1);
     const conversionScore = (tagVal.tryons / clickDiv) * 0.6 + (tagVal.favorites / clickDiv) * 0.4;
 

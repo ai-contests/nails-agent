@@ -44,9 +44,19 @@ export interface ExecutionExperiment {
   targetMetrics: string[];
 }
 
+export interface RecommendationChangeRequest {
+  styleId: string;
+  action: 'promote' | 'demote';
+  /** Explicit target rank (1-indexed). Omitted → use action default. */
+  targetRank?: number;
+  /** Hard cap on how many positions the rank may move. Default 10. */
+  maxDelta?: number;
+  reason: string;
+}
+
 export interface AdjustRecommendationExecutionPayload {
   strategyType: 'promote';
-  changes: { styleId: string; action: 'promote'; reason: string }[];
+  changes: RecommendationChangeRequest[];
   experiment: ExecutionExperiment;
   summary: string;
   requiresReview: boolean;
@@ -185,27 +195,42 @@ function extractTargetMetrics(expectedMetrics: unknown[]): string[] {
   return metrics;
 }
 
-export function buildExecutionPlanForProposal(proposal: ProposalGuardInput): ExecutionPlan {
+export interface BuildExecutionPlanInput extends ProposalGuardInput {
+  /** Optional fine-grained per-style adjustment hints from the LLM. */
+  recommendationChanges?: Array<Pick<RecommendationChangeRequest, 'styleId' | 'action' | 'targetRank' | 'maxDelta'> & { reason?: string }>;
+}
+
+export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput): ExecutionPlan {
   const reviewWindowHours = proposal.reviewWindowHours ?? 24;
   const targetMetrics = extractTargetMetrics(proposal.expectedMetrics);
   const reason = proposal.intendedAction;
 
   if (proposal.proposalType === 'adjust_recommendation') {
+    // Prefer LLM-provided per-change targets, falling back to default "promote" for each targetId.
+    const llmChanges = (proposal.recommendationChanges ?? [])
+      .filter(c => proposal.targetIds.includes(c.styleId));
+    const llmChangeByStyle = new Map(llmChanges.map(c => [c.styleId, c]));
+    const changes: RecommendationChangeRequest[] = proposal.targetIds.map(styleId => {
+      const hint = llmChangeByStyle.get(styleId);
+      return {
+        styleId,
+        action: (hint?.action === 'demote' ? 'demote' : 'promote'),
+        targetRank: hint?.targetRank,
+        maxDelta: hint?.maxDelta,
+        reason: hint?.reason || reason,
+      };
+    });
     return {
       executionTool: 'adjust_recommendation',
       executionPayload: {
         strategyType: 'promote',
-        changes: proposal.targetIds.map(styleId => ({
-          styleId,
-          action: 'promote',
-          reason,
-        })),
+        changes,
         experiment: {
           experimentType: 'recommendation_boost',
           reviewWindowHours,
           targetMetrics,
         },
-        summary: `Promote ${proposal.targetIds.length} style(s) in the main recommendation snapshot.`,
+        summary: `Adjust ${proposal.targetIds.length} style(s) in the main recommendation snapshot (fine-grained).`,
         requiresReview: true,
         evidenceRefs: [],
       },
@@ -239,6 +264,154 @@ export function buildExecutionPlanForProposal(proposal: ProposalGuardInput): Exe
   }
 
   return { executionTool: null, executionPayload: null };
+}
+
+/**
+ * Apply fine-grained per-style recommendation adjustments to the current rank list.
+ *
+ * For each change:
+ * - resolve target rank: explicit targetRank wins; otherwise default = current ± defaultDelta
+ *   (promote: current - defaultDelta; demote: current + defaultDelta).
+ * - clamp target rank to [1, N] and to [current - maxDelta, current + maxDelta]
+ *   (maxDelta defaults to options.maxDeltaDefault, default 10).
+ * - move the style to its target rank, shifting the rest accordingly.
+ *
+ * Optional diversity guard: if `options.tagsByStyle` is supplied along with
+ * `maxSameTagInWindow` and `diversityWindow`, the post-move arrangement is
+ * checked — for every window of `diversityWindow` consecutive ranks, no single
+ * tag may appear more than `maxSameTagInWindow` times. Adjustments that would
+ * violate this are rolled back individually.
+ */
+export interface ApplyAdjustmentOptions {
+  maxDeltaDefault?: number;
+  defaultDelta?: number;
+  diversityWindow?: number;
+  maxSameTagInWindow?: number;
+  /** styleId → tag list (use a denormalised list of color+length tags). */
+  tagsByStyle?: Map<string, string[]>;
+}
+
+export interface AppliedChangeReport {
+  styleId: string;
+  applied: boolean;
+  rankBefore: number | null;
+  rankAfter: number | null;
+  reason: string;
+  rejectionReason?: string;
+}
+
+export interface ApplyAdjustmentResult {
+  ranks: RecommendationRankItem[];
+  reports: AppliedChangeReport[];
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+function violatesDiversity(
+  ranks: RecommendationRankItem[],
+  tagsByStyle: Map<string, string[]>,
+  windowSize: number,
+  maxSameInWindow: number,
+): boolean {
+  if (windowSize <= 1 || maxSameInWindow <= 0) return false;
+  for (let i = 0; i <= ranks.length - windowSize; i++) {
+    const counts = new Map<string, number>();
+    for (let j = i; j < i + windowSize; j++) {
+      const tags = tagsByStyle.get(ranks[j]!.styleId) ?? [];
+      for (const tag of tags) {
+        const next = (counts.get(tag) ?? 0) + 1;
+        if (next > maxSameInWindow) return true;
+        counts.set(tag, next);
+      }
+    }
+  }
+  return false;
+}
+
+export function applyRecommendationAdjustments(
+  baseRanks: RecommendationRankItem[],
+  changes: RecommendationChangeRequest[],
+  options: ApplyAdjustmentOptions = {},
+): ApplyAdjustmentResult {
+  const maxDeltaDefault = options.maxDeltaDefault ?? 10;
+  const defaultDelta = options.defaultDelta ?? 5;
+
+  // Working copy keyed by original index for stable indexOf lookups.
+  let working = baseRanks.map(r => ({ ...r }));
+  const reports: AppliedChangeReport[] = [];
+
+  for (const change of changes) {
+    const idx = working.findIndex(r => r.styleId === change.styleId);
+    if (idx < 0) {
+      reports.push({
+        styleId: change.styleId,
+        applied: false,
+        rankBefore: null,
+        rankAfter: null,
+        reason: change.reason,
+        rejectionReason: 'style not in current ranks',
+      });
+      continue;
+    }
+
+    const currentRank = idx + 1;
+    const maxDelta = Math.max(0, change.maxDelta ?? maxDeltaDefault);
+    const direction = change.action === 'demote' ? +1 : -1;
+
+    let targetRank: number;
+    if (typeof change.targetRank === 'number' && Number.isFinite(change.targetRank)) {
+      targetRank = Math.round(change.targetRank);
+    } else {
+      targetRank = currentRank + direction * defaultDelta;
+    }
+    targetRank = clamp(targetRank, 1, working.length);
+    targetRank = clamp(targetRank, currentRank - maxDelta, currentRank + maxDelta);
+
+    if (targetRank === currentRank) {
+      reports.push({
+        styleId: change.styleId,
+        applied: false,
+        rankBefore: currentRank,
+        rankAfter: currentRank,
+        reason: change.reason,
+        rejectionReason: 'no-op after clamping',
+      });
+      continue;
+    }
+
+    const proposed = working.slice();
+    const [picked] = proposed.splice(idx, 1);
+    proposed.splice(targetRank - 1, 0, picked!);
+
+    // Diversity guard: roll back this change if it would violate the window constraint.
+    if (options.tagsByStyle && options.diversityWindow && options.maxSameTagInWindow) {
+      if (violatesDiversity(proposed, options.tagsByStyle, options.diversityWindow, options.maxSameTagInWindow)) {
+        reports.push({
+          styleId: change.styleId,
+          applied: false,
+          rankBefore: currentRank,
+          rankAfter: currentRank,
+          reason: change.reason,
+          rejectionReason: `would violate diversity (window=${options.diversityWindow}, max=${options.maxSameTagInWindow})`,
+        });
+        continue;
+      }
+    }
+
+    working = proposed;
+    reports.push({
+      styleId: change.styleId,
+      applied: true,
+      rankBefore: currentRank,
+      rankAfter: targetRank,
+      reason: change.reason,
+    });
+  }
+
+  const finalRanks = working.map((r, i) => ({ ...r, rankNo: i + 1 }));
+  return { ranks: finalRanks, reports };
 }
 
 export function rebuildRanksForStatusChange(

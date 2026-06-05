@@ -137,11 +137,15 @@ test('builds an adjust recommendation execution payload for approved recommendat
       {
         styleId: 'STYLE009',
         action: 'promote',
+        targetRank: undefined,
+        maxDelta: undefined,
         reason: 'Promote hot styles',
       },
       {
         styleId: 'STYLE028',
         action: 'promote',
+        targetRank: undefined,
+        maxDelta: undefined,
         reason: 'Promote hot styles',
       },
     ],
@@ -150,7 +154,7 @@ test('builds an adjust recommendation execution payload for approved recommendat
       reviewWindowHours: 12,
       targetMetrics: ['tryon_count', 'favorite_count'],
     },
-    summary: 'Promote 2 style(s) in the main recommendation snapshot.',
+    summary: 'Adjust 2 style(s) in the main recommendation snapshot (fine-grained).',
     requiresReview: true,
     evidenceRefs: [],
   });

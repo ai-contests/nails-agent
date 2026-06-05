@@ -1,6 +1,7 @@
 import { openDb, schema } from '../../db/src/client';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import {
+  applyRecommendationAdjustments,
   buildExecutionPlanForProposal,
   evaluateProposalGuards,
   type ExecutionPayload,
@@ -9,6 +10,7 @@ import {
   selectRecentHistoryRows,
   type AdjustRecommendationExecutionPayload,
   type DecideStyleStatusExecutionPayload,
+  type RecommendationChangeRequest,
   type RecommendationRankItem,
   type StyleStatusChange,
 } from './operationRules.js';
@@ -1063,27 +1065,33 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
   }));
   const currentRankByStyleId = new Map(currentRanks.map(item => [item.styleId, item.rankNo]));
 
-  const hasRecommendationAdjustment = proposals.some(proposal => proposal.executionTool === 'adjust_recommendation');
+  // Build the base rank list for adjustment. With fine-grained per-style
+  // changes (P3) we no longer rewrite the whole list from heatRanks; we keep
+  // the current active snapshot's ordering and apply local promote/demote.
+  // The historical heatRanks input is still accepted but only used as a tie
+  // breaker for unknown styles, not as a global override.
   const heatRankStyleIds = new Set((input.heatRanks || []).map(item => item.styleId));
-  const baseRanks = hasRecommendationAdjustment && input.heatRanks && input.heatRanks.length > 0
+  const baseRanks = input.heatRanks && input.heatRanks.length > 0
     ? [
-      ...input.heatRanks,
-      ...currentRanks.filter(item => !heatRankStyleIds.has(item.styleId)),
+      ...currentRanks,
+      ...(input.heatRanks
+        .filter(item => !currentRanks.some(r => r.styleId === item.styleId))),
     ].map((item, index) => ({ ...item, rankNo: index + 1 }))
     : currentRanks;
+  void heatRankStyleIds; // reserved for future tie-break tracking
 
   const statusChanges: StyleStatusChange[] = [];
   const statusChangeReasons = new Map<string, string>();
   const statusChangeProposalByStyleId = new Map<string, string>();
   const statusChangePayloadByProposalId = new Map<string, DecideStyleStatusExecutionPayload>();
   const recommendationPayloadByProposalId = new Map<string, AdjustRecommendationExecutionPayload>();
+  const recommendationChanges: RecommendationChangeRequest[] = [];
 
   for (const proposal of proposals) {
     if (proposal.executionTool === 'adjust_recommendation') {
-      recommendationPayloadByProposalId.set(
-        proposal.proposal_id,
-        proposal.executionPayload as AdjustRecommendationExecutionPayload,
-      );
+      const payload = proposal.executionPayload as AdjustRecommendationExecutionPayload;
+      recommendationPayloadByProposalId.set(proposal.proposal_id, payload);
+      recommendationChanges.push(...payload.changes);
     } else if (proposal.executionTool === 'decide_style_status') {
       const payload = proposal.executionPayload as DecideStyleStatusExecutionPayload;
       statusChangePayloadByProposalId.set(proposal.proposal_id, payload);
@@ -1095,7 +1103,32 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
     }
   }
 
-  const finalRanks = rebuildRanksForStatusChanges(baseRanks, statusChanges);
+  // P3: Apply fine-grained recommendation adjustments first (promote/demote with
+  // targetRank/maxDelta + diversity guard), then apply status changes which may
+  // insert/remove rows. Diversity tags come from each style's color_tags list.
+  let adjustmentReports: ReturnType<typeof applyRecommendationAdjustments>['reports'] = [];
+  let postAdjustmentRanks: RecommendationRankItem[] = baseRanks;
+  if (recommendationChanges.length > 0) {
+    const stylesForTags = await db
+      .select()
+      .from(schema.nailStyles)
+      .where(eq(schema.nailStyles.status, 'listed'));
+    const tagsByStyle = new Map<string, string[]>();
+    for (const s of stylesForTags) {
+      const colors: string[] = s.color_tags ? safeJson<string[]>(s.color_tags, []) : [];
+      tagsByStyle.set(s.style_id, colors.map(c => `color:${c}`));
+    }
+    const adjResult = applyRecommendationAdjustments(baseRanks, recommendationChanges, {
+      maxDeltaDefault: 10,
+      defaultDelta: 5,
+      diversityWindow: 5,
+      maxSameTagInWindow: 3,
+      tagsByStyle,
+    });
+    postAdjustmentRanks = adjResult.ranks;
+    adjustmentReports = adjResult.reports;
+  }
+  const finalRanks = rebuildRanksForStatusChanges(postAdjustmentRanks, statusChanges);
   const finalRankByStyleId = new Map(finalRanks.map(item => [item.styleId, item.rankNo]));
 
   const stylesBeforeChange = new Map<string, { status: string; source_type: string | null; is_available_for_tryon: boolean | null }>();
@@ -1196,6 +1229,10 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
         previousSnapshotId: currentSnapshot.snapshot_id,
         snapshotId,
         executionPayload: recommendationPayload || statusPayload || null,
+        // Only attach adjustment reports to recommendation decisions to avoid noise on status decisions.
+        adjustmentReports: proposal.executionTool === 'adjust_recommendation' && recommendationPayload
+          ? adjustmentReports.filter(r => recommendationPayload.changes.some(c => c.styleId === r.styleId))
+          : undefined,
       }),
       requires_review: true,
       created_at: now,

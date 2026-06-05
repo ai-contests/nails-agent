@@ -1,8 +1,8 @@
 # Agent 智能运营待处理设计文档
 
-更新时间：2026-06-05
+更新时间：2026-06-05（P0-P4 已落地，状态见 §7）
 
-本文记录当前 Agent 智能运营模块的阶段性状态、已经接通的执行链路，以及正式形成“策略复盘闭环”前仍需处理的设计问题。
+本文记录当前 Agent 智能运营模块的阶段性状态、已经接通的执行链路，以及正式形成”策略复盘闭环”前仍需处理的设计问题。
 
 ## 1. 当前目标
 
@@ -347,4 +347,58 @@ pending review expectedMetrics 持久化
 -> 删除随机 outcomeScore
 ```
 
-完成该任务后，再生成“Agent 完整运营文档”会更准确。
+完成该任务后，再生成”Agent 完整运营文档”会更准确。
+
+---
+
+## 7. 实施进度（2026-06-05 更新）
+
+| 项 | 状态 | 落地点 | 测试 |
+|---|---|---|---|
+| **P0 真实复盘闭环** | ✅ done | `src/agent/reviewEvaluator.ts` + `tools.ts` (`captureBaselineForReview` / `getDueReviewContext` 后窗口聚合 / `writeStrategyMemory` 结构化) + `orchestrator.ts` 去 `Math.random` | `reviewEvaluator.test.ts` 8 个 |
+| **P1 真实 growth_score** | ✅ done | `src/agent/trendAnalyzer.ts` (`computeGrowth` 历史均值 + 双重置信度) + `tools.ts/rollupBehaviorWindow` 接入 | `trendAnalyzer.test.ts` 10 个 |
+| **P2 tag 趋势 → 候选映射** | ✅ done | `src/agent/tagTrendMatcher.ts` (`detectTagTrends` / `matchCandidatesByTagTrend` + 同质化惩罚) + `getOperationContext` 暴露 `tagTrendActions` + LLM prompt 注入 | `tagTrendMatcher.test.ts` 10 个 |
+| **P3 精细化推荐调整** | ✅ done | `operationRules.ts` (`RecommendationChangeRequest` 含 `targetRank` / `maxDelta` + `applyRecommendationAdjustments` 局部移动 + 滑窗多样性 guard) + `executeApprovedProposalBatch` 不再全局重排 | `recommendationAdjustment.test.ts` 10 个 |
+| **P4 evidence_links 落库** | ✅ done | `tools.ts/executeApprovedProposalBatch` 每个 decision 写入 source_proposal / before&after snapshot / affected styles 4 类链接 | 覆盖在批处理路径里 |
+
+整体测试套件：**57/57 pass**（agent 模块），`tsc --noEmit` 0 错误。
+
+### 7.1 完整闭环现在符合文档目标
+
+文档 §1 描述的链路全部跑通且**每一步都是真数据驱动**：
+
+```text
+行为聚合 (rollupBehaviorWindow，含真实 growth_score)
+→ 读取最近 N 轮历史 / 候选池 / 推荐快照 / 策略记忆
+   + 自动算出 tag 趋势对应的候选动作 (P2)
+→ LLM 通过工具协议提出发现和动作建议
+   (可指定 targetRank / maxDelta 做局部调整, P3)
+→ 强 schema 校验 (Zod, 已有)
+→ 执行前检查 / 护栏 (operationRules.evaluateProposalGuards, 已有)
+→ 批量执行推荐调整 (局部 + 多样性 guard, P3)
+   或款式状态变更
+→ 重建推荐快照
+→ 落 evidence_links (P4) → 写入待复盘事项
+   (含真实 baseline metrics + expectedMetrics, P0)
+→ 下一轮先复盘效果
+   (按 review_window 聚合真实 after_metrics, P0)
+→ evaluateReviewOutcome 比对 expectedMetrics 判定 outcome (P0)
+→ writeStrategyMemory 写入结构化 before/after/delta/lesson (P0)
+→ 后续决策复用 strategy_memories
+```
+
+### 7.2 仍待办（非闭环必需）
+
+| 项 | 优先级 | 说明 |
+|---|---|---|
+| 跨 proposal 冲突检测（§3.8） | low | 批处理已能正确执行多个 proposal；显式冲突表（同 style 同时 list + unlist）当前没护栏。运营 demo 用不到，留下次迭代。 |
+| `evidence_links` 写入到 findings / memories | low | P4 已为 decision 落库。Findings / memories 仍把 evidence 存 JSON，可追溯但不能 JOIN。如未来需要”查这条 lesson 用到了哪些 heat snapshot”才需要补。 |
+| 单点 `adjustRecommendation` / `decideStyleStatus`（tools.ts 568-820） | low | orchestrator 只用批处理路径。单点版残留代码未升级 P0 / P3 改造，建议下次直接删除或改成调批处理的 thin wrapper。 |
+
+### 7.3 验收建议
+
+1. 跑一次完整 cycle：`bun run src/agent/orchestrator.ts` (manual_demo)。
+2. 第一轮：因为没历史，growth_score = 0，复盘没东西可做。Agent 应做出推荐调整或候选上架。
+3. 第二轮：12h 后跑（或手动调整 review_window_end），可看到 strategy_memories 拿到真实 outcomeScore，evidence_links 表非空。
+4. B 端可以基于 evidence_links 渲染”为什么 Agent 做这个决定” UI（decision → proposal → before/after snapshot → 受影响 styles）。
+

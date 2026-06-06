@@ -117,8 +117,8 @@ export default function GalleryPage() {
           </div>
         ) : paginatedStyles.length > 0 ? (
           paginatedStyles.map(style => {
-            // Handle absolute local paths vs remote URLs
-            const imgUrl = style.image_url.startsWith('http') 
+            // Handle relative paths starting with / (e.g. /data/...), remote URLs, or legacy absolute local paths
+            const imgUrl = style.image_url.startsWith('http') || style.image_url.startsWith('/')
               ? style.image_url 
               : `/api/local-image?path=${encodeURIComponent(style.image_url)}`;
               

@@ -72,6 +72,32 @@ export const defaultAgentToolHandlers: AgentToolHandlers = {
   recordActionProposal: tools.recordActionProposal,
 };
 
+/**
+ * Coerce common LLM targetType mistakes before Zod validation.
+ * e.g. list_candidate with targetType:"style" → targetType:"candidate"
+ */
+function coerceToolCallPlan(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object') return raw;
+  const obj = raw as Record<string, unknown>;
+  if (!Array.isArray(obj['toolCalls'])) return raw;
+  obj['toolCalls'] = (obj['toolCalls'] as unknown[]).map(tc => {
+    if (!tc || typeof tc !== 'object') return tc;
+    const call = tc as Record<string, unknown>;
+    const args = call['arguments'] as Record<string, unknown> | undefined;
+    if (!args) return tc;
+    // list_candidate must have targetType="candidate"
+    if (call['toolName'] === 'recordActionProposal' && args['proposalType'] === 'list_candidate') {
+      args['targetType'] = 'candidate';
+    }
+    // unlist_to_candidate must have targetType="style"
+    if (call['toolName'] === 'recordActionProposal' && args['proposalType'] === 'unlist_to_candidate') {
+      args['targetType'] = 'style';
+    }
+    return tc;
+  });
+  return obj;
+}
+
 export function parseAgentToolCallPlanResponse(responseText: string): AgentToolCallPlan {
   let parsed: unknown;
 
@@ -80,6 +106,8 @@ export function parseAgentToolCallPlanResponse(responseText: string): AgentToolC
   } catch (error) {
     throw new Error(`Invalid agent tool call plan JSON: ${(error as Error).message}`);
   }
+
+  parsed = coerceToolCallPlan(parsed);
 
   const result = AgentToolCallPlanSchema.safeParse(parsed);
   if (!result.success) {

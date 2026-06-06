@@ -15,12 +15,44 @@ export interface TryOnModalProps {
   handImageId: string | null;
 }
 
+function getDemoHandModel(styleId: string): string {
+  // Extract hand tag from styleId or map dynamically
+  // If the style matches a canon_*.png tryon image, we can resolve the original hand model
+  // Let's create a mapping based on typical tags
+  const mapping: Record<string, string> = {
+    'palm_down_top_fair': 'hand_palm_down_top_fair_offwhite.png',
+    'palm_down_top_medium': 'hand_palm_down_top_medium_softblue.png',
+    'palm_down_top_deep': 'hand_palm_down_top_deep_offwhite.png',
+    'fist_thumb_up_fair': 'hand_fist_thumb_up_fair_softblue.png',
+    'fist_thumb_up_medium': 'hand_fist_thumb_up_medium_offwhite.png',
+    'fist_thumb_up_deep': 'hand_fist_thumb_up_deep_softblue.png',
+    'two_hands_clasped_fair': 'hand_two_hands_clasped_fair_softbeige.png',
+    'two_hands_clasped_deep': 'hand_two_hands_clasped_deep_softpink.png',
+    'reaching_down_fair': 'hand_reaching_down_fair_softbeige.png',
+    'reaching_down_medium': 'hand_reaching_down_medium_softpink.png',
+    'reaching_down_deep': 'hand_reaching_down_deep_softblue.png',
+    'fingers_cupped_fair': 'hand_fingers_cupped_fair_offwhite.png',
+    'fingers_cupped_medium': 'hand_fingers_cupped_medium_softbeige.png',
+    'fingers_cupped_deep': 'hand_fingers_cupped_deep_softpink.png',
+  };
+
+  // Check if we can infer from style ID or default to palm_down_top_fair
+  // Example style IDs: STYLE001, etc. We can map them based on index or tag
+  // We'll fallback to a default hand model if not matched
+  const idNum = parseInt(styleId.replace(/[^\d]/g, '')) || 0;
+  const tags = Object.keys(mapping);
+  const tag = tags[idNum % tags.length] || 'palm_down_top_fair';
+  const handName = mapping[tag] || 'hand_palm_down_top_fair_offwhite.png';
+  return `/data/hand_models/pool/${handName}`;
+}
+
 export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, handImageId }: TryOnModalProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [jobStatus, setJobStatus] = useState<'idle' | 'running' | 'success' | 'failed'>('idle');
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [originalHandImage, setOriginalHandImage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tryOnMode, setTryOnMode] = useState<'demo' | 'custom' | null>(null);
   
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,6 +65,7 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
       setJobStatus('idle');
       setResultImage(null);
       setErrorMessage(null);
+      setTryOnMode(null);
     }
   }, [open]);
 
@@ -45,13 +78,14 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
     };
   }, []);
 
-  const startTryOn = async () => {
+  const startCustomTryOn = async () => {
     if (!sessionId || !styleId || !handImageId) {
       setErrorMessage('Missing session credentials.');
       setJobStatus('failed');
       return;
     }
 
+    setTryOnMode('custom');
     setJobStatus('running');
     setErrorMessage(null);
 
@@ -80,6 +114,35 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
     }
   };
 
+  const startDemoTryOn = async () => {
+    setTryOnMode('demo');
+    setJobStatus('running');
+    
+    // Simulate a brief generation delay for premium feel
+    setTimeout(async () => {
+      try {
+        // Fetch the style details to get its pre-rendered try-on image
+        const res = await fetch(`/api/styles/${styleId}`);
+        const data = await res.json();
+        
+        if (data.style && data.style.image_url) {
+          const tryOnImg = data.style.image_url.startsWith('http') || data.style.image_url.startsWith('/')
+            ? data.style.image_url
+            : `/api/local-image?path=${encodeURIComponent(data.style.image_url)}`;
+          
+          setResultImage(tryOnImg);
+          setOriginalHandImage(getDemoHandModel(styleId));
+          setJobStatus('success');
+        } else {
+          throw new Error('Nail style details not found.');
+        }
+      } catch (err) {
+        setErrorMessage('Failed to load demo try-on assets.');
+        setJobStatus('failed');
+      }
+    }, 1200);
+  };
+
   const pollJobStatus = (jobId: string) => {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
 
@@ -106,143 +169,164 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
     }, 2000);
   };
 
-  // Check if session exists
+  // Check if custom session exists
   const hasSession = !!sessionId && !!handImageId;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div className="bg-white p-6 max-w-xl mx-auto rounded-card">
         
-        {/* Scenario 1: No scan session active */}
-        {!hasSession && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-blush-light rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
-              <Camera className="w-8 h-8" />
+        {/* Scenario 1: Setup options / Choice Screen */}
+        {jobStatus === 'idle' && (
+          <div>
+            <h2 className="text-xl font-bold text-ink mb-2 text-center">AI Try-On Studio</h2>
+            <p className="text-ink-second text-xs text-center mb-6">Select how you want to preview the <strong>{styleName}</strong> design</p>
+            
+            <div className="space-y-4 mb-6">
+              {/* Option 1: Instant Demo Mode */}
+              <button 
+                onClick={startDemoTryOn}
+                className="w-full text-left p-4 border border-c-border hover:border-primary/50 hover:bg-surface-warm rounded-xl transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <h3 className="font-semibold text-sm text-ink group-hover:text-primary transition-colors">Instant Demo Preview</h3>
+                  <p className="text-xs text-ink-second mt-1 leading-relaxed">Preview this nail style instantly on a matching hand model. No upload required.</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-ink-light group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              </button>
+
+              {/* Option 2: Custom Generative AI Try-on */}
+              {hasSession ? (
+                <button 
+                  onClick={startCustomTryOn}
+                  className="w-full text-left p-4 border border-c-border hover:border-primary/50 hover:bg-surface-warm rounded-xl transition-all flex items-center justify-between group"
+                >
+                  <div>
+                    <h3 className="font-semibold text-sm text-ink group-hover:text-primary transition-colors">Custom AI Try-On (Hand Profile Active)</h3>
+                    <p className="text-xs text-ink-second mt-1 leading-relaxed">Generate a photorealistic try-on overlay mapped to your custom hand scan.</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-ink-light group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </button>
+              ) : (
+                <div className="p-4 border border-dashed border-c-border rounded-xl bg-surface-warm/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-semibold text-sm text-ink-second">Personalized Try-On</h3>
+                    <p className="text-xs text-ink-light mt-1 leading-relaxed">Upload your hand photo to see custom styles mapped to your skin tone and nail shape.</p>
+                  </div>
+                  <Link href="/hand" onClick={() => onOpenChange(false)} className="shrink-0">
+                    <Button variant="outline" size="sm" className="gap-1 bg-white text-xs">
+                      <Camera className="w-3.5 h-3.5" /> Scan Hand
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
-            <h2 className="text-xl font-bold text-ink mb-3">Hand Calibration Required</h2>
-            <p className="text-ink-second text-sm max-w-sm mx-auto mb-8 leading-relaxed">
-              To preview nail styles on your own hand, please perform a brief hand scan using our AI Studio first.
-            </p>
-            <div className="flex justify-center gap-4">
+
+            <div className="flex justify-end gap-3 border-t border-c-border pt-4">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Link href="/hand">
-                <Button variant="default" className="gap-2">
-                  Go to AI Studio <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
             </div>
           </div>
         )}
 
-        {/* Scenario 2: Session active, show generation trigger / status */}
-        {hasSession && (
+        {/* Scenario 2: Job Running */}
+        {jobStatus === 'running' && (
+          <div className="text-center py-12 flex flex-col items-center">
+            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+            <h3 className="text-base font-bold text-ink mb-2">
+              {tryOnMode === 'demo' ? 'Loading Hand Model Calibration...' : 'Rendering Virtual Overlay...'}
+            </h3>
+            <p className="text-xs text-ink-second max-w-xs leading-relaxed">
+              {tryOnMode === 'demo' 
+                ? 'Aligning nail designs on the pre-calibrated hand model.' 
+                : 'Our Diffusion models are aligning the nail plates, skin tones, and lighting. This typically takes 5-10 seconds.'
+              }
+            </p>
+          </div>
+        )}
+
+        {/* Scenario 3: Job Failed */}
+        {jobStatus === 'failed' && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4 text-error">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-bold text-ink mb-2">Generation Failed</h3>
+            <p className="text-xs text-error mb-8 font-mono bg-error/5 p-3 rounded border border-error/10 max-w-md mx-auto">
+              {errorMessage || 'Unknown ComfyCloud runtime error.'}
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => setJobStatus('idle')}>
+                Back
+              </Button>
+              <Button variant="default" onClick={tryOnMode === 'demo' ? startDemoTryOn : startCustomTryOn}>
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Scenario 4: Job Success (Show Slider) */}
+        {jobStatus === 'success' && resultImage && originalHandImage && (
           <div>
             <h2 className="text-xl font-bold text-ink mb-4 text-center">
-              {jobStatus === 'success' ? `Try-On: ${styleName}` : `AI Try-On Calibration`}
+              {tryOnMode === 'demo' ? `Preview: ${styleName}` : `AI Try-On Result`}
             </h2>
 
-            {jobStatus === 'idle' && (
-              <div className="text-center py-10">
-                <p className="text-sm text-ink-second max-w-sm mx-auto mb-8 leading-relaxed">
-                  Ready to calibrate the <strong>{styleName}</strong> design onto your hand profile. This will generate a high-fidelity virtual try-on render.
-                </p>
-                <div className="flex justify-center gap-4">
-                  <Button variant="outline" onClick={() => onOpenChange(false)}>
-                    Close
-                  </Button>
-                  <Button variant="default" onClick={startTryOn} className="px-8 shadow-soft-glow">
-                    Start Try-On Render
-                  </Button>
+            {/* Before/After Slider */}
+            <div className="relative w-full aspect-[3/4] bg-surface-warm rounded-lg overflow-hidden select-none mb-6 border border-c-border">
+              {/* Before Image (underneath) */}
+              <img 
+                src={originalHandImage} 
+                alt="Original Hand" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              
+              {/* After Image (clipped width) */}
+              <div 
+                className="absolute inset-0 overflow-hidden border-r-2 border-white shadow-[2px_0_10px_rgba(0,0,0,0.1)]"
+                style={{ width: `${sliderPosition}%` }}
+              >
+                <img 
+                  src={resultImage} 
+                  alt="Try On Result" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ width: '100%', maxWidth: 'none' }}
+                />
+              </div>
+              
+              <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">BEFORE</div>
+              <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">AFTER</div>
+              
+              <input 
+                type="range" 
+                min="0" max="100" 
+                value={sliderPosition} 
+                onChange={(e) => setSliderPosition(Number(e.target.value))}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10"
+              />
+              
+              {/* Slider bar thumb indicator */}
+              <div 
+                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center pointer-events-none z-20 border border-c-border"
+                style={{ left: `calc(${sliderPosition}% - 16px)` }}
+              >
+                <div className="flex gap-0.5">
+                  <div className="w-0.5 h-3 bg-gray-400 rounded-full" />
+                  <div className="w-0.5 h-3 bg-gray-400 rounded-full" />
                 </div>
               </div>
-            )}
+            </div>
 
-            {jobStatus === 'running' && (
-              <div className="text-center py-12 flex flex-col items-center">
-                <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
-                <h3 className="text-base font-bold text-ink mb-2">Rendering Virtual Overlay...</h3>
-                <p className="text-xs text-ink-second max-w-xs leading-relaxed">
-                  Our Diffusion models are aligning the nail plates, skin tones, and lighting. This typically takes 5-10 seconds.
-                </p>
-              </div>
-            )}
-
-            {jobStatus === 'failed' && (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4 text-error">
-                  <AlertTriangle className="w-8 h-8" />
-                </div>
-                <h3 className="text-lg font-bold text-ink mb-2">Generation Failed</h3>
-                <p className="text-xs text-error mb-8 font-mono bg-error/5 p-3 rounded border border-error/10 max-w-md mx-auto">
-                  {errorMessage || 'Unknown ComfyCloud runtime error.'}
-                </p>
-                <div className="flex justify-center gap-4">
-                  <Button variant="outline" onClick={() => onOpenChange(false)}>
-                    Close
-                  </Button>
-                  <Button variant="default" onClick={startTryOn}>
-                    Retry Try-On
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {jobStatus === 'success' && resultImage && originalHandImage && (
-              <div>
-                {/* Before/After Slider */}
-                <div className="relative w-full aspect-[3/4] bg-surface-warm rounded-lg overflow-hidden select-none mb-6 border border-c-border">
-                  {/* Before Image (underneath) */}
-                  <img 
-                    src={originalHandImage} 
-                    alt="Original Hand" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  
-                  {/* After Image (clipped width) */}
-                  <div 
-                    className="absolute inset-0 overflow-hidden border-r-2 border-white shadow-[2px_0_10px_rgba(0,0,0,0.1)]"
-                    style={{ width: `${sliderPosition}%` }}
-                  >
-                    <img 
-                      src={resultImage} 
-                      alt="Try On Result" 
-                      className="absolute inset-0 w-full h-full object-cover"
-                      style={{ width: '100%', maxWidth: 'none' }}
-                    />
-                  </div>
-                  
-                  <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">BEFORE</div>
-                  <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">AFTER</div>
-                  
-                  <input 
-                    type="range" 
-                    min="0" max="100" 
-                    value={sliderPosition} 
-                    onChange={(e) => setSliderPosition(Number(e.target.value))}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10"
-                  />
-                  
-                  {/* Slider bar thumb indicator */}
-                  <div 
-                    className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center pointer-events-none z-20 border border-c-border"
-                    style={{ left: `calc(${sliderPosition}% - 16px)` }}
-                  >
-                    <div className="flex gap-0.5">
-                      <div className="w-0.5 h-3 bg-gray-400 rounded-full" />
-                      <div className="w-0.5 h-3 bg-gray-400 rounded-full" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <Button variant="outline" className="w-48" onClick={() => onOpenChange(false)}>
-                    Done
-                  </Button>
-                </div>
-              </div>
-            )}
+            <div className="flex justify-between items-center gap-4">
+              <Button variant="outline" className="flex-1" onClick={() => setJobStatus('idle')}>
+                Try Another Method
+              </Button>
+              <Button variant="default" className="flex-1" onClick={() => onOpenChange(false)}>
+                Done
+              </Button>
+            </div>
           </div>
         )}
       </div>

@@ -19,12 +19,94 @@ def load_landmarker():
         raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
     options = HandLandmarkerOptions(
         base_options=BaseOptions(model_asset_path=str(MODEL_PATH)),
-        running_mode=VisionRunningMode.IMAGE
+        running_mode=VisionRunningMode.IMAGE,
+        num_hands=2,
+        min_hand_detection_confidence=0.05,
+        min_hand_presence_confidence=0.05
     )
     return HandLandmarker.create_from_options(options)
 
 def calculate_distance(p1, p2):
     return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2 + (p1[2] - p2[2])**2)
+
+def extract_traditional_cv_features(img):
+    h, w, c = img.shape
+    
+    # Convert to YCrCb space for human skin detection
+    img_ycrcb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    lower_skin = np.array([0, 133, 77], dtype=np.uint8)
+    upper_skin = np.array([255, 173, 127], dtype=np.uint8)
+    
+    mask = cv2.inRange(img_ycrcb, lower_skin, upper_skin)
+    
+    # Morphological operations to filter noise
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    mask = cv2.erode(mask, kernel, iterations=1)
+    mask = cv2.dilate(mask, kernel, iterations=2)
+    
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return None
+        
+    max_contour = max(contours, key=cv2.contourArea)
+    if cv2.contourArea(max_contour) < 5000:
+        return None
+        
+    # Minimum area bounding box to find aspect ratio regardless of orientation
+    rect = cv2.minAreaRect(max_contour)
+    (cx, cy), (width, height), angle = rect
+    
+    major = max(width, height)
+    minor = min(width, height)
+    aspect_ratio = major / max(minor, 0.01)
+    
+    # Classify hand shape based on aspect ratio
+    if aspect_ratio >= 1.55:
+        hand_shape = "slender_long"
+    elif aspect_ratio < 1.35:
+        hand_shape = "short_wide"
+    elif aspect_ratio >= 1.45:
+        hand_shape = "narrow_palm"
+    else:
+        hand_shape = "square_palm"
+        
+    # Sample skin color inside the contour mask
+    skin_pixels = img[mask > 0]
+    if len(skin_pixels) > 0:
+        avg_bgr = np.mean(skin_pixels, axis=0)
+        avg_rgb = [int(avg_bgr[2]), int(avg_bgr[1]), int(avg_bgr[0])]
+    else:
+        # Fallback to center
+        sample_window = img[max(0, h//2-10):min(h, h//2+11), max(0, w//2-10):min(w, w//2+11)]
+        avg_bgr = np.mean(sample_window, axis=(0, 1))
+        avg_rgb = [int(avg_bgr[2]), int(avg_bgr[1]), int(avg_bgr[0])]
+        
+    r, g, b = avg_rgb
+    luma = 0.299 * r + 0.587 * g + 0.114 * b
+    
+    if luma >= 210:
+        skin_tone = "warm_fair" if r - b > 18 else "cool_fair"
+    elif luma >= 170:
+        skin_tone = "warm_yellow" if r - b > 25 else "natural"
+    elif luma >= 110:
+        skin_tone = "wheat"
+    else:
+        skin_tone = "deep"
+        
+    return {
+        "handShape": hand_shape,
+        "handShapeConfidence": 0.60,
+        "skinTone": skin_tone,
+        "skinToneConfidence": 0.70,
+        "skinRgb": avg_rgb,
+        "rawMetrics": {
+            "method": "traditional_cv_contour_fallback",
+            "aspect_ratio": float(aspect_ratio),
+            "contour_area": float(cv2.contourArea(max_contour)),
+            "sampled_luma": float(luma),
+            "sampled_rgb": avg_rgb
+        }
+    }
 
 def extract_features(image_path: str, landmarker):
     img = cv2.imread(image_path)
@@ -126,26 +208,39 @@ def extract_features(image_path: str, landmarker):
         raw_metrics["sampled_luma"] = float(luma)
         raw_metrics["sampled_rgb"] = [int(x) for x in avg_rgb]
     else:
-        # Fallback to center of image for skin color sample
-        cx, cy = w // 2, h // 2
-        sample_window = img[cy-10:cy+11, cx-10:cx+11]
-        avg_bgr = np.mean(sample_window, axis=(0, 1))
-        avg_rgb = [int(avg_bgr[2]), int(avg_bgr[1]), int(avg_bgr[0])]
-        skin_rgb = avg_rgb
-        
-        # Simple fallback tone based on center colors
-        r, g, b = avg_rgb
-        luma = 0.299 * r + 0.587 * g + 0.114 * b
-        if luma >= 200:
-            skin_tone = "natural"
-        elif luma >= 120:
-            skin_tone = "wheat"
+        # Fallback to traditional CV contour analysis
+        cv_result = extract_traditional_cv_features(img)
+        if cv_result:
+            hand_shape = cv_result["handShape"]
+            hand_shape_confidence = cv_result["handShapeConfidence"]
+            skin_tone = cv_result["skinTone"]
+            skin_tone_confidence = cv_result["skinToneConfidence"]
+            skin_rgb = cv_result["skinRgb"]
+            raw_metrics = cv_result["rawMetrics"]
         else:
-            skin_tone = "deep"
+            # Final fallback to center of image for skin color sample
+            cx, cy = w // 2, h // 2
+            sample_window = img[max(0, cy-10):min(h, cy+11), max(0, cx-10):min(w, cx+11)]
+            avg_bgr = np.mean(sample_window, axis=(0, 1))
+            avg_rgb = [int(avg_bgr[2]), int(avg_bgr[1]), int(avg_bgr[0])]
+            skin_rgb = avg_rgb
             
-        raw_metrics["note"] = "No hand detected. Falling back to center color."
-        raw_metrics["sampled_luma"] = float(luma)
-        raw_metrics["sampled_rgb"] = avg_rgb
+            # Simple fallback tone based on center colors
+            r, g, b = avg_rgb
+            luma = 0.299 * r + 0.587 * g + 0.114 * b
+            if luma >= 200:
+                skin_tone = "natural"
+            elif luma >= 120:
+                skin_tone = "wheat"
+            else:
+                skin_tone = "deep"
+                
+            hand_shape = "slender_long" # Default standard hand shape
+            hand_shape_confidence = 0.50
+            skin_tone_confidence = 0.50
+            raw_metrics["note"] = "No hand contour detected. Falling back to center color and default shape."
+            raw_metrics["sampled_luma"] = float(luma)
+            raw_metrics["sampled_rgb"] = avg_rgb
 
     return {
         "handShape": hand_shape,

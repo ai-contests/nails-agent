@@ -32,21 +32,40 @@ import {
 const { sqlite, db } = openDb();
 
 export interface SqliteTransactionConnection {
-  exec(statement: string): unknown;
+  // @libsql/client uses async execute(); better-sqlite3 uses sync exec()
+  execute?: (statement: string) => Promise<unknown>;
+  exec?: (statement: string) => unknown;
 }
 
 export async function runInSqliteTransaction<T>(
   sqliteDb: SqliteTransactionConnection,
   work: () => Promise<T> | T,
 ): Promise<T> {
-  sqliteDb.exec('BEGIN IMMEDIATE');
-  try {
-    const result = await work();
-    sqliteDb.exec('COMMIT');
-    return result;
-  } catch (error) {
-    sqliteDb.exec('ROLLBACK');
-    throw error;
+  if (sqliteDb.execute) {
+    // @libsql/client path (async)
+    await sqliteDb.execute('BEGIN');
+    try {
+      const result = await work();
+      await sqliteDb.execute('COMMIT');
+      return result;
+    } catch (error) {
+      await sqliteDb.execute('ROLLBACK');
+      throw error;
+    }
+  } else if (sqliteDb.exec) {
+    // better-sqlite3 path (sync)
+    sqliteDb.exec('BEGIN IMMEDIATE');
+    try {
+      const result = await work();
+      sqliteDb.exec('COMMIT');
+      return result;
+    } catch (error) {
+      sqliteDb.exec('ROLLBACK');
+      throw error;
+    }
+  } else {
+    // No transaction support — run work directly
+    return work();
   }
 }
 

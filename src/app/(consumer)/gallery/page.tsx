@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { CategoryTag } from '@/components/ui/CategoryTag';
 import { StyleCard } from '@/components/ui/StyleCard';
 import { Pagination } from '@/components/ui/Pagination';
@@ -26,8 +27,21 @@ export default function GalleryPage() {
   useEffect(() => {
     const fetchStyles = async () => {
       try {
+        // Retrieve sessionId from URL or localStorage
+        let sessionId = '';
+        if (typeof window !== 'undefined') {
+          sessionId = new URLSearchParams(window.location.search).get('sessionId') || '';
+          if (!sessionId) {
+            sessionId = localStorage.getItem('nails_session_id') || '';
+          }
+        }
+
+        const url = sessionId 
+          ? `/api/recommendations/main?sessionId=${encodeURIComponent(sessionId)}` 
+          : '/api/recommendations/main';
+
         // Fetch real data from the backend API
-        const res = await fetch('/api/recommendations/main');
+        const res = await fetch(url);
         const data = await res.json();
         
         // Extract styles from the API response
@@ -130,12 +144,13 @@ export default function GalleryPage() {
             } catch (e) {}
 
             return (
-              <StyleCard 
-                key={style.style_id}
-                title={title} 
-                description="AI-curated precision nail art design tailored for your unique style." 
-                imageUrl={imgUrl} 
-              />
+              <Link href={`/styles/${style.style_id}`} key={style.style_id} className="block no-underline">
+                <StyleCard 
+                  title={title} 
+                  description="AI-curated precision nail art design tailored for your unique style." 
+                  imageUrl={imgUrl} 
+                />
+              </Link>
             );
           })
         ) : (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CategoryTag } from '@/components/ui/CategoryTag';
@@ -245,7 +245,14 @@ export default function GalleryPage() {
 
       {/* Similar Hand Recommendations Dialog */}
       <Dialog open={similarOpen} onOpenChange={setSimilarOpen}>
-        <div className="bg-white p-8 max-w-4xl w-full mx-auto max-h-[85vh] overflow-y-auto custom-scrollbar rounded-card">
+        <div className="bg-white p-8 max-w-4xl w-full mx-auto max-h-[85vh] overflow-y-auto custom-scrollbar rounded-card relative shadow-lg">
+          {/* Close Button */}
+          <button 
+            onClick={() => setSimilarOpen(false)} 
+            className="absolute right-4 top-4 p-1.5 hover:bg-surface-warm rounded-full text-ink-light transition-colors z-50"
+          >
+            <X className="w-4 h-4" />
+          </button>
           <div className="text-center mb-6">
             <h2 className="text-xl font-bold text-ink mb-2">与您手型相似的用户正在选择这些美甲</h2>
             {handProfile && (

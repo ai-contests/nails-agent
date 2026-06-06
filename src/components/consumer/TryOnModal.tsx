@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Dialog } from '../ui/Dialog';
 import { Button } from '../ui/Button';
-import { Loader2, Camera, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Loader2, Camera, AlertTriangle, ArrowRight, X } from 'lucide-react';
 import Link from 'next/link';
 
 export interface TryOnModalProps {
@@ -228,7 +228,14 @@ export function TryOnModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="bg-white p-6 max-w-xl mx-auto rounded-card">
+      <div className="bg-white p-6 max-w-xl w-full mx-auto rounded-card relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-lg">
+        {/* Close Button */}
+        <button 
+          onClick={() => onOpenChange(false)} 
+          className="absolute right-4 top-4 p-1.5 hover:bg-surface-warm rounded-full text-ink-light transition-colors z-50"
+        >
+          <X className="w-4 h-4" />
+        </button>
         
         {/* Scenario 1: Setup options / Choice Screen */}
         {jobStatus === 'idle' && (

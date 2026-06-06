@@ -58,21 +58,21 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
 
         TOP STYLE HEAT (top 8, recent 12h):
         ${JSON.stringify(opCtx.styleHeat
-          .sort((a, b) => (b.heat_score ?? 0) - (a.heat_score ?? 0))
+          .sort((a: typeof opCtx.styleHeat[number], b: typeof opCtx.styleHeat[number]) => (b.heat_score ?? 0) - (a.heat_score ?? 0))
           .slice(0, 8)
-          .map(s => ({ id: s.style_id, heat: s.heat_score, growth: s.growth_score, conv: s.conversion_score })))}
+          .map((s: typeof opCtx.styleHeat[number]) => ({ id: s.style_id, heat: s.heat_score, growth: s.growth_score, conv: s.conversion_score })))}
 
         TAG HEAT:
-        ${JSON.stringify(opCtx.tagHeat.map(t => ({ tag: t.tag_type + ':' + t.tag_value, heat: t.heat_score, growth: t.growth_score })))}
+        ${JSON.stringify(opCtx.tagHeat.map((t: typeof opCtx.tagHeat[number]) => ({ tag: t.tag_type + ':' + t.tag_value, heat: t.heat_score, growth: t.growth_score })))}
 
         ACTIVE RECOMMENDATIONS (top 10 ranks):
-        ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 10).map(r => ({ id: r.item.style_id, rank: r.item.rank_no })))}
+        ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 10).map((r: typeof opCtx.activeRecommendationItems[number]) => ({ id: r.item.style_id, rank: r.item.rank_no })))}
 
         RISING TAG TRENDS + PRE-MATCHED CANDIDATES (use these for list_candidate proposals):
-        ${JSON.stringify({ trends: opCtx.tagTrendActions.trends.slice(0, 3), actions: opCtx.tagTrendActions.actions.slice(0, 3).map(a => ({ styleId: a.styleId, reason: a.reason, score: a.finalScore })) })}
+        ${JSON.stringify({ trends: opCtx.tagTrendActions.trends.slice(0, 3), actions: opCtx.tagTrendActions.actions.slice(0, 3).map((a: typeof opCtx.tagTrendActions.actions[number]) => ({ styleId: a.styleId, reason: a.reason, score: a.finalScore })) })}
 
         STRATEGY MEMORIES (recent lessons):
-        ${JSON.stringify(opCtx.memories.slice(0, 5).map(m => ({ type: m.action_type, score: m.outcome_score, lesson: m.lesson.slice(0, 120) })))}
+        ${JSON.stringify(opCtx.memories.slice(0, 5).map((m: typeof opCtx.memories[number]) => ({ type: m.action_type, score: m.outcome_score, lesson: m.lesson.slice(0, 120) })))}
 
         Output exactly one JSON object:
         {

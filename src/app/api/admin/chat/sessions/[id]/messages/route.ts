@@ -19,7 +19,7 @@ export async function GET(
     .orderBy(schema.agentChatMessages.created_at);
 
   return json({
-    messages: messages.map(m => ({
+    messages: messages.map((m: typeof messages[number]) => ({
       messageId: m.message_id,
       role: m.role,
       content: m.content,

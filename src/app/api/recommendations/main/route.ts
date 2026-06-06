@@ -24,7 +24,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       .select()
       .from(schema.nailStyles)
       .where(eq(schema.nailStyles.status, 'listed'));
-    return json({ items: styles.map((s, idx) => ({ style: s, rankNo: idx + 1 })) });
+    return json({ items: styles.map((s: typeof styles[number], idx: number) => ({ style: s, rankNo: idx + 1 })) });
   }
 
   const items = await db
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   return json({
     snapshotId: snapshot.snapshot_id,
     activatedAt: snapshot.activated_at,
-    items: items.map(i => ({
+    items: items.map((i: typeof items[number]) => ({
       itemId: i.item.item_id,
       rankNo: i.item.rank_no,
       score: i.item.score,

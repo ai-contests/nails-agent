@@ -49,16 +49,16 @@ export async function POST(req: NextRequest): Promise<Response> {
       db.select().from(schema.agentDecisions).where(eq(schema.agentDecisions.agent_run_id, lastRun.agent_run_id)),
     ]);
 
-    findings.forEach(f => relatedFindingIds.push(f.finding_id));
-    decisions.forEach(d => relatedDecisionIds.push(d.decision_id));
+    findings.forEach((f: typeof findings[number]) => relatedFindingIds.push(f.finding_id));
+    decisions.forEach((d: typeof decisions[number]) => relatedDecisionIds.push(d.decision_id));
 
     context = `
       最后一次 Agent 运行: ${lastRun.agent_run_id}
       触发方式: ${lastRun.trigger_type}
       完成时间: ${lastRun.completed_at}
       摘要: ${lastRun.chat_summary}
-      发现事项: ${JSON.stringify(findings.map(f => ({ type: f.finding_type, title: f.title, summary: f.summary })))}
-      决策记录: ${JSON.stringify(decisions.map(d => ({ action: d.action_type, summary: d.summary })))}
+      发现事项: ${JSON.stringify(findings.map((f: typeof findings[number]) => ({ type: f.finding_type, title: f.title, summary: f.summary })))}
+      决策记录: ${JSON.stringify(decisions.map((d: typeof decisions[number]) => ({ action: d.action_type, summary: d.summary })))}
     `;
   }
 

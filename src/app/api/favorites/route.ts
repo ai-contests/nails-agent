@@ -77,5 +77,5 @@ export async function GET(req: NextRequest): Promise<Response> {
       )
     );
 
-  return json({ items: favorites.map(f => f.style) });
+  return json({ items: favorites.map((f: typeof favorites[number]) => f.style) });
 }

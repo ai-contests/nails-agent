@@ -151,9 +151,10 @@ export async function rollupBehaviorWindow(input: RollupInput) {
     .where(sql`${schema.styleHeatSnapshots.agent_run_id} != ${input.agentRunId}`)
     .orderBy(desc(schema.styleHeatSnapshots.window_end))
     .limit(2000);
+  type StyleHeatRow = typeof recentStyleHistoryRows[number];
   const styleHistoryIndex = indexHistoryByKey(
-    recentStyleHistoryRows.filter((r): r is typeof r & { style_id: string } => !!r.style_id),
-    r => r.style_id,
+    recentStyleHistoryRows.filter((r: StyleHeatRow): r is StyleHeatRow & { style_id: string } => !!r.style_id),
+    (r: StyleHeatRow & { style_id: string }) => r.style_id,
   );
 
   // Write style heat snapshots
@@ -223,9 +224,10 @@ export async function rollupBehaviorWindow(input: RollupInput) {
     .where(sql`${schema.tagHeatSnapshots.agent_run_id} != ${input.agentRunId}`)
     .orderBy(desc(schema.tagHeatSnapshots.window_end))
     .limit(2000);
+  type TagHeatRow = typeof recentTagHistoryRows[number];
   const tagHistoryIndex = indexHistoryByKey(
     recentTagHistoryRows,
-    r => `${r.tag_type}:${r.tag_value}`,
+    (r: TagHeatRow) => `${r.tag_type}:${r.tag_value}`,
   );
 
   for (const tagVal of tagStats.values()) {
@@ -379,7 +381,7 @@ export async function getDueReviewContext(agentRunId: string) {
         .select()
         .from(schema.agentDecisionItems)
         .where(eq(schema.agentDecisionItems.decision_id, review.decision_id));
-      targetStyleIds = items.map(i => i.style_id).filter((s): s is string => !!s);
+      targetStyleIds = items.map((i: typeof items[number]) => i.style_id).filter((s: string | null): s is string => !!s);
     }
 
     let afterMetrics: BaselineMetrics;
@@ -493,7 +495,7 @@ export async function getOperationContext(agentRunId: string, historyRounds = 5)
   // candidate styles" mapping. LLM sees these as concrete suggestions so it can
   // emit recordActionProposal(list_candidate) without having to do the matching
   // itself. tagHeat rows from drizzle may have nullable fields — sanitize.
-  const tagHeatForMatcher = tagHeat.map(t => ({
+  const tagHeatForMatcher = tagHeat.map((t: typeof tagHeat[number]) => ({
     tag_type: t.tag_type,
     tag_value: t.tag_value,
     heat_score: t.heat_score ?? 0,
@@ -503,13 +505,13 @@ export async function getOperationContext(agentRunId: string, historyRounds = 5)
     favorite_count: t.favorite_count ?? 0,
     style_count: t.style_count ?? 0,
   }));
-  const candidatesForMatcher = candidates.map(c => ({
+  const candidatesForMatcher = candidates.map((c: typeof candidates[number]) => ({
     style_id: c.style_id,
     color_tags: c.color_tags ?? '[]',
     length_tags: c.length_tags ?? '[]',
     is_available_for_tryon: c.is_available_for_tryon,
   }));
-  const listedForMatcher = listedForSaturation.map(s => ({
+  const listedForMatcher = listedForSaturation.map((s: typeof listedForSaturation[number]) => ({
     style_id: s.style_id,
     color_tags: s.color_tags ?? '[]',
     length_tags: s.length_tags ?? '[]',
@@ -879,15 +881,16 @@ export async function decideStyleStatus(input: DecideStyleStatusInput) {
     .where(eq(schema.recommendationItems.snapshot_id, currentSnapshot.snapshot_id))
     .orderBy(schema.recommendationItems.rank_no);
 
-  const currentRanks = currentRecommendationItems.map(item => ({
+  type RecItem = typeof currentRecommendationItems[number];
+  const currentRanks = currentRecommendationItems.map((item: RecItem) => ({
     styleId: item.style_id,
     rankNo: item.rank_no,
     score: item.score,
     reason: item.reason,
   }));
-  const rankBefore = currentRanks.find(item => item.styleId === input.styleId)?.rankNo ?? null;
+  const rankBefore = currentRanks.find((item: typeof currentRanks[number]) => item.styleId === input.styleId)?.rankNo ?? null;
   const rebuiltRanks = rebuildRanksForStatusChange(currentRanks, input.styleId, input.newStatus);
-  const rankAfter = rebuiltRanks.find(item => item.styleId === input.styleId)?.rankNo ?? null;
+  const rankAfter = rebuiltRanks.find((item: typeof rebuiltRanks[number]) => item.styleId === input.styleId)?.rankNo ?? null;
 
   const originalStatus = style.status;
 
@@ -1110,26 +1113,27 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
     .where(eq(schema.recommendationItems.snapshot_id, currentSnapshot.snapshot_id))
     .orderBy(schema.recommendationItems.rank_no);
 
-  const currentRanks = currentRecommendationItems.map(item => ({
+  type BatchRecItem = typeof currentRecommendationItems[number];
+  const currentRanks = currentRecommendationItems.map((item: BatchRecItem) => ({
     styleId: item.style_id,
     rankNo: item.rank_no,
     score: item.score,
     reason: item.reason,
   }));
-  const currentRankByStyleId = new Map(currentRanks.map(item => [item.styleId, item.rankNo]));
+  const currentRankByStyleId = new Map(currentRanks.map((item: typeof currentRanks[number]) => [item.styleId, item.rankNo]));
 
   // Build the base rank list for adjustment. With fine-grained per-style
   // changes (P3) we no longer rewrite the whole list from heatRanks; we keep
   // the current active snapshot's ordering and apply local promote/demote.
   // The historical heatRanks input is still accepted but only used as a tie
   // breaker for unknown styles, not as a global override.
-  const heatRankStyleIds = new Set((input.heatRanks || []).map(item => item.styleId));
+  const heatRankStyleIds = new Set((input.heatRanks || []).map((item: typeof currentRanks[number]) => item.styleId));
   const baseRanks = input.heatRanks && input.heatRanks.length > 0
     ? [
       ...currentRanks,
       ...(input.heatRanks
-        .filter(item => !currentRanks.some(r => r.styleId === item.styleId))),
-    ].map((item, index) => ({ ...item, rankNo: index + 1 }))
+        .filter((item: RecommendationRankItem) => !currentRanks.some((r: typeof currentRanks[number]) => r.styleId === item.styleId))),
+    ].map((item: typeof currentRanks[number], index: number) => ({ ...item, rankNo: index + 1 }))
     : currentRanks;
   void heatRankStyleIds; // reserved for future tie-break tracking
 

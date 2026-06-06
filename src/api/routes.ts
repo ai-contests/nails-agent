@@ -51,7 +51,7 @@ async function getGlobalRecommendationFallback(limit: number): Promise<NailStyle
       .orderBy(schema.recommendationItems.rank_no)
       .limit(limit);
 
-    return ranked.map(row => row.style);
+    return ranked.map((row: { style: typeof ranked[number] extends { style: infer S } ? S : never }) => row.style);
   }
 
   return db
@@ -86,7 +86,7 @@ router.get('/api/recommendations/main', async () => {
       .select()
       .from(schema.nailStyles)
       .where(eq(schema.nailStyles.status, 'listed'));
-    return jsonResponse({ items: styles.map((s, idx) => ({ style: s, rankNo: idx + 1 })) });
+    return jsonResponse({ items: styles.map((s: (typeof styles)[number], idx: number) => ({ style: s, rankNo: idx + 1 })) });
   }
 
   // Retrieve recommendation items
@@ -104,7 +104,7 @@ router.get('/api/recommendations/main', async () => {
   return jsonResponse({
     snapshotId: snapshot.snapshot_id,
     activatedAt: snapshot.activated_at,
-    items: items.map(i => ({
+    items: items.map((i: typeof items[number]) => ({
       itemId: i.item.item_id,
       rankNo: i.item.rank_no,
       score: i.item.score,
@@ -163,7 +163,7 @@ router.get('/api/styles/:id', async (req, params) => {
       event_type: 'style_click',
       source_page: 'detail',
       created_at: new Date().toISOString(),
-    }).catch(err => console.error('Error logging style_click event:', err));
+    }).catch((err: unknown) => console.error('Error logging style_click event:', err));
   }
 
   return jsonResponse({
@@ -291,7 +291,7 @@ router.post('/api/tryon-jobs', async (req) => {
     event_type: 'tryon_start',
     source_page: 'detail',
     created_at: now,
-  }).catch(err => console.error('Error logging tryon_start event:', err));
+  }).catch((err: unknown) => console.error('Error logging tryon_start event:', err));
 
   // Run ComfyCloud workflow in background
   const runWorkflowPromise = async () => {
@@ -450,7 +450,7 @@ router.get('/api/favorites', async (req) => {
       )
     );
 
-  return jsonResponse({ items: favorites.map(f => f.style) });
+  return jsonResponse({ items: favorites.map((f: typeof favorites[number]) => f.style) });
 });
 
 // 8. Similar Hand Recommendations
@@ -660,14 +660,14 @@ router.post('/api/admin/chat/messages', async (req) => {
       .from(schema.agentDecisions)
       .where(eq(schema.agentDecisions.agent_run_id, lastRun.agent_run_id));
 
-    findings.forEach(f => relatedFindingIds.push(f.finding_id));
-    decisions.forEach(d => relatedDecisionIds.push(d.decision_id));
+    findings.forEach((f: typeof findings[number]) => relatedFindingIds.push(f.finding_id));
+    decisions.forEach((d: typeof decisions[number]) => relatedDecisionIds.push(d.decision_id));
 
     context = `
       Last Agent Run: ${lastRun.agent_run_id} (Trigger: ${lastRun.trigger_type}, Completed At: ${lastRun.completed_at})
       Summary: ${lastRun.chat_summary}
-      Findings Identified: ${JSON.stringify(findings.map(f => ({ type: f.finding_type, title: f.title, summary: f.summary })))}
-      Decisions Made: ${JSON.stringify(decisions.map(d => ({ action: d.action_type, summary: d.summary })))}
+      Findings Identified: ${JSON.stringify(findings.map((f: typeof findings[number]) => ({ type: f.finding_type, title: f.title, summary: f.summary })))}
+      Decisions Made: ${JSON.stringify(decisions.map((d: typeof decisions[number]) => ({ action: d.action_type, summary: d.summary })))}
     `;
   }
 
@@ -727,7 +727,7 @@ router.get('/api/admin/chat/sessions/:id/messages', async (_req, params) => {
     .orderBy(schema.agentChatMessages.created_at);
 
   return jsonResponse({
-    messages: messages.map(m => ({
+    messages: messages.map((m: typeof messages[number]) => ({
       messageId: m.message_id,
       role: m.role,
       content: m.content,

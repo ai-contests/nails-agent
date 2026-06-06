@@ -12,7 +12,7 @@ HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
 
-MODEL_PATH = Path("/Users/nev4rb14su/workspace/nails-agent/data/hand_landmarker.task")
+MODEL_PATH = Path(__file__).resolve().parent.parent / "data" / "hand_landmarker.task"
 
 def load_landmarker():
     if not MODEL_PATH.exists():

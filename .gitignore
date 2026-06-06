@@ -31,6 +31,7 @@ data/*
 !data/extraction/
 data/extraction/*
 !data/extraction/manifest.json
+!data/hand_landmarker.task
 !data/seed_hands/
 db/data/
 

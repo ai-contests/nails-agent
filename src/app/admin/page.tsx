@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from "react";
-import { Send, Play, Loader2, ChevronRight } from 'lucide-react';
+import { Send, Play, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { DecisionCard } from '@/components/admin/DecisionCard';
 import { TimelineNode } from '@/components/admin/TimelineNode';
@@ -112,24 +112,47 @@ export default function AdminDashboard() {
     }
   }, [runs, selectedRunId, fetchRunDetail]);
 
+  // Poll until the latest run reaches a terminal state (completed/failed)
+  const pollUntilComplete = useCallback(async (runId: string) => {
+    let attempts = 0;
+    const maxAttempts = 40; // 40 × 4s = 160s max
+    const interval = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/admin/runs/${runId}`);
+        const data = await res.json() as RunDetail;
+        setRunDetail(data);
+        await fetchRuns();
+        if (data.run.status === 'completed' || data.run.status === 'failed' || attempts >= maxAttempts) {
+          clearInterval(interval);
+          setMessage(
+            data.run.status === 'completed'
+              ? `✓ Cycle complete — ${data.findings.length} findings, ${data.decisions.length} decisions`
+              : `✗ Cycle failed: ${data.run.error_message ?? 'unknown error'}`
+          );
+        }
+      } catch {
+        if (attempts >= maxAttempts) clearInterval(interval);
+      }
+    }, 4000);
+  }, [fetchRuns]);
+
   const triggerCycle = async () => {
     setTriggering(true);
-    setMessage(null);
+    setMessage('Agent cycle triggered — waiting for completion...');
     try {
-      const res = await fetch('/api/admin/run', { method: 'POST' });
-      const data = await res.json() as { message?: string };
-      setMessage(data.message ?? 'Agent cycle triggered');
-      // Poll after 2s for the new run to appear
+      await fetch('/api/admin/run', { method: 'POST' });
+      // Wait 3s for the run row to be created, then start polling
       setTimeout(async () => {
-        await fetchRuns();
         const res2 = await fetch('/api/admin/runs');
         const d2 = await res2.json() as { runs: AgentRun[] };
         if (d2.runs && d2.runs.length > 0) {
           const latest = d2.runs[0]!;
           setSelectedRunId(latest.agent_run_id);
-          fetchRunDetail(latest.agent_run_id);
+          setRuns(d2.runs);
+          pollUntilComplete(latest.agent_run_id);
         }
-      }, 2000);
+      }, 3000);
     } catch (e) {
       setMessage(`Error: ${(e as Error).message}`);
     } finally {
@@ -215,9 +238,19 @@ export default function AdminDashboard() {
             </div>
             <p className="text-xs text-text-dark-secondary">Monitor AI performance, manage recommendations, and trigger manual overrides.</p>
           </div>
-          <Button variant="admin_default" onClick={triggerCycle} disabled={triggering} className="gap-2">
-            <Play className="w-4 h-4" /> {triggering ? 'Running...' : 'Trigger Agent Cycle'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {selectedRunId && (
+              <button
+                onClick={() => fetchRunDetail(selectedRunId)}
+                className="text-xs text-text-dark-muted hover:text-text-dark-primary flex items-center gap-1 px-3 py-2 border border-border-dark rounded-md transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Refresh
+              </button>
+            )}
+            <Button variant="admin_default" onClick={triggerCycle} disabled={triggering} className="gap-2">
+              <Play className="w-4 h-4" /> {triggering ? 'Running...' : 'Trigger Agent Cycle'}
+            </Button>
+          </div>
         </div>
 
         {message && (

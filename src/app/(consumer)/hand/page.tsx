@@ -128,8 +128,8 @@ export default function HandStudioPage() {
         // Redirect back to the style details page with auto-open try-on query param
         router.push(`/styles/${fromStyleId}?autoTryOn=true`);
       } else {
-        // Redirect to gallery page, which will load custom recommendations using the sessionId
-        router.push(`/gallery?sessionId=${profile.sessionId}`);
+        // Redirect to gallery page with showSimilar query param to trigger similar hand recommendations overlay
+        router.push(`/gallery?sessionId=${profile.sessionId}&showSimilar=true`);
       }
     }
   };
@@ -189,7 +189,14 @@ export default function HandStudioPage() {
               {errorMessage && (
                 <p className="text-error text-xs mb-4 font-mono">{errorMessage}</p>
               )}
-              <Button variant="default" className="shadow-soft-glow">
+              <Button 
+                variant="default" 
+                className="shadow-soft-glow"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerFileInput();
+                }}
+              >
                 Start Scan
               </Button>
             </Card>

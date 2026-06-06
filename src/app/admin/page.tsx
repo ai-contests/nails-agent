@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Send, Play } from 'lucide-react';
+import { Send, Play, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { DecisionCard } from '@/components/admin/DecisionCard';
 import { TimelineNode } from '@/components/admin/TimelineNode';
+import Link from 'next/link';
 
 interface AgentRun {
   agent_run_id: string;
@@ -21,6 +22,11 @@ export default function AdminDashboard() {
   const [triggering, setTriggering] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'agent'; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [sendingChat, setSendingChat] = useState(false);
+
   const fetchRuns = async () => {
     try {
       const res = await fetch('/api/admin/runs');
@@ -33,6 +39,20 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchRuns();
+
+    // Initialize Chat Session
+    const initChat = async () => {
+      try {
+        const res = await fetch('/api/admin/chat/session', { method: 'POST' });
+        const data = await res.json();
+        if (data.chatSessionId) {
+          setChatSessionId(data.chatSessionId);
+        }
+      } catch (e) {
+        console.error('Failed to init chat session:', e);
+      }
+    };
+    initChat();
   }, []);
 
   const triggerCycle = async () => {
@@ -47,6 +67,33 @@ export default function AdminDashboard() {
       setMessage(`Error: ${(e as Error).message}`);
     } finally {
       setTriggering(false);
+    }
+  };
+
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || !chatSessionId || sendingChat) return;
+
+    const userContent = chatInput.trim();
+    setChatInput('');
+    setChatMessages(prev => [...prev, { role: 'user', content: userContent }]);
+    setSendingChat(true);
+
+    try {
+      const res = await fetch('/api/admin/chat/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatSessionId, content: userContent }),
+      });
+      const data = await res.json();
+      if (data.content) {
+        setChatMessages(prev => [...prev, { role: 'agent', content: data.content }]);
+      } else if (data.error) {
+        setChatMessages(prev => [...prev, { role: 'agent', content: `Error: ${data.error}` }]);
+      }
+    } catch (e) {
+      setChatMessages(prev => [...prev, { role: 'agent', content: `Network error: ${(e as Error).message}` }]);
+    } finally {
+      setSendingChat(false);
     }
   };
 
@@ -79,7 +126,12 @@ export default function AdminDashboard() {
       <main className="flex-1 bg-bg-dark flex flex-col h-full overflow-y-auto p-8 relative">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl font-bold text-text-dark-primary mb-1">Technical Operations</h1>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-xl font-bold text-text-dark-primary">Technical Operations</h1>
+              <Link href="/" className="text-xs text-accent-blue hover:underline">
+                Back to Consumer App
+              </Link>
+            </div>
             <p className="text-xs text-text-dark-secondary">Monitor AI performance, manage recommendations, and trigger manual overrides.</p>
           </div>
           <Button variant="admin_default" onClick={triggerCycle} disabled={triggering} className="gap-2">
@@ -137,23 +189,57 @@ export default function AdminDashboard() {
           <span className="w-2 h-2 rounded-full bg-accent-blue" />
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
           <div className="bg-bg-dark border border-border-dark rounded-lg p-3 w-[90%]">
             <p className="text-xs text-text-dark-secondary">System ready. Awaiting operational queries or manual overrides.</p>
           </div>
+          {chatMessages.map((msg, idx) => (
+            <div 
+              key={idx} 
+              className={`border border-border-dark rounded-lg p-3 w-[90%] ${
+                msg.role === 'user' 
+                  ? 'bg-accent-blue/10 ml-auto border-accent-blue/20' 
+                  : 'bg-bg-dark'
+              }`}
+            >
+              <div className="text-[10px] font-bold text-text-dark-muted uppercase mb-1">
+                {msg.role === 'user' ? 'Operator' : 'AI Copilot'}
+              </div>
+              <p className="text-xs text-text-dark-primary whitespace-pre-wrap">{msg.content}</p>
+            </div>
+          ))}
+          {sendingChat && (
+            <div className="flex justify-start items-center text-xs text-text-dark-muted gap-2 ml-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Thinking...</span>
+            </div>
+          )}
         </div>
 
         <div className="p-4 border-t border-border-dark bg-surface-dark-elevated">
-          <div className="relative">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendChatMessage();
+            }}
+            className="relative"
+          >
             <input 
               type="text" 
               placeholder="Ask the agent to query logs..." 
-              className="w-full bg-bg-dark border border-border-dark rounded-md py-2.5 pl-3 pr-10 text-xs text-text-dark-primary focus:outline-none focus:border-border-dark-focus focus:ring-1 focus:ring-border-dark-focus"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              disabled={sendingChat || !chatSessionId}
+              className="w-full bg-bg-dark border border-border-dark rounded-md py-2.5 pl-3 pr-10 text-xs text-text-dark-primary focus:outline-none focus:border-border-dark-focus focus:ring-1 focus:ring-border-dark-focus disabled:opacity-50"
             />
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-text-dark-primary text-bg-dark rounded hover:bg-text-dark-secondary transition-colors">
+            <button 
+              type="submit"
+              disabled={sendingChat || !chatSessionId}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-text-dark-primary text-bg-dark rounded hover:bg-text-dark-secondary transition-colors disabled:opacity-50"
+            >
               <Send className="w-3 h-3" />
             </button>
-          </div>
+          </form>
         </div>
       </aside>
     </div>

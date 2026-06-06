@@ -1,6 +1,6 @@
 import { Card, CardContent } from './Card';
-import { Button } from './Button';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 export interface StyleCardProps {
   title: string;
@@ -8,9 +8,10 @@ export interface StyleCardProps {
   imageUrl: string;
   matchScore?: string;
   className?: string;
+  onTryOnClick?: (e: React.MouseEvent) => void;
 }
 
-export function StyleCard({ title, description, imageUrl, matchScore, className }: StyleCardProps) {
+export function StyleCard({ title, description, imageUrl, matchScore, className, onTryOnClick }: StyleCardProps) {
   return (
     <Card className={cn("group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-glow cursor-pointer border-c-border bg-white rounded-card flex flex-col", className)}>
       <div className="relative aspect-[3/4] bg-surface-warm w-full overflow-hidden">
@@ -25,9 +26,18 @@ export function StyleCard({ title, description, imageUrl, matchScore, className 
 
         {/* Hover Try On Button (Centered) */}
         <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <Button variant="secondary" className="rounded-full shadow-lg scale-95 group-hover:scale-100 transition-transform">
+          <div 
+            onClick={(e) => {
+              if (onTryOnClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                onTryOnClick(e);
+              }
+            }}
+            className="bg-white text-ink font-semibold px-6 py-2.5 rounded-full shadow-lg scale-95 group-hover:scale-100 transition-transform text-xs cursor-pointer hover:bg-surface-warm"
+          >
             Try On
-          </Button>
+          </div>
         </div>
       </div>
       <CardContent className="p-4 pt-3 flex-1 flex flex-col">
@@ -37,3 +47,5 @@ export function StyleCard({ title, description, imageUrl, matchScore, className 
     </Card>
   );
 }
+
+

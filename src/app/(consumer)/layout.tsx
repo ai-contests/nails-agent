@@ -1,4 +1,5 @@
 import { Search, Bell, User } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ConsumerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,10 +8,10 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
         <div className="flex items-center gap-8">
           <div className="text-xl font-bold text-primary tracking-tight">Blush AI</div>
           <nav className="hidden md:flex gap-6 text-sm font-medium text-ink-second">
-            <a href="/" className="hover:text-ink transition-colors">Discovery</a>
-            <a href="/gallery" className="hover:text-ink transition-colors">Gallery</a>
-            <a href="/hand" className="hover:text-ink transition-colors">AI Studio</a>
-            <span className="cursor-not-allowed opacity-50">Community</span>
+            <Link href="/" className="hover:text-ink transition-colors">Discovery</Link>
+            <Link href="/gallery" className="hover:text-ink transition-colors">Gallery</Link>
+            <Link href="/hand" className="hover:text-ink transition-colors">AI Studio</Link>
+            <Link href="/favorites" className="hover:text-ink transition-colors">Favorites</Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">
@@ -46,9 +47,9 @@ export default function ConsumerLayout({ children }: { children: React.ReactNode
           <div>
             <h4 className="font-semibold text-ink mb-4">Explore</h4>
             <div className="flex flex-col gap-2 text-sm text-ink-second">
-              <a href="/" className="hover:text-ink">Style Discovery</a>
-              <a href="/gallery" className="hover:text-ink">Nail Gallery</a>
-              <a href="/hand" className="hover:text-ink">Virtual Try-on</a>
+              <Link href="/" className="hover:text-ink">Style Discovery</Link>
+              <Link href="/gallery" className="hover:text-ink">Nail Gallery</Link>
+              <Link href="/hand" className="hover:text-ink">Virtual Try-on</Link>
             </div>
           </div>
           <div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 import { Dialog } from '../ui/Dialog';
 import { Button } from '../ui/Button';
 import { Loader2, Camera, AlertTriangle, ArrowRight } from 'lucide-react';
@@ -11,14 +11,12 @@ export interface TryOnModalProps {
   onOpenChange: (open: boolean) => void;
   styleId: string;
   styleName: string;
+  styleImageUrl: string;
   sessionId: string | null;
   handImageId: string | null;
 }
 
 function getDemoHandModel(styleId: string): string {
-  // Extract hand tag from styleId or map dynamically
-  // If the style matches a canon_*.png tryon image, we can resolve the original hand model
-  // Let's create a mapping based on typical tags
   const mapping: Record<string, string> = {
     'palm_down_top_fair': 'hand_palm_down_top_fair_offwhite.png',
     'palm_down_top_medium': 'hand_palm_down_top_medium_softblue.png',
@@ -36,9 +34,6 @@ function getDemoHandModel(styleId: string): string {
     'fingers_cupped_deep': 'hand_fingers_cupped_deep_softpink.png',
   };
 
-  // Check if we can infer from style ID or default to palm_down_top_fair
-  // Example style IDs: STYLE001, etc. We can map them based on index or tag
-  // We'll fallback to a default hand model if not matched
   const idNum = parseInt(styleId.replace(/[^\d]/g, '')) || 0;
   const tags = Object.keys(mapping);
   const tag = tags[idNum % tags.length] || 'palm_down_top_fair';
@@ -46,15 +41,52 @@ function getDemoHandModel(styleId: string): string {
   return `/data/hand_models/pool/${handName}`;
 }
 
-export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, handImageId }: TryOnModalProps) {
+export function TryOnModal({
+  open,
+  onOpenChange,
+  styleId,
+  styleName,
+  styleImageUrl,
+  sessionId,
+  handImageId,
+}: TryOnModalProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [jobStatus, setJobStatus] = useState<'idle' | 'running' | 'success' | 'failed'>('idle');
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [originalHandImage, setOriginalHandImage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tryOnMode, setTryOnMode] = useState<'demo' | 'custom' | null>(null);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
   
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const getHandModelFromImageUrl = (url: string): string => {
+    const mapping: Record<string, string> = {
+      'palm_down_top_fair': 'hand_palm_down_top_fair_offwhite.png',
+      'palm_down_top_medium': 'hand_palm_down_top_medium_softblue.png',
+      'palm_down_top_deep': 'hand_palm_down_top_deep_offwhite.png',
+      'fist_thumb_up_fair': 'hand_fist_thumb_up_fair_softblue.png',
+      'fist_thumb_up_medium': 'hand_fist_thumb_up_medium_offwhite.png',
+      'fist_thumb_up_deep': 'hand_fist_thumb_up_deep_softblue.png',
+      'two_hands_clasped_fair': 'hand_two_hands_clasped_fair_softbeige.png',
+      'two_hands_clasped_deep': 'hand_two_hands_clasped_deep_softpink.png',
+      'reaching_down_fair': 'hand_reaching_down_fair_softbeige.png',
+      'reaching_down_medium': 'hand_reaching_down_medium_softpink.png',
+      'reaching_down_deep': 'hand_reaching_down_deep_softblue.png',
+      'fingers_cupped_fair': 'hand_fingers_cupped_fair_offwhite.png',
+      'fingers_cupped_medium': 'hand_fingers_cupped_medium_softbeige.png',
+      'fingers_cupped_deep': 'hand_fingers_cupped_deep_softpink.png',
+    };
+
+    const filename = url.split('/').pop() || '';
+    const match = filename.match(/canon_\d+_(.+)\.png/);
+    const handTag = (match && match[1]) ? match[1] : '';
+    const handName = mapping[handTag];
+    if (handName) {
+      return `/data/hand_models/pool/${handName}`;
+    }
+    return getDemoHandModel(styleId);
+  };
 
   // Reset modal state when closed/opened
   useEffect(() => {
@@ -68,6 +100,31 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
       setTryOnMode(null);
     }
   }, [open]);
+
+  // Fetch recommendations when opened
+  useEffect(() => {
+    if (open) {
+      const fetchRecs = async () => {
+        try {
+          const url = sessionId 
+            ? `/api/similar-hand-recommendations?sessionId=${encodeURIComponent(sessionId)}`
+            : `/api/recommendations/main`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.items) {
+            const items = data.items
+              .map((i: any) => i.style || i)
+              .filter((i: any) => i.style_id !== styleId)
+              .slice(0, 3);
+            setRecommendations(items);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      fetchRecs();
+    }
+  }, [open, styleId, sessionId]);
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -118,10 +175,8 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
     setTryOnMode('demo');
     setJobStatus('running');
     
-    // Simulate a brief generation delay for premium feel
     setTimeout(async () => {
       try {
-        // Fetch the style details to get its pre-rendered try-on image
         const res = await fetch(`/api/styles/${styleId}`);
         const data = await res.json();
         
@@ -131,7 +186,7 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
             : `/api/local-image?path=${encodeURIComponent(data.style.image_url)}`;
           
           setResultImage(tryOnImg);
-          setOriginalHandImage(getDemoHandModel(styleId));
+          setOriginalHandImage(getHandModelFromImageUrl(styleImageUrl));
           setJobStatus('success');
         } else {
           throw new Error('Nail style details not found.');
@@ -169,7 +224,6 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
     }, 2000);
   };
 
-  // Check if custom session exists
   const hasSession = !!sessionId && !!handImageId;
 
   return (
@@ -283,18 +337,23 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
                 className="absolute inset-0 w-full h-full object-cover"
               />
               
-              {/* After Image (clipped width) */}
+              {/* After Image (Clipped using clipPath) */}
               <div 
-                className="absolute inset-0 overflow-hidden border-r-2 border-white shadow-[2px_0_10px_rgba(0,0,0,0.1)]"
-                style={{ width: `${sliderPosition}%` }}
+                className="absolute inset-0"
+                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
               >
                 <img 
                   src={resultImage} 
                   alt="Try On Result" 
                   className="absolute inset-0 w-full h-full object-cover"
-                  style={{ width: '100%', maxWidth: 'none' }}
                 />
               </div>
+
+              {/* Slider Line */}
+              <div 
+                className="absolute inset-y-0 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
+                style={{ left: `${sliderPosition}%` }}
+              />
               
               <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">BEFORE</div>
               <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded">AFTER</div>
@@ -318,6 +377,40 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
                 </div>
               </div>
             </div>
+
+            {/* Recommended Styles */}
+            {recommendations.length > 0 && (
+              <div className="mb-6">
+                <h4 className="text-[10px] font-bold text-ink-light tracking-widest uppercase mb-3 text-left">Recommended Styles</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  {recommendations.map((rec) => {
+                    const recImg = rec.image_url.startsWith('http') || rec.image_url.startsWith('/')
+                      ? rec.image_url
+                      : `/api/local-image?path=${encodeURIComponent(rec.image_url)}`;
+                    
+                    let recName = rec.style_id;
+                    try {
+                      const colors = JSON.parse(rec.color_tags);
+                      if (colors.length > 0) recName = colors[0].replace(/\b\w/g, (c: string) => c.toUpperCase());
+                    } catch (e) {}
+
+                    return (
+                      <Link 
+                        href={`/styles/${rec.style_id}?autoTryOn=true`} 
+                        key={rec.style_id}
+                        onClick={() => onOpenChange(false)}
+                        className="group border border-c-border hover:border-primary/50 rounded-lg p-1.5 flex flex-col items-center bg-surface-warm/30 hover:bg-white transition-all"
+                      >
+                        <div className="aspect-[3/4] w-full rounded overflow-hidden mb-1.5 bg-surface-warm">
+                          <img src={recImg} alt={recName} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        </div>
+                        <span className="text-[10px] font-semibold text-ink truncate w-full text-center">{recName}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-between items-center gap-4">
               <Button variant="outline" className="flex-1" onClick={() => setJobStatus('idle')}>

@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react";
 import { Search, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { CategoryTag } from '@/components/ui/CategoryTag';
 import { StyleCard } from '@/components/ui/StyleCard';
 import { Pagination } from '@/components/ui/Pagination';
+import { Button } from '@/components/ui/Button';
+import { Dialog } from '@/components/ui/Dialog';
 
 const CATEGORIES = ['All', 'Short', 'Medium', 'Long', 'Nude', 'Pink', 'Purple', 'Red', 'Metallic'];
 const ITEMS_PER_PAGE = 8;
@@ -18,11 +21,57 @@ interface NailStyle {
 }
 
 export default function GalleryPage() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [styles, setStyles] = useState<NailStyle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [handProfile, setHandProfile] = useState<{ handShape: string; skinTone: string } | null>(null);
+  const [similarOpen, setSimilarOpen] = useState(false);
+  const [similarStyles, setSimilarStyles] = useState<NailStyle[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedProfile = localStorage.getItem('nails_hand_profile');
+      if (savedProfile) {
+        try {
+          setHandProfile(JSON.parse(savedProfile));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const showSimilar = params.get('showSimilar');
+      const savedSession = localStorage.getItem('nails_session_id');
+      
+      if (showSimilar === 'true' && savedSession) {
+        setSimilarOpen(true);
+        fetchSimilarStyles(savedSession);
+      }
+    }
+  }, []);
+
+  const fetchSimilarStyles = async (sid: string) => {
+    try {
+      setSimilarLoading(true);
+      const res = await fetch(`/api/similar-hand-recommendations?sessionId=${encodeURIComponent(sid)}`);
+      const data = await res.json();
+      if (data.items) {
+        setSimilarStyles(data.items.map((i: any) => i.style || i));
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSimilarLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchStyles = async () => {
@@ -122,6 +171,25 @@ export default function GalleryPage() {
         </div>
       </div>
 
+      {handProfile && ( 
+        <div className="mb-8 p-4 bg-blush-light border border-primary/20 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+            <div className="text-sm">
+              <span className="font-semibold text-ink">Hand Profile Active:</span>{' '}
+              <span className="text-ink-second capitalize">{handProfile.handShape.replace('_', ' ')}</span>{' '}
+              <span className="text-ink-light font-mono text-xs">({handProfile.skinTone.replace('_', ' ')})</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-ink-second">Click any style card's <strong>Try On</strong> button to overlay this profile.</span>
+            <Link href="/hand">
+              <Button variant="outline" size="sm" className="bg-white text-xs py-1 px-3">Recalibrate</Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 min-h-[600px] content-start">
         {loading ? (
@@ -149,6 +217,7 @@ export default function GalleryPage() {
                   title={title} 
                   description="AI-curated precision nail art design tailored for your unique style." 
                   imageUrl={imgUrl} 
+                  onTryOnClick={() => router.push(`/styles/${style.style_id}?autoTryOn=true`)}
                 />
               </Link>
             );
@@ -173,6 +242,73 @@ export default function GalleryPage() {
           />
         </div>
       )}
+
+      {/* Similar Hand Recommendations Dialog */}
+      <Dialog open={similarOpen} onOpenChange={setSimilarOpen}>
+        <div className="bg-white p-8 max-w-4xl w-full mx-auto max-h-[85vh] overflow-y-auto custom-scrollbar rounded-card">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-ink mb-2">与您手型相似的用户正在选择这些美甲</h2>
+            {handProfile && (
+              <p className="text-xs text-ink-second">
+                已匹配您的手型：<span className="font-semibold text-primary capitalize">{handProfile.handShape.replace('_', ' ')}</span>
+                {' '}• 肤色：<span className="font-semibold text-primary capitalize">{handProfile.skinTone.replace('_', ' ')}</span>
+              </p>
+            )}
+          </div>
+
+          {similarLoading ? (
+            <div className="flex justify-center items-center py-20 text-ink-second">
+              <Loader2 className="w-8 h-8 animate-spin" />
+              <span className="ml-3">正在匹配相似手型推荐...</span>
+            </div>
+          ) : similarStyles.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+              {similarStyles.map(style => {
+                const imgUrl = style.image_url.startsWith('http') || style.image_url.startsWith('/')
+                  ? style.image_url
+                  : `/api/local-image?path=${encodeURIComponent(style.image_url)}`;
+
+                let title = style.style_id;
+                try {
+                  const colors = JSON.parse(style.color_tags);
+                  if (colors.length > 0) title = colors.join(' & ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+                } catch (e) {}
+
+                return (
+                  <div 
+                    key={style.style_id} 
+                    className="relative cursor-pointer"
+                    onClick={() => {
+                      setSimilarOpen(false);
+                      router.push(`/styles/${style.style_id}`);
+                    }}
+                  >
+                    <StyleCard 
+                      title={title}
+                      description="AI-curated coordinate design."
+                      imageUrl={imgUrl}
+                      onTryOnClick={() => {
+                        setSimilarOpen(false);
+                        router.push(`/styles/${style.style_id}?autoTryOn=true`);
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-20 text-ink-second text-sm">
+              暂无相似手型推荐数据。
+            </div>
+          )}
+
+          <div className="flex justify-end border-t border-c-border pt-4">
+            <Button variant="outline" onClick={() => setSimilarOpen(false)}>
+              关闭
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

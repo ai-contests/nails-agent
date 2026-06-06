@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
 import { eq } from 'drizzle-orm';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, copyFile } from 'fs/promises';
 import path from 'path';
 import { openDb, schema } from '@/db/src/client';
 import {
@@ -74,6 +74,51 @@ export async function POST(req: NextRequest): Promise<Response> {
       await db.update(schema.tryonJobs)
         .set({ status: 'running', started_at: new Date().toISOString() })
         .where(eq(schema.tryonJobs.tryon_job_id, tryonJobId));
+
+      const apiKey = process.env['COMFYCLOUD_API_KEY'] || '';
+      if (!apiKey) {
+        // Mocking behavior
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate delay
+        
+        const outDir = path.join(process.cwd(), 'data', 'tryon_results');
+        await mkdir(outDir, { recursive: true });
+        const outName = `${tryonJobId}.png`;
+        
+        const srcPath = style.image_url.startsWith('/') 
+          ? path.join(process.cwd(), style.image_url.substring(1)) // Remove leading slash for local disk
+          : style.image_url;
+          
+        try {
+          await copyFile(srcPath, path.join(outDir, outName));
+        } catch (e) {
+          console.error(`Failed to copy style image for mock try-on:`, e);
+          try {
+            await copyFile(path.join(process.cwd(), style.image_url), path.join(outDir, outName));
+          } catch (e2) {
+            console.error(`Second copy attempt failed:`, e2);
+          }
+        }
+        
+        const resultUrl = `/data/tryon_results/${outName}`;
+
+        await db.update(schema.tryonJobs)
+          .set({ 
+            status: 'success', 
+            result_image_url: resultUrl, 
+            finished_at: new Date().toISOString() 
+          })
+          .where(eq(schema.tryonJobs.tryon_job_id, tryonJobId));
+
+        await db.insert(schema.behaviorEvents).values({
+          event_id: generateId('EV'),
+          session_id: sessionId,
+          style_id: styleId,
+          event_type: 'tryon_success',
+          source_page: 'detail',
+          created_at: new Date().toISOString(),
+        });
+        return;
+      }
 
       const handName = await uploadImage(path.join(process.cwd(), handImage.image_url));
       const styleName = await uploadImage(path.join(process.cwd(), style.image_url));

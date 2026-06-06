@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { StyleCard } from '@/components/ui/StyleCard';
 import { TryOnModal } from '@/components/consumer/TryOnModal';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface StyleDetailProps {
   params: Promise<{ id: string }>;
@@ -30,6 +31,7 @@ interface VisualFeature {
 }
 
 export default function StyleDetailPage({ params }: StyleDetailProps) {
+  const router = useRouter();
   const [styleId, setStyleId] = useState<string | null>(null);
   const [style, setStyle] = useState<NailStyle | null>(null);
   const [features, setFeatures] = useState<VisualFeature | null>(null);
@@ -360,6 +362,7 @@ export default function StyleDetailPage({ params }: StyleDetailProps) {
                     description="AI-curated coordinate design." 
                     imageUrl={simImgUrl} 
                     matchScore={simMatch}
+                    onTryOnClick={() => router.push(`/styles/${sim.style_id}?autoTryOn=true`)}
                   />
                 </Link>
               );
@@ -374,6 +377,7 @@ export default function StyleDetailPage({ params }: StyleDetailProps) {
         onOpenChange={setModalOpen} 
         styleId={style.style_id}
         styleName={title} 
+        styleImageUrl={style.image_url}
         sessionId={sessionId}
         handImageId={handImageId}
       />

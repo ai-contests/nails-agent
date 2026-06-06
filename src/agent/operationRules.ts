@@ -3,13 +3,18 @@ export interface HeatHistoryRow {
   window_end: string;
 }
 
+export interface I18nString {
+  en: string;
+  zh: string;
+}
+
 export interface ProposalGuardInput {
   proposalType: string;
   targetIds: string[];
-  intendedAction: string;
-  hypothesis: string;
+  intendedAction: string | I18nString;
+  hypothesis: string | I18nString;
   expectedMetrics: unknown[];
-  rollbackCondition: string;
+  rollbackCondition: string | I18nString;
   reviewWindowHours?: number | null;
   confidence?: number | null;
 }
@@ -28,7 +33,7 @@ export interface RecommendationRankItem {
   styleId: string;
   rankNo: number;
   score: number;
-  reason?: string;
+  reason?: string | I18nString;
 }
 
 export interface StyleStatusChange {
@@ -51,7 +56,7 @@ export interface RecommendationChangeRequest {
   targetRank?: number;
   /** Hard cap on how many positions the rank may move. Default 10. */
   maxDelta?: number;
-  reason: string;
+  reason: string | I18nString;
 }
 
 export interface AdjustRecommendationExecutionPayload {
@@ -69,7 +74,7 @@ export interface DecideStyleStatusExecutionPayload {
     styleId: string;
     action: 'list' | 'unlist';
     newStatus: 'listed' | 'candidate';
-    reason: string;
+    reason: string | I18nString;
   }[];
   experiment: ExecutionExperiment;
   summary: string;
@@ -119,16 +124,19 @@ export function evaluateProposalGuards(
     rulesChecked.push({ rule, status: 'passed' });
   };
 
-  if (!proposal.intendedAction.trim()) fail('intended_action_present', 'Missing intended action');
+  const intendedActionText = typeof proposal.intendedAction === 'string' ? proposal.intendedAction : proposal.intendedAction?.en;
+  if (!intendedActionText || !intendedActionText.trim()) fail('intended_action_present', 'Missing intended action');
   else pass('intended_action_present');
 
-  if (!proposal.hypothesis.trim()) fail('hypothesis_present', 'Missing hypothesis');
+  const hypothesisText = typeof proposal.hypothesis === 'string' ? proposal.hypothesis : proposal.hypothesis?.en;
+  if (!hypothesisText || !hypothesisText.trim()) fail('hypothesis_present', 'Missing hypothesis');
   else pass('hypothesis_present');
 
   if (proposal.expectedMetrics.length === 0) fail('expected_metrics_present', 'Expected metrics are required');
   else pass('expected_metrics_present');
 
-  if (!proposal.rollbackCondition.trim()) fail('rollback_condition_present', 'Missing rollback condition');
+  const rollbackConditionText = typeof proposal.rollbackCondition === 'string' ? proposal.rollbackCondition : proposal.rollbackCondition?.en;
+  if (!rollbackConditionText || !rollbackConditionText.trim()) fail('rollback_condition_present', 'Missing rollback condition');
   else pass('rollback_condition_present');
 
   if (proposal.confidence == null || proposal.confidence < 0.5) fail('confidence_threshold', 'Confidence must be at least 0.5');
@@ -197,7 +205,7 @@ function extractTargetMetrics(expectedMetrics: unknown[]): string[] {
 
 export interface BuildExecutionPlanInput extends ProposalGuardInput {
   /** Optional fine-grained per-style adjustment hints from the LLM. */
-  recommendationChanges?: Array<Pick<RecommendationChangeRequest, 'styleId' | 'action' | 'targetRank' | 'maxDelta'> & { reason?: string }>;
+  recommendationChanges?: Array<Pick<RecommendationChangeRequest, 'styleId' | 'action' | 'targetRank' | 'maxDelta'> & { reason?: string | I18nString }>;
 }
 
 /**
@@ -245,6 +253,7 @@ export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput)
   const reviewWindowHours = proposal.reviewWindowHours ?? Number(process.env['AGENT_REVIEW_WINDOW_HOURS'] ?? '2');
   const targetMetrics = extractTargetMetrics(proposal.expectedMetrics);
   const reason = proposal.intendedAction;
+  const reasonText = typeof reason === 'string' ? reason : reason.en;
 
   if (proposal.proposalType === 'adjust_recommendation') {
     // 1. Prefer LLM-provided per-change hints
@@ -253,7 +262,7 @@ export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput)
     const llmChangeByStyle = new Map(llmChanges.map(c => [c.styleId, c]));
 
     // 2. Fall back to parsing intendedAction text for direction + targetRank
-    const textHints = parseIntentHints(reason, proposal.targetIds);
+    const textHints = parseIntentHints(reasonText, proposal.targetIds);
 
     const changes: RecommendationChangeRequest[] = proposal.targetIds.map(styleId => {
       const llmHint = llmChangeByStyle.get(styleId);
@@ -269,7 +278,7 @@ export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput)
         action,
         targetRank,
         maxDelta: llmHint?.maxDelta,
-        reason: (llmHint as { reason?: string } | undefined)?.reason || reason,
+        reason: (llmHint as { reason?: string | I18nString } | undefined)?.reason || reason,
       };
     });
     return {
@@ -516,7 +525,7 @@ export interface AppliedChangeReport {
   applied: boolean;
   rankBefore: number | null;
   rankAfter: number | null;
-  reason: string;
+  reason: string | I18nString;
   rejectionReason?: string;
 }
 
@@ -603,6 +612,9 @@ export function applyRecommendationAdjustments(
 
     const proposed = working.slice();
     const [picked] = proposed.splice(idx, 1);
+    if (picked) {
+      picked.reason = typeof change.reason === 'string' ? change.reason : JSON.stringify(change.reason);
+    }
     proposed.splice(targetRank - 1, 0, picked!);
 
     // Diversity guard: roll back this change if it would violate the window constraint.

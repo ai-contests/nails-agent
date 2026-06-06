@@ -19,6 +19,21 @@ export async function POST(req: NextRequest): Promise<Response> {
   const { db } = openDb();
   const now = new Date().toISOString();
 
+  // Ensure user session exists to prevent foreign key constraint violation
+  const sessionExists = await db
+    .select()
+    .from(schema.userSessions)
+    .where(eq(schema.userSessions.session_id, sessionId))
+    .get();
+
+  if (!sessionExists) {
+    await db.insert(schema.userSessions).values({
+      session_id: sessionId,
+      status: 'active',
+      created_at: now,
+    });
+  }
+
   const existing = await db
     .select()
     .from(schema.sessionFavorites)

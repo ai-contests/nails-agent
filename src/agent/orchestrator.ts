@@ -56,77 +56,43 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
         content: `
         Analyze the following nail platform data:
 
-        TOP STYLE HEAT (top 8, recent 12h):
+        TOP STYLE HEAT (top 3):
         ${JSON.stringify(opCtx.styleHeat
           .sort((a: typeof opCtx.styleHeat[number], b: typeof opCtx.styleHeat[number]) => (b.heat_score ?? 0) - (a.heat_score ?? 0))
-          .slice(0, 8)
+          .slice(0, 3)
           .map((s: typeof opCtx.styleHeat[number]) => ({ id: s.style_id, heat: s.heat_score, growth: s.growth_score, conv: s.conversion_score })))}
 
-        TAG HEAT:
-        ${JSON.stringify(opCtx.tagHeat.map((t: typeof opCtx.tagHeat[number]) => ({ tag: t.tag_type + ':' + t.tag_value, heat: t.heat_score, growth: t.growth_score })))}
+        TAG HEAT (top 3):
+        ${JSON.stringify(opCtx.tagHeat
+          .sort((a: typeof opCtx.tagHeat[number], b: typeof opCtx.tagHeat[number]) => (b.heat_score ?? 0) - (a.heat_score ?? 0))
+          .slice(0, 3)
+          .map((t: typeof opCtx.tagHeat[number]) => ({ tag: t.tag_type + ':' + t.tag_value, heat: t.heat_score, growth: t.growth_score })))}
 
-        ACTIVE RECOMMENDATIONS (top 10 ranks):
-        ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 10).map((r: typeof opCtx.activeRecommendationItems[number]) => ({ id: r.item.style_id, rank: r.item.rank_no })))}
+        ACTIVE RECOMMENDATIONS (top 8):
+        ${JSON.stringify((opCtx.activeRecommendationItems || []).slice(0, 8).map((r: typeof opCtx.activeRecommendationItems[number]) => ({ id: r.item.style_id, rank: r.item.rank_no })))}
 
-        RISING TAG TRENDS + PRE-MATCHED CANDIDATES (use these for list_candidate proposals):
-        ${JSON.stringify({ trends: opCtx.tagTrendActions.trends.slice(0, 3), actions: opCtx.tagTrendActions.actions.slice(0, 3).map((a: typeof opCtx.tagTrendActions.actions[number]) => ({ styleId: a.styleId, reason: a.reason, score: a.finalScore })) })}
+        RISING TAG TRENDS (top 2):
+        ${JSON.stringify({ trends: opCtx.tagTrendActions.trends.slice(0, 2), actions: opCtx.tagTrendActions.actions.slice(0, 2).map((a: typeof opCtx.tagTrendActions.actions[number]) => ({ styleId: a.styleId, score: a.finalScore })) })}
 
-        STRATEGY MEMORIES (recent lessons):
-        ${JSON.stringify(opCtx.memories.slice(0, 5).map((m: typeof opCtx.memories[number]) => ({ type: m.action_type, score: m.outcome_score, lesson: m.lesson.slice(0, 120) })))}
+        STRATEGY MEMORIES (top 2):
+        ${JSON.stringify(opCtx.memories.slice(0, 2).map((m: typeof opCtx.memories[number]) => ({ type: m.action_type, score: m.outcome_score, lesson: m.lesson.slice(0, 100) })))}
 
-        Output exactly one JSON object:
+        Output JSON format:
         {
           "toolCalls": [
-            {
-              "toolName": "discoverOpportunity",
-              "arguments": {
-                "targetType": "style" | "tag" | "candidate" | "global",
-                "targetId": "string",
-                "title": "string",
-                "summary": "string",
-                "score": 0.0
-              }
-            },
-            {
-              "toolName": "diagnoseAnomaly",
-              "arguments": {
-                "targetType": "style" | "tag" | "global",
-                "targetId": "string",
-                "title": "string",
-                "summary": "string",
-                "score": 0.0
-              }
-            },
-            {
-              "toolName": "continueObservation",
-              "arguments": {
-                "note": "string"
-              }
-            },
-            {
-              "toolName": "recordActionProposal",
-              "arguments": {
-                "proposalType": "adjust_recommendation" | "list_candidate" | "unlist_to_candidate",
-                "targetType": "style" | "candidate",
-                "targetIds": ["string"],
-                "intendedAction": "string",
-                "hypothesis": "string",
-                "expectedMetrics": [{ "metric": "tryon_count" | "favorite_count" | "conversion_score", "direction": "increase" | "decrease" | "maintain", "minDelta": 0.0 }],
-                "rollbackCondition": "string",
-                "reviewWindowHours": 12,
-                "confidence": 0.0
-              }
-            }
+            { "toolName": "discoverOpportunity", "arguments": { "targetType": "style, tag, candidate, or global", "targetId": "string", "title": { "en": "string", "zh": "string" }, "summary": { "en": "string", "zh": "string" }, "score": number } },
+            { "toolName": "diagnoseAnomaly", "arguments": { "targetType": "style, tag, or global", "targetId": "string", "title": { "en": "string", "zh": "string" }, "summary": { "en": "string", "zh": "string" }, "score": number } },
+            { "toolName": "continueObservation", "arguments": { "note": "string" } },
+            { "toolName": "recordActionProposal", "arguments": { "proposalType": "adjust_recommendation, list_candidate, or unlist_to_candidate", "targetType": "style or candidate", "targetIds": ["string"], "recommendationChanges": [{ "styleId": "string", "action": "promote or demote", "targetRank": number, "maxDelta": number, "reason": { "en": "string", "zh": "string" } }], "intendedAction": { "en": "string", "zh": "string" }, "hypothesis": { "en": "string", "zh": "string" }, "expectedMetrics": [{ "metric": "tryon_count, favorite_count, or conversion_score", "direction": "increase, decrease, or maintain", "minDelta": number }], "rollbackCondition": { "en": "string", "zh": "string" }, "reviewWindowHours": number, "confidence": number } }
           ]
         }
 
         Rules:
-        - score and confidence must be numbers from 0 to 1.
+        - score/confidence must be 0.0 to 1.0.
         - Call at least one finding tool: discoverOpportunity, diagnoseAnomaly, or continueObservation.
-        - You may record tag trends with discoverOpportunity or diagnoseAnomaly.
-        - Only recordActionProposal creates proposals. Its targetType must be executable "style" or "candidate" only.
-        - Do not call execution tools. You are not allowed to call adjustRecommendation, decideStyleStatus, writeStrategyMemory, validateActionProposal, or completeAgentRun.
-        - If a tag trend is useful but not mapped to concrete styles yet, call discoverOpportunity only and do not create a proposal.
+        - Only recordActionProposal creates proposals (targetType must be "style" or "candidate").
+        - Never call execution tools (e.g. adjustRecommendation, decideStyleStatus, writeStrategyMemory, etc.).
+        - If a tag trend has no matched styles, call discoverOpportunity only; do not create proposal.
         `
       }
     ];
@@ -137,12 +103,13 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
 
     try {
       const responseText = await callLlmModel(promptMessages);
+      console.log(`[Agent Cycle] LLM Response Content:\n${responseText}`);
       const toolCallPlan = parseAgentToolCallPlanResponse(responseText);
       const toolExecution = await executeAgentToolCalls(toolCallPlan.toolCalls, runId);
       findingIds = toolExecution.findingIds;
       proposalIds = toolExecution.proposalIds;
     } catch (e) {
-      console.warn('Failed to call LLM or validate agent tool calls; no operational actions will be executed:', e);
+      console.error('[Agent Cycle] Failed to call LLM or validate agent tool calls:', e);
       observationNote = 'LLM tool call plan was unavailable or failed schema validation. No operational action executed this run.';
     }
 

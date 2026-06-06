@@ -15,22 +15,27 @@ export const ExpectedMetricSchema = z.object({
   minDelta: z.number().nonnegative().optional(),
 }).strict();
 
+export const I18nStringSchema = z.object({
+  en: z.string().min(1),
+  zh: z.string().min(1),
+}).strict();
+
 export const FindingSchema = z.object({
   findingType: z.enum(['opportunity', 'anomaly']),
   targetType: z.enum(['style', 'tag', 'candidate', 'global']),
   targetId: z.string().min(1).optional(),
-  title: z.string().min(1),
-  summary: z.string().min(1),
+  title: I18nStringSchema,
+  summary: I18nStringSchema,
   evidence: z.record(z.string(), z.unknown()).optional(),
   score: z.number().min(0).max(1).optional(),
 }).strict();
 
 const BaseProposalSchema = z.object({
   targetIds: z.array(z.string().min(1)),
-  intendedAction: z.string().min(1),
-  hypothesis: z.string().min(1),
+  intendedAction: I18nStringSchema,
+  hypothesis: I18nStringSchema,
   expectedMetrics: z.array(ExpectedMetricSchema).min(1),
-  rollbackCondition: z.string().min(1),
+  rollbackCondition: I18nStringSchema,
   reviewWindowHours: z.number().int().positive().optional(),
   confidence: z.number().min(0).max(1).optional(),
   executionTool: z.string().min(1).optional(),
@@ -41,6 +46,13 @@ const AdjustRecommendationProposalSchema = BaseProposalSchema.extend({
   proposalType: z.literal('adjust_recommendation'),
   targetType: z.literal('style'),
   targetIds: z.array(z.string().min(1)).min(1).max(10),
+  recommendationChanges: z.array(z.object({
+    styleId: z.string().min(1),
+    action: z.enum(['promote', 'demote']),
+    targetRank: z.number().int().positive().optional(),
+    maxDelta: z.number().int().positive().optional(),
+    reason: I18nStringSchema.optional()
+  })).optional(),
 }).strict();
 
 const ListCandidateProposalSchema = BaseProposalSchema.extend({
@@ -59,10 +71,10 @@ const NoActionProposalSchema = z.object({
   proposalType: z.literal('no_action'),
   targetType: z.literal('global'),
   targetIds: z.array(z.string()).max(0),
-  intendedAction: z.string().min(1),
-  hypothesis: z.string().min(1),
+  intendedAction: I18nStringSchema,
+  hypothesis: I18nStringSchema,
   expectedMetrics: z.array(ExpectedMetricSchema).max(0),
-  rollbackCondition: z.string().min(1),
+  rollbackCondition: I18nStringSchema,
   reviewWindowHours: z.number().int().positive().optional(),
   confidence: z.number().min(0).max(1).optional(),
   executionTool: z.string().min(1).optional(),

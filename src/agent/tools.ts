@@ -576,12 +576,17 @@ export async function getOperationContext(agentRunId: string, historyRounds = 5)
 // 2. FINDING TOOLS
 // ==========================================
 
+export interface I18nString {
+  en: string;
+  zh: string;
+}
+
 export interface DiscoverOpportunityInput {
   agentRunId: string;
   targetType: 'style' | 'tag' | 'candidate' | 'global';
   targetId?: string;
-  title: string;
-  summary: string;
+  title: I18nString;
+  summary: I18nString;
   evidence: Record<string, unknown>;
   score?: number;
 }
@@ -595,8 +600,8 @@ export async function discoverOpportunity(input: DiscoverOpportunityInput) {
     finding_type: 'opportunity',
     target_type: input.targetType,
     target_id: input.targetId || null,
-    title: input.title,
-    summary: input.summary,
+    title: JSON.stringify(input.title),
+    summary: JSON.stringify(input.summary),
     evidence: JSON.stringify(input.evidence),
     score: input.score || null,
     created_at: new Date().toISOString(),
@@ -609,8 +614,8 @@ export interface DiagnoseAnomalyInput {
   agentRunId: string;
   targetType: 'style' | 'tag' | 'global';
   targetId?: string;
-  title: string;
-  summary: string;
+  title: I18nString;
+  summary: I18nString;
   evidence: Record<string, unknown>;
   score?: number;
 }
@@ -624,8 +629,8 @@ export async function diagnoseAnomaly(input: DiagnoseAnomalyInput) {
     finding_type: 'anomaly',
     target_type: input.targetType,
     target_id: input.targetId || null,
-    title: input.title,
-    summary: input.summary,
+    title: JSON.stringify(input.title),
+    summary: JSON.stringify(input.summary),
     evidence: JSON.stringify(input.evidence),
     score: input.score || null,
     created_at: new Date().toISOString(),
@@ -642,8 +647,8 @@ export async function continueObservation(agentRunId: string, note: string) {
     agent_run_id: agentRunId,
     finding_type: 'tag_trend',
     target_type: 'global',
-    title: 'Baseline Observation',
-    summary: note,
+    title: JSON.stringify({ en: 'Baseline Observation', zh: '基线观察' }),
+    summary: JSON.stringify({ en: note, zh: note }),
     evidence: JSON.stringify({ note }),
     created_at: new Date().toISOString(),
   });
@@ -660,10 +665,10 @@ export interface RecordProposalInput {
   proposalType: 'adjust_recommendation' | 'list_candidate' | 'unlist_to_candidate' | 'start_experiment' | 'no_action';
   targetType: 'style' | 'candidate' | 'tag' | 'tag_combo' | 'global';
   targetIds: string[];
-  intendedAction: string;
-  hypothesis: string;
+  intendedAction: I18nString;
+  hypothesis: I18nString;
   expectedMetrics: Record<string, unknown>[];
-  rollbackCondition: string;
+  rollbackCondition: I18nString;
   reviewWindowHours?: number;
   confidence?: number;
   executionTool?: string;
@@ -680,10 +685,10 @@ export async function recordActionProposal(input: RecordProposalInput) {
     proposal_type: input.proposalType,
     target_type: input.targetType,
     target_ids: JSON.stringify(input.targetIds),
-    intended_action: input.intendedAction,
-    hypothesis: input.hypothesis,
+    intended_action: JSON.stringify(input.intendedAction),
+    hypothesis: JSON.stringify(input.hypothesis),
     expected_metrics: JSON.stringify(input.expectedMetrics),
-    rollback_condition: input.rollbackCondition,
+    rollback_condition: JSON.stringify(input.rollbackCondition),
     review_window_hours: input.reviewWindowHours ?? Number(process.env['AGENT_REVIEW_WINDOW_HOURS'] ?? '2'),
     confidence: input.confidence || null,
     status: 'pending_check',
@@ -1177,7 +1182,7 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
   void heatRankStyleIds; // reserved for future tie-break tracking
 
   const statusChanges: StyleStatusChange[] = [];
-  const statusChangeReasons = new Map<string, string>();
+  const statusChangeReasons = new Map<string, string | I18nString>();
   const statusChangeProposalByStyleId = new Map<string, string>();
   const statusChangePayloadByProposalId = new Map<string, DecideStyleStatusExecutionPayload>();
   const recommendationPayloadByProposalId = new Map<string, AdjustRecommendationExecutionPayload>();
@@ -1346,9 +1351,11 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
       title: proposal.executionTool === 'adjust_recommendation'
         ? 'Adjust main recommendations page'
         : `Modify status for ${proposalStatusChanges.length} style(s)`,
-      summary: proposal.executionTool === 'adjust_recommendation'
-        ? `Agent batch generated recommendation snapshot ${snapshotId}.`
-        : `Agent batch changed ${proposalStatusChanges.length} style status value(s) and generated snapshot ${snapshotId}.`,
+      summary: proposal.intended_action
+        ? `${proposal.intended_action} (Snapshot ID: ${snapshotId})`
+        : proposal.executionTool === 'adjust_recommendation'
+          ? `Agent batch generated recommendation snapshot ${snapshotId}.`
+          : `Agent batch changed ${proposalStatusChanges.length} style status value(s) and generated snapshot ${snapshotId}.`,
       status: 'executed',
       execution_result: JSON.stringify({
         previousSnapshotId: currentSnapshot.snapshot_id,
@@ -1394,7 +1401,7 @@ export async function executeApprovedProposalBatch(input: ExecuteApprovedProposa
           to_status: change.newStatus,
           rank_before: currentRankByStyleId.get(change.styleId) ?? null,
           rank_after: finalRankByStyleId.get(change.styleId) ?? null,
-          reason: statusChangeReasons.get(change.styleId) || 'Agent batch status change',
+          reason: typeof statusChangeReasons.get(change.styleId) === 'string' ? statusChangeReasons.get(change.styleId) as string : JSON.stringify(statusChangeReasons.get(change.styleId)),
           created_at: now,
         });
 

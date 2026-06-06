@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { DecisionCard } from '@/components/admin/DecisionCard';
 import { TimelineNode } from '@/components/admin/TimelineNode';
 import { Link } from '@/src/i18n/routing';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 
 interface AgentRun {
@@ -38,6 +38,7 @@ interface Decision {
   title: string;
   summary: string;
   status: string;
+  execution_result?: string | null;
 }
 
 interface Proposal {
@@ -57,6 +58,21 @@ interface RunDetail {
 
 export default function AdminDashboard() {
   const t = useTranslations('admin');
+  const locale = useLocale();
+
+  const renderI18n = useCallback((text: string | null | undefined) => {
+    if (!text) return '';
+    try {
+      const obj = JSON.parse(text);
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        return (obj as Record<string, string>)[locale] || (obj as Record<string, string>)['en'] || text;
+      }
+    } catch {
+      return text;
+    }
+    return text;
+  }, [locale]);
+
   const [runs, setRuns] = useState<AgentRun[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [runDetail, setRunDetail] = useState<RunDetail | null>(null);
@@ -343,8 +359,8 @@ export default function AdminDashboard() {
                         {f.finding_type}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-text-dark-primary truncate">{f.title}</p>
-                        <p className="text-[11px] text-text-dark-muted mt-0.5 line-clamp-2">{f.summary}</p>
+                        <p className="text-xs font-medium text-text-dark-primary truncate">{renderI18n(f.title)}</p>
+                        <p className="text-[11px] text-text-dark-muted mt-0.5 line-clamp-2">{renderI18n(f.summary)}</p>
                         {f.target_id && (
                           <p className="text-[10px] text-text-dark-muted font-mono mt-1">{f.target_type}: {f.target_id}</p>
                         )}
@@ -370,8 +386,27 @@ export default function AdminDashboard() {
                     <div key={d.decision_id} className="bg-surface-dark border border-border-dark rounded-md p-3 flex items-start gap-3">
                       <ChevronRight className="w-3.5 h-3.5 text-accent-blue shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-text-dark-primary truncate">{d.title}</p>
-                        <p className="text-[11px] text-text-dark-muted mt-0.5 line-clamp-2">{d.summary}</p>
+                        <p className="text-xs font-medium text-text-dark-primary truncate">{renderI18n(d.title)}</p>
+                        <p className="text-[11px] text-text-dark-muted mt-0.5 line-clamp-2">{renderI18n(d.summary)}</p>
+                        {d.execution_result && (() => {
+                          try {
+                            const result = JSON.parse(d.execution_result);
+                            if (result.adjustmentReports && result.adjustmentReports.length > 0) {
+                              return (
+                                <div className="mt-2 space-y-1">
+                                  {result.adjustmentReports.map((r: any) => (
+                                    <div key={r.styleId} className="text-[10px] text-text-dark-secondary flex gap-2">
+                                      <span className="font-mono text-accent-blue">{r.styleId}</span>
+                                      <span className="font-mono bg-bg-dark px-1 rounded">{r.rankBefore} &rarr; {r.rankAfter}</span>
+                                      <span className="truncate" title={renderI18n(r.reason)}>{renderI18n(r.reason)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              );
+                            }
+                          } catch (e) {}
+                          return null;
+                        })()}
                         <p className="text-[10px] font-mono text-accent-blue mt-1">{d.action_type}</p>
                       </div>
                       <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
@@ -394,7 +429,7 @@ export default function AdminDashboard() {
                   {runDetail.proposals.map(p => (
                     <div key={p.proposal_id} className="bg-surface-dark border border-border-dark rounded-md p-3 flex items-start gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-text-dark-primary truncate">{p.intended_action}</p>
+                        <p className="text-xs font-medium text-text-dark-primary truncate">{renderI18n(p.intended_action)}</p>
                         <p className="text-[10px] font-mono text-text-dark-muted mt-1">{p.proposal_type}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">

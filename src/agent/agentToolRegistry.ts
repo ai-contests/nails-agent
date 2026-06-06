@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import * as tools from './tools';
-import { ProposalSchema } from './agentPlanSchema';
+import { ProposalSchema, I18nStringSchema } from './agentPlanSchema';
 
 const DiscoverOpportunityArgumentsSchema = z.object({
   targetType: z.enum(['style', 'tag', 'candidate', 'global']),
   targetId: z.string().min(1).optional(),
-  title: z.string().min(1),
-  summary: z.string().min(1),
+  title: I18nStringSchema,
+  summary: I18nStringSchema,
   evidence: z.record(z.string(), z.unknown()).optional(),
   score: z.number().min(0).max(1).optional(),
 }).strict();
@@ -14,8 +14,8 @@ const DiscoverOpportunityArgumentsSchema = z.object({
 const DiagnoseAnomalyArgumentsSchema = z.object({
   targetType: z.enum(['style', 'tag', 'global']),
   targetId: z.string().min(1).optional(),
-  title: z.string().min(1),
-  summary: z.string().min(1),
+  title: I18nStringSchema,
+  summary: I18nStringSchema,
   evidence: z.record(z.string(), z.unknown()).optional(),
   score: z.number().min(0).max(1).optional(),
 }).strict();
@@ -100,9 +100,22 @@ function coerceToolCallPlan(raw: unknown): unknown {
 
 export function parseAgentToolCallPlanResponse(responseText: string): AgentToolCallPlan {
   let parsed: unknown;
+  let cleanText = responseText.trim();
+
+  // Strip markdown code block wrappers if present
+  if (cleanText.startsWith('```')) {
+    const lines = cleanText.split('\n');
+    if (lines[0]?.startsWith('```')) {
+      lines.shift();
+    }
+    if (lines[lines.length - 1]?.startsWith('```')) {
+      lines.pop();
+    }
+    cleanText = lines.join('\n').trim();
+  }
 
   try {
-    parsed = JSON.parse(responseText);
+    parsed = JSON.parse(cleanText);
   } catch (error) {
     throw new Error(`Invalid agent tool call plan JSON: ${(error as Error).message}`);
   }

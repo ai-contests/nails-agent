@@ -1,96 +1,8 @@
 [
   {
-    "style_id": "STYLE001",
-    "source": "candidate",
-    "image_path": "/Users/nev4rb14su/workspace/nails-agent/data/tryon_v2/canon_001_palm_down_top_medium.png",
-    "image_width": 1024,
-    "image_height": 1024,
-    "nail_count": 5,
-    "bboxes": [
-      {
-        "x1": 494,
-        "y1": 167,
-        "x2": 540,
-        "y2": 236
-      },
-      {
-        "x1": 611,
-        "y1": 219,
-        "x2": 653,
-        "y2": 289
-      },
-      {
-        "x1": 725,
-        "y1": 354,
-        "x2": 763,
-        "y2": 414
-      },
-      {
-        "x1": 377,
-        "y1": 212,
-        "x2": 417,
-        "y2": 279
-      },
-      {
-        "x1": 259,
-        "y1": 459,
-        "x2": 306,
-        "y2": 540
-      }
-    ],
-    "primary_color_family": "olive",
-    "primary_color_name": "橄榄绿",
-    "primary_color_rgb": [
-      100,
-      91,
-      64
-    ],
-    "dominant_palette": [
-      [
-        100,
-        91,
-        64
-      ],
-      [
-        232,
-        217,
-        188
-      ],
-      [
-        48,
-        46,
-        40
-      ],
-      [
-        159,
-        147,
-        116
-      ],
-      [
-        205,
-        188,
-        160
-      ]
-    ],
-    "color_confidence": 0.129,
-    "secondary_color_family": "cream",
-    "secondary_color_name": "奶白",
-    "secondary_color_rgb": [
-      232,
-      217,
-      188
-    ],
-    "secondary_color_confidence": 0.124,
-    "length_tag": "medium",
-    "length_ratio": 1.665,
-    "length_confidence": 0.989,
-    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
-    "extracted_at": "2026-06-04T09:21:32.761Z"
-  },
-  {
     "style_id": "STYLE002",
     "source": "enhanced",
-    "image_path": "https://qu.ax/jOXQI",
+    "image_path": "/images/tryon_v2/canon_002_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -178,7 +90,7 @@
   {
     "style_id": "STYLE003",
     "source": "enhanced",
-    "image_path": "https://qu.ax/idlcu",
+    "image_path": "/images/tryon_v2/canon_004_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -266,7 +178,7 @@
   {
     "style_id": "STYLE004",
     "source": "enhanced",
-    "image_path": "https://qu.ax/b9IQc",
+    "image_path": "/images/tryon_v2/canon_006_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 7,
@@ -366,7 +278,7 @@
   {
     "style_id": "STYLE005",
     "source": "enhanced",
-    "image_path": "https://qu.ax/Xhqc9",
+    "image_path": "/images/tryon_v2/canon_008_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -454,7 +366,7 @@
   {
     "style_id": "STYLE006",
     "source": "enhanced",
-    "image_path": "https://qu.ax/BhSpa",
+    "image_path": "/images/tryon_v2/canon_010_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -542,7 +454,7 @@
   {
     "style_id": "STYLE007",
     "source": "enhanced",
-    "image_path": "https://qu.ax/guK2a",
+    "image_path": "/images/tryon_v2/canon_012_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -630,7 +542,7 @@
   {
     "style_id": "STYLE008",
     "source": "enhanced",
-    "image_path": "https://qu.ax/zvvxo",
+    "image_path": "/images/tryon_v2/canon_014_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -718,7 +630,7 @@
   {
     "style_id": "STYLE009",
     "source": "enhanced",
-    "image_path": "https://qu.ax/7MaL8",
+    "image_path": "/images/tryon_v2/canon_016_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -806,7 +718,7 @@
   {
     "style_id": "STYLE010",
     "source": "enhanced",
-    "image_path": "https://qu.ax/rOntm",
+    "image_path": "/images/tryon_v2/canon_018_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -894,7 +806,7 @@
   {
     "style_id": "STYLE011",
     "source": "enhanced",
-    "image_path": "https://qu.ax/R3PVA",
+    "image_path": "/images/tryon_v2/canon_020_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -1000,7 +912,7 @@
   {
     "style_id": "STYLE012",
     "source": "enhanced",
-    "image_path": "https://qu.ax/ZUIAd",
+    "image_path": "/images/tryon_v2/canon_022_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1088,7 +1000,7 @@
   {
     "style_id": "STYLE013",
     "source": "enhanced",
-    "image_path": "https://qu.ax/rLUZX",
+    "image_path": "/images/tryon_v2/canon_024_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1176,7 +1088,7 @@
   {
     "style_id": "STYLE014",
     "source": "enhanced",
-    "image_path": "https://qu.ax/T66cx",
+    "image_path": "/images/tryon_v2/canon_026_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1264,7 +1176,7 @@
   {
     "style_id": "STYLE015",
     "source": "enhanced",
-    "image_path": "https://qu.ax/ztrRR",
+    "image_path": "/images/tryon_v2/canon_028_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1352,7 +1264,7 @@
   {
     "style_id": "STYLE016",
     "source": "enhanced",
-    "image_path": "https://qu.ax/yffkJ",
+    "image_path": "/images/tryon_v2/canon_030_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1440,7 +1352,7 @@
   {
     "style_id": "STYLE017",
     "source": "enhanced",
-    "image_path": "https://qu.ax/PWnfX",
+    "image_path": "/images/tryon_v2/canon_032_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1528,7 +1440,7 @@
   {
     "style_id": "STYLE018",
     "source": "enhanced",
-    "image_path": "https://qu.ax/Idc4g",
+    "image_path": "/images/tryon_v2/canon_034_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 7,
@@ -1628,7 +1540,7 @@
   {
     "style_id": "STYLE019",
     "source": "enhanced",
-    "image_path": "https://qu.ax/oWopP",
+    "image_path": "/images/tryon_v2/canon_036_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1716,7 +1628,7 @@
   {
     "style_id": "STYLE020",
     "source": "enhanced",
-    "image_path": "https://qu.ax/EHY1n",
+    "image_path": "/images/tryon_v2/canon_038_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1804,7 +1716,7 @@
   {
     "style_id": "STYLE021",
     "source": "enhanced",
-    "image_path": "https://qu.ax/sYn2r",
+    "image_path": "/images/tryon_v2/canon_040_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1892,7 +1804,7 @@
   {
     "style_id": "STYLE022",
     "source": "enhanced",
-    "image_path": "https://qu.ax/WRX6c",
+    "image_path": "/images/tryon_v2/canon_042_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -1980,7 +1892,7 @@
   {
     "style_id": "STYLE023",
     "source": "enhanced",
-    "image_path": "https://qu.ax/bhvuL",
+    "image_path": "/images/tryon_v2/canon_044_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2068,7 +1980,7 @@
   {
     "style_id": "STYLE024",
     "source": "enhanced",
-    "image_path": "https://qu.ax/B2IYh",
+    "image_path": "/images/tryon_v2/canon_046_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2156,7 +2068,7 @@
   {
     "style_id": "STYLE025",
     "source": "enhanced",
-    "image_path": "https://qu.ax/JmcRr",
+    "image_path": "/images/tryon_v2/canon_048_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -2262,7 +2174,7 @@
   {
     "style_id": "STYLE026",
     "source": "enhanced",
-    "image_path": "https://qu.ax/3aRPR",
+    "image_path": "/images/tryon_v2/canon_050_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2350,7 +2262,7 @@
   {
     "style_id": "STYLE027",
     "source": "enhanced",
-    "image_path": "https://qu.ax/28Zhg",
+    "image_path": "/images/tryon_v2/canon_052_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2434,7 +2346,7 @@
   {
     "style_id": "STYLE028",
     "source": "enhanced",
-    "image_path": "https://qu.ax/WmMjl",
+    "image_path": "/images/tryon_v2/canon_054_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2522,7 +2434,7 @@
   {
     "style_id": "STYLE029",
     "source": "enhanced",
-    "image_path": "https://qu.ax/gea54",
+    "image_path": "/images/tryon_v2/canon_056_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2586,7 +2498,7 @@
   {
     "style_id": "STYLE030",
     "source": "enhanced",
-    "image_path": "https://qu.ax/cy3dr",
+    "image_path": "/images/tryon_v2/canon_058_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2674,7 +2586,7 @@
   {
     "style_id": "STYLE031",
     "source": "enhanced",
-    "image_path": "https://qu.ax/lt3aZ",
+    "image_path": "/images/tryon_v2/canon_060_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -2762,7 +2674,7 @@
   {
     "style_id": "STYLE032",
     "source": "enhanced",
-    "image_path": "https://qu.ax/fAOke",
+    "image_path": "/images/tryon_v2/canon_062_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -2866,197 +2778,9 @@
     "extracted_at": "2026-06-04T04:58:43.593Z"
   },
   {
-    "style_id": "STYLE033",
-    "source": "candidate",
-    "image_path": "/Users/nev4rb14su/workspace/nails-agent/data/tryon_v2/canon_033_fist_thumb_up_deep.png",
-    "image_width": 1024,
-    "image_height": 1024,
-    "nail_count": 5,
-    "bboxes": [
-      {
-        "x1": 524,
-        "y1": 560,
-        "x2": 587,
-        "y2": 648
-      },
-      {
-        "x1": 451,
-        "y1": 592,
-        "x2": 511,
-        "y2": 675
-      },
-      {
-        "x1": 603,
-        "y1": 492,
-        "x2": 657,
-        "y2": 577
-      },
-      {
-        "x1": 372,
-        "y1": 557,
-        "x2": 417,
-        "y2": 629
-      },
-      {
-        "x1": 700,
-        "y1": 144,
-        "x2": 745,
-        "y2": 237
-      }
-    ],
-    "primary_color_family": "rose_gold",
-    "primary_color_name": "玫瑰金",
-    "primary_color_rgb": [
-      214,
-      179,
-      171
-    ],
-    "dominant_palette": [
-      [
-        214,
-        179,
-        171
-      ],
-      [
-        231,
-        184,
-        186
-      ],
-      [
-        201,
-        150,
-        146
-      ],
-      [
-        226,
-        200,
-        194
-      ],
-      [
-        243,
-        226,
-        225
-      ]
-    ],
-    "color_confidence": 0.482,
-    "secondary_color_family": "pink",
-    "secondary_color_name": "亮粉",
-    "secondary_color_rgb": [
-      231,
-      184,
-      186
-    ],
-    "secondary_color_confidence": 0.117,
-    "length_tag": "medium",
-    "length_ratio": 1.658,
-    "length_confidence": 0.845,
-    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
-    "extracted_at": "2026-06-04T09:21:44.399Z"
-  },
-  {
-    "style_id": "STYLE034",
-    "source": "enhanced",
-    "image_path": "/Users/nev4rb14su/workspace/nails-agent/data/tryon_v2/canon_034_two_hands_clasped_fair.png",
-    "image_width": 1024,
-    "image_height": 1024,
-    "nail_count": 7,
-    "bboxes": [
-      {
-        "x1": 417,
-        "y1": 149,
-        "x2": 461,
-        "y2": 209
-      },
-      {
-        "x1": 473,
-        "y1": 309,
-        "x2": 510,
-        "y2": 364
-      },
-      {
-        "x1": 465,
-        "y1": 122,
-        "x2": 516,
-        "y2": 183
-      },
-      {
-        "x1": 533,
-        "y1": 311,
-        "x2": 564,
-        "y2": 356
-      },
-      {
-        "x1": 539,
-        "y1": 177,
-        "x2": 579,
-        "y2": 232
-      },
-      {
-        "x1": 539,
-        "y1": 125,
-        "x2": 567,
-        "y2": 160
-      },
-      {
-        "x1": 575,
-        "y1": 146,
-        "x2": 614,
-        "y2": 196
-      }
-    ],
-    "primary_color_family": "red_pink",
-    "primary_color_name": "玫红",
-    "primary_color_rgb": [
-      194,
-      88,
-      99
-    ],
-    "dominant_palette": [
-      [
-        194,
-        88,
-        99
-      ],
-      [
-        189,
-        118,
-        116
-      ],
-      [
-        247,
-        239,
-        238
-      ],
-      [
-        126,
-        21,
-        24
-      ],
-      [
-        168,
-        124,
-        95
-      ]
-    ],
-    "color_confidence": 0.053,
-    "secondary_color_family": "mauve",
-    "secondary_color_name": "玫粉",
-    "secondary_color_rgb": [
-      189,
-      118,
-      116
-    ],
-    "secondary_color_confidence": 0.052,
-    "length_tag": "short",
-    "length_ratio": 1.47,
-    "length_confidence": 0.972,
-    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
-    "extracted_at": "2026-06-04T09:22:02.994Z"
-  },
-  {
     "style_id": "STYLE035",
     "source": "enhanced",
-    "image_path": "https://qu.ax/PcR6h",
+    "image_path": "/images/tryon_v2/canon_068_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3144,7 +2868,7 @@
   {
     "style_id": "STYLE036",
     "source": "enhanced",
-    "image_path": "https://qu.ax/xBw4c",
+    "image_path": "/images/tryon_v2/canon_070_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3228,7 +2952,7 @@
   {
     "style_id": "STYLE037",
     "source": "enhanced",
-    "image_path": "https://qu.ax/n3LLE",
+    "image_path": "/images/tryon_v2/canon_072_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3297,7 +3021,7 @@
   {
     "style_id": "STYLE038",
     "source": "enhanced",
-    "image_path": "https://qu.ax/BYQcp",
+    "image_path": "/images/tryon_v2/canon_074_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3385,7 +3109,7 @@
   {
     "style_id": "STYLE039",
     "source": "enhanced",
-    "image_path": "https://qu.ax/QvWRk",
+    "image_path": "/images/tryon_v2/canon_076_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -3477,7 +3201,7 @@
   {
     "style_id": "STYLE040",
     "source": "enhanced",
-    "image_path": "https://qu.ax/djQ5e",
+    "image_path": "/images/tryon_v2/canon_078_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3565,7 +3289,7 @@
   {
     "style_id": "STYLE041",
     "source": "enhanced",
-    "image_path": "https://qu.ax/5UYJy",
+    "image_path": "/images/tryon_v2/canon_080_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3653,7 +3377,7 @@
   {
     "style_id": "STYLE042",
     "source": "enhanced",
-    "image_path": "https://qu.ax/jLhog",
+    "image_path": "/images/tryon_v2/canon_082_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3734,97 +3458,9 @@
     "extracted_at": "2026-06-04T04:59:00.608Z"
   },
   {
-    "style_id": "STYLE043",
-    "source": "candidate",
-    "image_path": "/Users/nev4rb14su/workspace/nails-agent/data/tryon_v2/canon_043_palm_down_top_medium.png",
-    "image_width": 1024,
-    "image_height": 1024,
-    "nail_count": 5,
-    "bboxes": [
-      {
-        "x1": 495,
-        "y1": 155,
-        "x2": 539,
-        "y2": 232
-      },
-      {
-        "x1": 726,
-        "y1": 342,
-        "x2": 763,
-        "y2": 406
-      },
-      {
-        "x1": 257,
-        "y1": 450,
-        "x2": 305,
-        "y2": 531
-      },
-      {
-        "x1": 377,
-        "y1": 201,
-        "x2": 417,
-        "y2": 272
-      },
-      {
-        "x1": 612,
-        "y1": 205,
-        "x2": 650,
-        "y2": 278
-      }
-    ],
-    "primary_color_family": "pink",
-    "primary_color_name": "亮粉",
-    "primary_color_rgb": [
-      233,
-      180,
-      185
-    ],
-    "dominant_palette": [
-      [
-        233,
-        180,
-        185
-      ],
-      [
-        219,
-        184,
-        180
-      ],
-      [
-        207,
-        154,
-        154
-      ],
-      [
-        230,
-        205,
-        202
-      ],
-      [
-        241,
-        219,
-        220
-      ]
-    ],
-    "color_confidence": 0.637,
-    "secondary_color_family": "rose_gold",
-    "secondary_color_name": "玫瑰金",
-    "secondary_color_rgb": [
-      219,
-      184,
-      180
-    ],
-    "secondary_color_confidence": 0.108,
-    "length_tag": "long",
-    "length_ratio": 1.79,
-    "length_confidence": 0.993,
-    "extractor_version": "roboflow_seg_v3+v6_skinref_DT_erode+pca_axis_v2+sec_color",
-    "extracted_at": "2026-06-04T09:22:14.203Z"
-  },
-  {
     "style_id": "STYLE044",
     "source": "enhanced",
-    "image_path": "https://qu.ax/LHApw",
+    "image_path": "/images/tryon_v2/canon_086_palm_down_top_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -3912,7 +3548,7 @@
   {
     "style_id": "STYLE045",
     "source": "enhanced",
-    "image_path": "https://qu.ax/dCvha",
+    "image_path": "/images/tryon_v2/canon_088_fist_thumb_up_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4000,7 +3636,7 @@
   {
     "style_id": "STYLE046",
     "source": "enhanced",
-    "image_path": "https://qu.ax/uITF2",
+    "image_path": "/images/tryon_v2/canon_090_two_hands_clasped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -4106,7 +3742,7 @@
   {
     "style_id": "STYLE047",
     "source": "enhanced",
-    "image_path": "https://qu.ax/lLjJF",
+    "image_path": "/images/tryon_v2/canon_092_reaching_down_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4194,7 +3830,7 @@
   {
     "style_id": "STYLE048",
     "source": "enhanced",
-    "image_path": "https://qu.ax/s6QAb",
+    "image_path": "/images/tryon_v2/canon_094_reaching_down_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4282,7 +3918,7 @@
   {
     "style_id": "STYLE049",
     "source": "enhanced",
-    "image_path": "https://qu.ax/YMgUe",
+    "image_path": "/images/tryon_v2/canon_096_fingers_cupped_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4365,7 +4001,7 @@
   {
     "style_id": "STYLE050",
     "source": "enhanced",
-    "image_path": "https://qu.ax/0sLdu",
+    "image_path": "/images/tryon_v2/canon_098_palm_down_top_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4453,7 +4089,7 @@
   {
     "style_id": "STYLE051",
     "source": "candidate",
-    "image_path": "https://qu.ax/NQsfS",
+    "image_path": "/images/tryon_v2/canon_001_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4541,7 +4177,7 @@
   {
     "style_id": "STYLE052",
     "source": "candidate",
-    "image_path": "https://qu.ax/MtzL6",
+    "image_path": "/images/tryon_v2/canon_003_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4629,7 +4265,7 @@
   {
     "style_id": "STYLE053",
     "source": "candidate",
-    "image_path": "https://qu.ax/3hfAS",
+    "image_path": "/images/tryon_v2/canon_005_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4717,7 +4353,7 @@
   {
     "style_id": "STYLE054",
     "source": "candidate",
-    "image_path": "https://qu.ax/mAwzV",
+    "image_path": "/images/tryon_v2/canon_007_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 10,
@@ -4835,7 +4471,7 @@
   {
     "style_id": "STYLE055",
     "source": "candidate",
-    "image_path": "https://qu.ax/vmeEt",
+    "image_path": "/images/tryon_v2/canon_009_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -4923,7 +4559,7 @@
   {
     "style_id": "STYLE056",
     "source": "candidate",
-    "image_path": "https://qu.ax/yJ8Ql",
+    "image_path": "/images/tryon_v2/canon_011_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5011,7 +4647,7 @@
   {
     "style_id": "STYLE057",
     "source": "candidate",
-    "image_path": "https://qu.ax/osFIb",
+    "image_path": "/images/tryon_v2/canon_013_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5099,7 +4735,7 @@
   {
     "style_id": "STYLE058",
     "source": "candidate",
-    "image_path": "https://qu.ax/5wiUI",
+    "image_path": "/images/tryon_v2/canon_015_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5187,7 +4823,7 @@
   {
     "style_id": "STYLE059",
     "source": "candidate",
-    "image_path": "https://qu.ax/OP1pK",
+    "image_path": "/images/tryon_v2/canon_017_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5275,7 +4911,7 @@
   {
     "style_id": "STYLE060",
     "source": "candidate",
-    "image_path": "https://qu.ax/HvKtC",
+    "image_path": "/images/tryon_v2/canon_019_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 4,
@@ -5357,7 +4993,7 @@
   {
     "style_id": "STYLE061",
     "source": "candidate",
-    "image_path": "https://qu.ax/Blb7w",
+    "image_path": "/images/tryon_v2/canon_021_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 10,
@@ -5475,7 +5111,7 @@
   {
     "style_id": "STYLE062",
     "source": "candidate",
-    "image_path": "https://qu.ax/EbcQq",
+    "image_path": "/images/tryon_v2/canon_023_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5539,7 +5175,7 @@
   {
     "style_id": "STYLE063",
     "source": "candidate",
-    "image_path": "https://qu.ax/beohW",
+    "image_path": "/images/tryon_v2/canon_025_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5627,7 +5263,7 @@
   {
     "style_id": "STYLE064",
     "source": "candidate",
-    "image_path": "https://qu.ax/LGhda",
+    "image_path": "/images/tryon_v2/canon_027_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5715,7 +5351,7 @@
   {
     "style_id": "STYLE065",
     "source": "candidate",
-    "image_path": "https://qu.ax/MjCTw",
+    "image_path": "/images/tryon_v2/canon_029_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5803,7 +5439,7 @@
   {
     "style_id": "STYLE066",
     "source": "candidate",
-    "image_path": "https://qu.ax/FVf9c",
+    "image_path": "/images/tryon_v2/canon_031_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5891,7 +5527,7 @@
   {
     "style_id": "STYLE067",
     "source": "candidate",
-    "image_path": "https://qu.ax/XxKjz",
+    "image_path": "/images/tryon_v2/canon_033_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -5979,7 +5615,7 @@
   {
     "style_id": "STYLE068",
     "source": "candidate",
-    "image_path": "https://qu.ax/MKJZA",
+    "image_path": "/images/tryon_v2/canon_035_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -6085,7 +5721,7 @@
   {
     "style_id": "STYLE069",
     "source": "candidate",
-    "image_path": "https://qu.ax/tdAci",
+    "image_path": "/images/tryon_v2/canon_037_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6173,7 +5809,7 @@
   {
     "style_id": "STYLE070",
     "source": "candidate",
-    "image_path": "https://qu.ax/sUqtd",
+    "image_path": "/images/tryon_v2/canon_039_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 4,
@@ -6255,7 +5891,7 @@
   {
     "style_id": "STYLE071",
     "source": "candidate",
-    "image_path": "https://qu.ax/65TlI",
+    "image_path": "/images/tryon_v2/canon_041_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6343,7 +5979,7 @@
   {
     "style_id": "STYLE072",
     "source": "candidate",
-    "image_path": "https://qu.ax/QOtpo",
+    "image_path": "/images/tryon_v2/canon_043_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6431,7 +6067,7 @@
   {
     "style_id": "STYLE073",
     "source": "candidate",
-    "image_path": "https://qu.ax/mLig9",
+    "image_path": "/images/tryon_v2/canon_045_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6519,7 +6155,7 @@
   {
     "style_id": "STYLE074",
     "source": "candidate",
-    "image_path": "https://qu.ax/opTSB",
+    "image_path": "/images/tryon_v2/canon_047_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6607,7 +6243,7 @@
   {
     "style_id": "STYLE075",
     "source": "candidate",
-    "image_path": "https://qu.ax/5IOUQ",
+    "image_path": "/images/tryon_v2/canon_049_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 10,
@@ -6725,7 +6361,7 @@
   {
     "style_id": "STYLE076",
     "source": "candidate",
-    "image_path": "https://qu.ax/GF7b0",
+    "image_path": "/images/tryon_v2/canon_051_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6804,7 +6440,7 @@
   {
     "style_id": "STYLE077",
     "source": "candidate",
-    "image_path": "https://qu.ax/LhHja",
+    "image_path": "/images/tryon_v2/canon_053_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6892,7 +6528,7 @@
   {
     "style_id": "STYLE078",
     "source": "candidate",
-    "image_path": "https://qu.ax/DNDV8",
+    "image_path": "/images/tryon_v2/canon_055_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -6980,7 +6616,7 @@
   {
     "style_id": "STYLE079",
     "source": "candidate",
-    "image_path": "https://qu.ax/9neH6",
+    "image_path": "/images/tryon_v2/canon_057_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7068,7 +6704,7 @@
   {
     "style_id": "STYLE080",
     "source": "candidate",
-    "image_path": "https://qu.ax/AwhFn",
+    "image_path": "/images/tryon_v2/canon_059_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7156,7 +6792,7 @@
   {
     "style_id": "STYLE081",
     "source": "candidate",
-    "image_path": "https://qu.ax/7tErD",
+    "image_path": "/images/tryon_v2/canon_061_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7244,7 +6880,7 @@
   {
     "style_id": "STYLE082",
     "source": "candidate",
-    "image_path": "https://qu.ax/ZeZDl",
+    "image_path": "/images/tryon_v2/canon_063_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 10,
@@ -7362,7 +6998,7 @@
   {
     "style_id": "STYLE083",
     "source": "candidate",
-    "image_path": "https://qu.ax/Jbkqx",
+    "image_path": "/images/tryon_v2/canon_065_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 13,
@@ -7498,7 +7134,7 @@
   {
     "style_id": "STYLE084",
     "source": "candidate",
-    "image_path": "https://qu.ax/ySdvn",
+    "image_path": "/images/tryon_v2/canon_067_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7586,7 +7222,7 @@
   {
     "style_id": "STYLE085",
     "source": "candidate",
-    "image_path": "https://qu.ax/mFd6T",
+    "image_path": "/images/tryon_v2/canon_069_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7674,7 +7310,7 @@
   {
     "style_id": "STYLE086",
     "source": "candidate",
-    "image_path": "https://qu.ax/PNGzY",
+    "image_path": "/images/tryon_v2/canon_071_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7762,7 +7398,7 @@
   {
     "style_id": "STYLE087",
     "source": "candidate",
-    "image_path": "https://qu.ax/dJrUR",
+    "image_path": "/images/tryon_v2/canon_073_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7850,7 +7486,7 @@
   {
     "style_id": "STYLE088",
     "source": "candidate",
-    "image_path": "https://qu.ax/52Rfo",
+    "image_path": "/images/tryon_v2/canon_075_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -7938,7 +7574,7 @@
   {
     "style_id": "STYLE089",
     "source": "candidate",
-    "image_path": "https://qu.ax/3meva",
+    "image_path": "/images/tryon_v2/canon_077_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 10,
@@ -8056,7 +7692,7 @@
   {
     "style_id": "STYLE090",
     "source": "candidate",
-    "image_path": "https://qu.ax/9Nr43",
+    "image_path": "/images/tryon_v2/canon_079_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8144,7 +7780,7 @@
   {
     "style_id": "STYLE091",
     "source": "candidate",
-    "image_path": "https://qu.ax/IHajl",
+    "image_path": "/images/tryon_v2/canon_081_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8232,7 +7868,7 @@
   {
     "style_id": "STYLE092",
     "source": "candidate",
-    "image_path": "https://qu.ax/nxlmX",
+    "image_path": "/images/tryon_v2/canon_083_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8320,7 +7956,7 @@
   {
     "style_id": "STYLE093",
     "source": "candidate",
-    "image_path": "https://qu.ax/8iLcp",
+    "image_path": "/images/tryon_v2/canon_085_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8408,7 +8044,7 @@
   {
     "style_id": "STYLE094",
     "source": "candidate",
-    "image_path": "https://qu.ax/syVaO",
+    "image_path": "/images/tryon_v2/canon_087_fist_thumb_up_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8496,7 +8132,7 @@
   {
     "style_id": "STYLE095",
     "source": "candidate",
-    "image_path": "https://qu.ax/6Sqkh",
+    "image_path": "/images/tryon_v2/canon_089_fist_thumb_up_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8584,7 +8220,7 @@
   {
     "style_id": "STYLE096",
     "source": "candidate",
-    "image_path": "https://qu.ax/8OrdE",
+    "image_path": "/images/tryon_v2/canon_091_two_hands_clasped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 8,
@@ -8690,7 +8326,7 @@
   {
     "style_id": "STYLE097",
     "source": "candidate",
-    "image_path": "https://qu.ax/XMSFb",
+    "image_path": "/images/tryon_v2/canon_093_reaching_down_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8778,7 +8414,7 @@
   {
     "style_id": "STYLE098",
     "source": "candidate",
-    "image_path": "https://qu.ax/VUTaZ",
+    "image_path": "/images/tryon_v2/canon_095_fingers_cupped_fair.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8866,7 +8502,7 @@
   {
     "style_id": "STYLE099",
     "source": "candidate",
-    "image_path": "https://qu.ax/0lU5d",
+    "image_path": "/images/tryon_v2/canon_097_fingers_cupped_deep.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,
@@ -8954,7 +8590,7 @@
   {
     "style_id": "STYLE100",
     "source": "candidate",
-    "image_path": "https://qu.ax/lgDXH",
+    "image_path": "/images/tryon_v2/canon_099_palm_down_top_medium.png",
     "image_width": 1024,
     "image_height": 1024,
     "nail_count": 5,

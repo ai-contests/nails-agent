@@ -525,7 +525,7 @@ function main() {
     console.log(`  - ${styleSnapshotRows.length} style heat snapshots`);
     console.log(`  - ${tagSnapshotRows.length} tag heat snapshots`);
   } catch (e) {
-    sqlite.run('ROLLBACK');
+    try { sqlite.run('ROLLBACK'); } catch {}
     throw e;
   } finally {
     sqlite.close();

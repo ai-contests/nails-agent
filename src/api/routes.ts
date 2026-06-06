@@ -9,7 +9,16 @@ import { mergeRankedStyles } from './recommendationLogic';
 import fs from 'fs';
 import path from 'path';
 
-const { db } = openDb();
+const db = new Proxy({} as any, {
+  get(_target, prop, receiver) {
+    const { db: actualDb } = openDb();
+    const value = Reflect.get(actualDb, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(actualDb);
+    }
+    return value;
+  }
+});
 
 export const router = new Router();
 

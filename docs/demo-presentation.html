@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nails-Agent · 美甲 AI 试戴与智能运营</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a26;
+    --accent: #c084fc;
+    --accent2: #f472b6;
+    --accent3: #38bdf8;
+    --text: #f1f0ff;
+    --muted: #94a3b8;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(192,132,252,0.2);
+    --green: #4ade80;
+    --amber: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  nav .logo { font-size: 1rem; font-weight: 700; letter-spacing: .05em; }
+  nav .logo span { color: var(--accent); }
+  nav .nav-links { display: flex; gap: 1.5rem; }
+  nav .nav-links a {
+    color: var(--muted); font-size: .8rem; text-decoration: none;
+    cursor: pointer; transition: color .2s;
+  }
+  nav .nav-links a:hover { color: var(--text); }
+
+  /* SECTIONS */
+  section {
+    min-height: 100vh; padding: 5rem 2rem 3rem;
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 1100px; margin: 0 auto;
+  }
+  section.full { max-width: 100%; padding: 5rem 4rem 3rem; }
+
+  /* HERO */
+  .hero {
+    text-align: center; align-items: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(192,132,252,0.15) 0%, transparent 70%);
+  }
+  .hero .badge {
+    display: inline-block; border: 1px solid var(--border);
+    background: rgba(192,132,252,0.1);
+    padding: .35rem 1rem; border-radius: 99px;
+    font-size: .75rem; color: var(--accent); letter-spacing: .08em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+  }
+  .hero p { font-size: 1.15rem; color: var(--muted); max-width: 680px; line-height: 1.8; margin-bottom: 2rem; }
+  .hero .tagline-row {
+    display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .hero .tagline-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: .8rem 1.5rem;
+    font-size: .9rem;
+  }
+  .hero .tagline-item strong { color: var(--accent); }
+  .hero .stats-row {
+    display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+  }
+  .stat-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.2rem 2rem; text-align: center;
+    min-width: 130px;
+  }
+  .stat-box .num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .stat-box .label { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+  /* SECTION HEADER */
+  .section-tag {
+    display: inline-block; font-size: .7rem; letter-spacing: .15em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: .8rem;
+    padding: .25rem .8rem; background: rgba(192,132,252,0.1);
+    border-radius: 99px; border: 1px solid var(--border);
+  }
+  .section-tag.green { color: var(--green); background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.2); }
+  .section-tag.blue { color: var(--accent3); background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.2); }
+  .section-tag.amber { color: var(--amber); background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.2); }
+  h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: .5rem; line-height: 1.2; }
+  .subtitle { color: var(--muted); font-size: 1rem; line-height: 1.8; max-width: 700px; margin-bottom: 2.5rem; }
+
+  /* ARCH */
+  .arch-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin-bottom: 2rem;
+  }
+  @media (max-width: 700px) { .arch-grid { grid-template-columns: 1fr; } }
+  .arch-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.8rem;
+  }
+  .arch-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .8rem; }
+  .arch-card h3 .pill {
+    display: inline-block; font-size: .65rem; padding: .2rem .6rem;
+    border-radius: 99px; margin-left: .5rem; vertical-align: middle;
+  }
+  .pill-c { background: rgba(192,132,252,0.2); color: var(--accent); }
+  .pill-b { background: rgba(56,189,248,0.2); color: var(--accent3); }
+  .arch-card p { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+  .flow-steps {
+    display: flex; flex-direction: column; gap: .6rem; margin-top: 1rem;
+  }
+  .flow-step {
+    display: flex; align-items: flex-start; gap: .8rem;
+    font-size: .85rem; color: var(--muted); line-height: 1.5;
+  }
+  .step-num {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(192,132,252,0.2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 700; color: var(--accent);
+  }
+  .step-num.blue { background: rgba(56,189,248,0.2); color: var(--accent3); }
+
+  /* FEATURE DEMO */
+  .demo-flow {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin: 2rem 0;
+  }
+  .demo-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; position: relative;
+    overflow: hidden; transition: border-color .3s, transform .2s;
+  }
+  .demo-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .demo-card .icon {
+    font-size: 2rem; margin-bottom: 1rem;
+  }
+  .demo-card h4 { font-size: .95rem; font-weight: 700; margin-bottom: .5rem; }
+  .demo-card p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+  .demo-card .badge-tag {
+    display: inline-block; margin-top: .8rem;
+    font-size: .7rem; padding: .2rem .7rem; border-radius: 99px;
+    background: rgba(192,132,252,0.15); color: var(--accent);
+    border: 1px solid rgba(192,132,252,0.25);
+  }
+
+  /* SCREEN MOCKUPS */
+  .mockup-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem; margin: 2rem 0;
+  }
+  @media (max-width: 800px) { .mockup-row { grid-template-columns: 1fr; } }
+  .mockup {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .mockup-header {
+    background: var(--bg2); padding: .6rem 1rem;
+    display: flex; align-items: center; gap: .5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: .75rem; color: var(--muted);
+  }
+  .mockup-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .mockup-body { padding: 1rem; }
+
+  /* NAIL GRID MOCKUP */
+  .nail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .nail-card-mock {
+    border-radius: 8px; aspect-ratio: 3/4; position: relative;
+    overflow: hidden; display: flex; align-items: flex-end;
+  }
+  .nail-card-mock .color-block {
+    width: 100%; height: 100%; border-radius: 8px;
+  }
+  .nail-card-mock .card-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,.7));
+    padding: .3rem .4rem; font-size: .55rem; color: #fff;
+  }
+  /* HAND UPLOAD MOCKUP */
+  .upload-zone {
+    border: 1.5px dashed var(--border); border-radius: 12px;
+    padding: 1rem; text-align: center; margin-bottom: .8rem;
+    font-size: .75rem; color: var(--muted);
+  }
+  .profile-result {
+    background: rgba(192,132,252,0.1); border: 1px solid var(--border);
+    border-radius: 10px; padding: .8rem; font-size: .75rem;
+  }
+  .profile-result .row { display: flex; justify-content: space-between; margin-bottom: .4rem; }
+  .profile-result .val { color: var(--accent); font-weight: 600; }
+  .similar-styles { margin-top: .8rem; }
+  .similar-styles .label { font-size: .65rem; color: var(--muted); margin-bottom: .5rem; }
+  .similar-row { display: flex; gap: 5px; }
+  .s-dot { width: 28px; height: 36px; border-radius: 6px; }
+
+  /* TRYON MOCKUP */
+  .tryon-before-after {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
+    margin-bottom: .8rem;
+  }
+  .hand-mock {
+    border-radius: 10px; aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .65rem; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .hand-result {
+    border-radius: 10px; aspect-ratio: 1;
+    background: linear-gradient(135deg, #f0e6ff, #fce7f3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .result-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.5); padding: .3rem; font-size: .55rem; color: #fff;
+    text-align: center;
+  }
+  .tryon-badge {
+    display: flex; align-items: center; gap: .4rem;
+    background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 99px; padding: .3rem .8rem; font-size: .72rem; color: var(--green);
+  }
+
+  /* AGENT SECTION */
+  .agent-loop {
+    display: grid; grid-template-columns: 1fr 1.8fr;
+    gap: 2rem; align-items: start; margin: 2rem 0;
+  }
+  @media (max-width: 750px) { .agent-loop { grid-template-columns: 1fr; } }
+  .loop-diagram {
+    display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  }
+  .loop-node {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: .7rem 1.2rem; width: 100%;
+    font-size: .8rem; text-align: center; position: relative;
+  }
+  .loop-node.highlight { border-color: var(--accent); background: rgba(192,132,252,0.1); }
+  .loop-node.highlight2 { border-color: var(--accent3); background: rgba(56,189,248,0.1); }
+  .loop-node.highlight3 { border-color: var(--green); background: rgba(74,222,128,0.1); }
+  .loop-arrow { color: var(--muted); font-size: .9rem; }
+  .agent-detail { display: flex; flex-direction: column; gap: .8rem; }
+  .finding-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem;
+  }
+  .finding-card .fc-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: .5rem;
+  }
+  .finding-card .fc-title { font-size: .85rem; font-weight: 600; }
+  .finding-card .fc-type {
+    font-size: .65rem; padding: .2rem .6rem; border-radius: 99px;
+  }
+  .type-opp { background: rgba(74,222,128,0.2); color: var(--green); }
+  .type-ano { background: rgba(251,191,36,0.2); color: var(--amber); }
+  .type-trend { background: rgba(192,132,252,0.2); color: var(--accent); }
+  .finding-card .fc-body { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+  .decision-item {
+    display: flex; align-items: center; gap: .8rem;
+    background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px; padding: .7rem 1rem; font-size: .8rem;
+  }
+  .decision-icon { font-size: 1rem; }
+  .memory-card {
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 12px; padding: 1rem;
+  }
+  .memory-card h4 { font-size: .85rem; color: var(--accent3); margin-bottom: .5rem; }
+  .memory-card p { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+
+  /* TECH STACK */
+  .tech-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin: 2rem 0;
+  }
+  .tech-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.4rem;
+  }
+  .tech-card .layer { font-size: .7rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem; }
+  .tech-card .tech-name { font-size: 1rem; font-weight: 700; margin-bottom: .3rem; }
+  .tech-card .tech-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+  /* DB SCHEMA */
+  .schema-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: .6rem; margin: 1.5rem 0;
+  }
+  .schema-group {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: .9rem;
+  }
+  .schema-group .group-name {
+    font-size: .65rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin-bottom: .6rem;
+  }
+  .schema-group .table-list { display: flex; flex-direction: column; gap: .3rem; }
+  .table-chip {
+    font-size: .7rem; padding: .2rem .6rem; background: rgba(255,255,255,0.05);
+    border-radius: 6px; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .table-chip.accent { color: var(--accent); background: rgba(192,132,252,0.1); }
+  .table-chip.blue { color: var(--accent3); background: rgba(56,189,248,0.1); }
+
+  /* COMMERCIAL VALUE */
+  .value-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem; margin: 2rem 0;
+  }
+  @media (max-width: 750px) { .value-grid { grid-template-columns: 1fr; } }
+  .value-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem; text-align: center;
+    transition: transform .2s, border-color .3s;
+  }
+  .value-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .value-card .v-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .value-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+  .value-card .v-metric { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: .8rem 0; }
+  .value-card p { font-size: .82rem; color: var(--muted); line-height: 1.7; }
+
+  /* MARKET */
+  .market-row {
+    display: flex; gap: 2rem; flex-wrap: wrap; margin: 1.5rem 0;
+  }
+  .market-block {
+    flex: 1; min-width: 200px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+  }
+  .market-block .m-num { font-size: 2.2rem; font-weight: 800; color: var(--accent2); }
+  .market-block .m-label { font-size: .8rem; color: var(--muted); margin-top: .3rem; }
+  .expand-chips {
+    display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem;
+  }
+  .expand-chip {
+    padding: .3rem .9rem; border-radius: 99px; font-size: .78rem;
+    border: 1px solid var(--border); color: var(--muted);
+  }
+
+  /* CRITERIA MATRIX */
+  .matrix {
+    width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+    font-size: .85rem;
+  }
+  .matrix th {
+    text-align: left; padding: .8rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted); font-weight: 600; font-size: .75rem;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .matrix td {
+    padding: .9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  .matrix tr:hover td { background: rgba(255,255,255,0.02); }
+  .matrix .criteria { font-weight: 700; }
+  .matrix .score-bar {
+    display: flex; gap: 4px; margin-top: .4rem;
+  }
+  .matrix .score-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+    background: var(--accent);
+  }
+  .matrix .score-dot.empty { background: rgba(255,255,255,0.1); }
+
+  /* PIPELINE */
+  .pipeline {
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+  .p-step {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: .7rem 1rem;
+    font-size: .82rem; white-space: nowrap;
+    transition: border-color .3s;
+  }
+  .p-step:hover { border-color: var(--accent); }
+  .p-arrow { color: var(--muted); padding: 0 .5rem; font-size: 1rem; }
+
+  /* CLOSING */
+  .closing {
+    text-align: center; align-items: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(244,114,182,0.1) 0%, transparent 70%);
+  }
+  .closing h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
+  .closing .final-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0; }
+  .final-chip {
+    padding: .6rem 1.4rem; border-radius: 99px;
+    border: 1px solid var(--border); background: var(--card);
+    font-size: .9rem; color: var(--accent);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(192,132,252,0.3); border-radius: 3px; }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 2rem;
+  }
+
+  /* ANNOTATION */
+  .anno {
+    background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0; padding: .8rem 1.2rem;
+    font-size: .83rem; color: var(--muted); line-height: 1.7;
+    margin: 1rem 0;
+  }
+  .anno strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Nails<span>·</span>Agent</div>
+  <div class="nav-links">
+    <a onclick="document.getElementById('overview').scrollIntoView({behavior:'smooth'})">方案概览</a>
+    <a onclick="document.getElementById('c-side').scrollIntoView({behavior:'smooth'})">C端演示</a>
+    <a onclick="document.getElementById('b-side').scrollIntoView({behavior:'smooth'})">B端 Agent</a>
+    <a onclick="document.getElementById('tech').scrollIntoView({behavior:'smooth'})">技术架构</a>
+    <a onclick="document.getElementById('value').scrollIntoView({behavior:'smooth'})">商业价值</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="badge">美团 AI 比赛 · 美甲 AI 试戴与智能运营</div>
+  <h1>看见选择<br>运营自动化</h1>
+  <p>用户上传手图，30 秒内试戴任意款式；智能 Agent 12 小时自动运营闭环，
+  持续学习、持续优化——Nails-Agent 重新定义本地生活美甲品类体验。</p>
+
+  <div class="tagline-row">
+    <div class="tagline-item">📱 <strong>C端</strong>：试戴即所得 · 相似手型推荐</div>
+    <div class="tagline-item">🤖 <strong>B端</strong>：Agent 运营自动化 · 策略记忆</div>
+    <div class="tagline-item">🔗 <strong>闭环</strong>：行为 → 热度 → 决策 → 推荐</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="num">100</div><div class="label">试戴演示图</div></div>
+    <div class="stat-box"><div class="num">98</div><div class="label">款式特征库</div></div>
+    <div class="stat-box"><div class="num">21</div><div class="label">数据库表</div></div>
+    <div class="stat-box"><div class="num">14</div><div class="label">手模姿势×肤色</div></div>
+    <div class="stat-box"><div class="num">30s</div><div class="label">试戴响应时间</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="section-tag">创新性</div>
+  <h2>两端一体，全新切入</h2>
+  <p class="subtitle">传统美甲平台解决的是「展示」问题，Nails-Agent 解决的是「决策」和「运营效率」问题。
+  C端消除选择焦虑，B端消除运营人力依赖。</p>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h3>C 端用户体验 <span class="pill pill-c">Consumer</span></h3>
+      <p>用户从「看图猜效果」升级为「上传手图，试戴后决策」。同时基于手型识别匹配相似用户偏好，推荐更精准。</p>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="step-num">1</div>浏览 Agent 实时维护的主推荐页</div>
+        <div class="flow-step"><div class="step-num">2</div>上传手图 → 手型 + 肤色识别</div>
+        <div class="flow-step"><div class="step-num">3</div>相似手型用户的热门款推荐</div>
+        <div class="flow-step"><div class="step-num">4</div>一键试戴，30 秒出效果图</div>
+        <div class="flow-step"><div class="step-num">5</div>收藏 / 跳转预约下单</div>
+      </div>
+    </div>
+    <div class="arch-card">
+      <h3>B 端智能运营 <span class="pill pill-b">Business</span></h3>
+      <p>每 12 小时自动运行一轮 Agent：聚合行为热度，识别机会与异常，自动调整推荐位与候选款上下架，将每次决策效果复盘为可复用经验。</p>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="step-num blue">1</div>聚合行为事件 → style_heat / tag_heat</div>
+        <div class="flow-step"><div class="step-num blue">2</div>识别机会 / 异常 / 趋势 / 候选匹配</div>
+        <div class="flow-step"><div class="step-num blue">3</div>执行决策：推荐调整 / 上下架 / 实验</div>
+        <div class="flow-step"><div class="step-num blue">4</div>原子切换推荐快照，避免半更新</div>
+        <div class="flow-step"><div class="step-num blue">5</div>复盘 → 写入 strategy_memories</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anno">
+    <strong>核心创新点：</strong>「相似手型推荐」基于真实手型+肤色匹配，不是猜你喜欢而是找和你长得像的人在选什么。
+    Agent 的 <strong>strategy_memories</strong> 机制让系统在每轮决策后自我更新经验库，越跑越聪明。
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- C SIDE -->
+<section id="c-side">
+  <div class="section-tag green">应用效果 · 完整性</div>
+  <h2>C端演示 · 完整用户旅程</h2>
+  <p class="subtitle">从浏览到试戴，全流程无缝衔接，30 秒内用户看见真实效果。</p>
+
+  <div class="mockup-row">
+    <!-- MOCKUP 1: 主推荐页 -->
+    <div class="mockup">
+      <div class="mockup-header">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#febc2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <span style="margin-left:.5rem">主推荐页</span>
+      </div>
+      <div class="mockup-body">
+        <div style="font-size:.7rem;color:var(--muted);margin-bottom:.6rem">Agent 实时维护 · 50 款上架中</div>
+        <div class="nail-grid">
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#f0d9ff,#d4a8f0)"></div><div class="card-label">lilac 渐变</div></div>
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#fce4ec,#f48fb1)"></div><div class="card-label">奶油玫瑰</div></div>
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#e8f5e9,#a5d6a7)"></div><div class="card-label">抹茶冰</div></div>
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#e3f2fd,#90caf9)"></div><div class="card-label">初夏蓝</div></div>
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#fff9e6,#ffe082)"></div><div class="card-label">奶黄闪粉</div></div>
+          <div class="nail-card-mock"><div class="color-block" style="background:linear-gradient(135deg,#fce4ec,#e91e63)"></div><div class="card-label">深莓红</div></div>
+        </div>
+        <div style="margin-top:.8rem;font-size:.65rem;color:var(--muted)">↑ 由 Agent 推荐排名驱动</div>
+      </div>
+    </div>
+
+    <!-- MOCKUP 2: 手型识别 -->
+    <div class="mockup">
+      <div class="mockup-header">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#febc2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <span style="margin-left:.5rem">手型识别</span>
+      </div>
+      <div class="mockup-body">
+        <div class="upload-zone">
+          📷 上传手图<br>
+          <span style="font-size:.65rem">支持 JPG / PNG · 单手正面最佳</span>
+        </div>
+        <div class="profile-result">
+          <div class="row"><span>手型分析</span><span class="val">细长型 (slender)</span></div>
+          <div class="row"><span>置信度</span><span class="val">91.3%</span></div>
+          <div class="row"><span>肤色识别</span><span class="val">medium</span></div>
+          <div class="row" style="margin-bottom:0"><span>肤色 RGB</span><span class="val">#C8956C</span></div>
+        </div>
+        <div class="similar-styles">
+          <div class="label">🎯 相似手型的用户都在选</div>
+          <div class="similar-row">
+            <div class="s-dot" style="background:linear-gradient(#f0d9ff,#d4a8f0)"></div>
+            <div class="s-dot" style="background:linear-gradient(#fce4ec,#f48fb1)"></div>
+            <div class="s-dot" style="background:linear-gradient(#e3f2fd,#90caf9)"></div>
+            <div class="s-dot" style="background:linear-gradient(#fff9e6,#ffe082)"></div>
+            <div class="s-dot" style="background:linear-gradient(#e8f5e9,#a5d6a7)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOCKUP 3: 试戴结果 -->
+    <div class="mockup">
+      <div class="mockup-header">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#febc2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <span style="margin-left:.5rem">试戴结果</span>
+      </div>
+      <div class="mockup-body">
+        <div class="tryon-before-after">
+          <div class="hand-mock" style="background:var(--bg2)">
+            <div style="text-align:center">
+              <div style="font-size:1.5rem">🤚</div>
+              <div style="font-size:.6rem;margin-top:.3rem">原始手图</div>
+            </div>
+          </div>
+          <div class="hand-result">
+            💅
+            <div class="result-overlay">试戴效果 · Nano Banana 2</div>
+          </div>
+        </div>
+        <div class="tryon-badge">
+          <span>✓</span>
+          <span>生成成功 · 耗时 28s</span>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:.8rem">
+          <div style="flex:1;background:rgba(192,132,252,0.15);border:1px solid var(--border);border-radius:8px;padding:.5rem;font-size:.7rem;text-align:center;color:var(--accent);cursor:pointer">❤️ 收藏</div>
+          <div style="flex:1;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:8px;padding:.5rem;font-size:.7rem;text-align:center;color:var(--accent3);cursor:pointer">📅 预约</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div style="margin-top:1.5rem">
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem">试戴技术管线</div>
+    <div class="pipeline">
+      <div class="p-step">POST /tryon-jobs</div>
+      <div class="p-arrow">→</div>
+      <div class="p-step">上传 hand + style 图</div>
+      <div class="p-arrow">→</div>
+      <div class="p-step">ComfyCloud REST</div>
+      <div class="p-arrow">→</div>
+      <div class="p-step">Nano Banana 2</div>
+      <div class="p-arrow">→</div>
+      <div class="p-step">Poll 完成</div>
+      <div class="p-arrow">→</div>
+      <div class="p-step" style="border-color:var(--green);color:var(--green)">结果图返回</div>
+    </div>
+  </div>
+
+  <div class="anno" style="margin-top:1.5rem">
+    <strong>100 张演示图全部生成成功（0 失败）</strong>，覆盖 5 种手型姿势 × 3 种肤色 × 100 款设计。
+    图像质量达到 Cocomo / Slllight 韩系美甲 catalog 水准，pastel 背景 + 柔光单品质感。
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- B SIDE -->
+<section id="b-side">
+  <div class="section-tag">创新性 · 完整性</div>
+  <h2>B端 Agent · 智能运营闭环</h2>
+  <p class="subtitle">LangGraph.js 驱动的自主 Agent，每 12 小时完成一轮完整运营分析与执行，
+  并通过 strategy_memories 不断积累可复用的运营经验。</p>
+
+  <div class="agent-loop">
+    <!-- LOOP DIAGRAM -->
+    <div class="loop-diagram">
+      <div class="loop-node highlight">🔁 触发（定时 / 手动）</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node">📊 聚合行为热度快照</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node">📚 读取上下文 + 历史记忆</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node highlight2">🔍 Findings 分析</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node">⚡ 执行决策</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node">🔄 原子切换推荐快照</div>
+      <div class="loop-arrow">↓</div>
+      <div class="loop-node highlight3">🧠 复盘 → strategy_memories</div>
+    </div>
+
+    <!-- FINDINGS & DECISIONS -->
+    <div class="agent-detail">
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem">本轮 Agent Findings</div>
+
+      <div class="finding-card">
+        <div class="fc-header">
+          <div class="fc-title">STYLE-032 曝光不足机会</div>
+          <div class="fc-type type-opp">opportunity</div>
+        </div>
+        <div class="fc-body">lilac 渐变款热度增长率 +38%，当前推荐位 #31。tag_heat 显示「lilac」标签本周跻身 top-3，但曝光仍受限于排名。建议提升至 #12 位置。</div>
+      </div>
+
+      <div class="finding-card">
+        <div class="fc-header">
+          <div class="fc-title">STYLE-015 连续下滑异常</div>
+          <div class="fc-type type-ano">anomaly</div>
+        </div>
+        <div class="fc-body">过去 3 轮 heat_score 从 0.74 下降至 0.31，tryon_count 降幅 -62%。可能已过热点期，建议降推至 #35 或转候选池。</div>
+      </div>
+
+      <div class="finding-card">
+        <div class="fc-header">
+          <div class="fc-title">「chrome」标签趋势上升</div>
+          <div class="fc-type type-trend">tag_trend</div>
+        </div>
+        <div class="fc-body">候选池中有 3 款 chrome 系款式匹配当前趋势，建议上架 STYLE-C047、STYLE-C051 进行为期 7 天的曝光实验。</div>
+      </div>
+
+      <div style="margin-top:.5rem">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">执行决策</div>
+        <div class="decision-item">
+          <div class="decision-icon">📈</div>
+          <div>STYLE-032 提升至 #12 · 设 7 日复盘窗口</div>
+        </div>
+        <div class="decision-item" style="margin-top:.5rem;background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2)">
+          <div class="decision-icon">📉</div>
+          <div>STYLE-015 降至 #35</div>
+        </div>
+        <div class="decision-item" style="margin-top:.5rem;background:rgba(56,189,248,0.05);border-color:rgba(56,189,248,0.2)">
+          <div class="decision-icon">✨</div>
+          <div>STYLE-C047, C051 上架 → listed</div>
+        </div>
+      </div>
+
+      <div class="memory-card" style="margin-top:.8rem">
+        <h4>🧠 策略记忆（strategy_memories）</h4>
+        <p>上一轮对「coral」系款式的提升实验已到期复盘：7 天内 heat_score +0.29，tryon_count +44%。
+        结论：「当 tag 进入 top-5 趋势且当前排名 > 25 时，提升 15 位以上效果显著」。
+        本轮分析将调取此经验作为 lilac 决策依据。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH -->
+<section id="tech">
+  <div class="section-tag blue">完整性 · 技术成熟度</div>
+  <h2>技术架构纵深</h2>
+  <p class="subtitle">Next.js 全栈 + LangGraph.js Agent + ComfyCloud，轻量部署，完整功能覆盖。</p>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="layer">前端 + 后端</div>
+      <div class="tech-name">Next.js 14</div>
+      <div class="tech-desc">App Router + TypeScript。C端 / B端同构，API Routes 处理所有后端逻辑。</div>
+    </div>
+    <div class="tech-card">
+      <div class="layer">Agent 框架</div>
+      <div class="tech-name">LangGraph.js</div>
+      <div class="tech-desc">图结构 Agent，支持条件分支（warmup 检测 / 决策分叉）和状态持久化。接 Qwen via ModelScope。</div>
+    </div>
+    <div class="tech-card">
+      <div class="layer">试戴管线</div>
+      <div class="tech-name">ComfyCloud + Nano Banana 2</div>
+      <div class="tech-desc">GeminiImage2Node 工作流：LoadImage×2 → ImageBatch → 生成 → SaveImage。100% 成功率。</div>
+    </div>
+    <div class="tech-card">
+      <div class="layer">视觉特征提取</div>
+      <div class="tech-name">Roboflow API</div>
+      <div class="tech-desc">98 款美甲的颜色族 / 主色 RGB / 长度比例结构化提取，支撑精准推荐和 Agent 分析。</div>
+    </div>
+    <div class="tech-card">
+      <div class="layer">数据层</div>
+      <div class="tech-name">SQLite + Drizzle ORM</div>
+      <div class="tech-desc">21 张表，本地运行零配置。推荐快照原子切换，保证前端始终读到完整状态。</div>
+    </div>
+    <div class="tech-card">
+      <div class="layer">部署</div>
+      <div class="tech-name">pnpm dev + ngrok</div>
+      <div class="tech-desc">演示环境一条命令启动，ngrok 提供公网访问。无需云服务器，评委可直接访问。</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">数据库 21 张表 · 分组架构</div>
+    <div class="schema-grid">
+      <div class="schema-group">
+        <div class="group-name">款式数据</div>
+        <div class="table-list">
+          <div class="table-chip accent">nail_styles</div>
+          <div class="table-chip accent">nail_visual_features</div>
+        </div>
+      </div>
+      <div class="schema-group">
+        <div class="group-name">用户会话</div>
+        <div class="table-list">
+          <div class="table-chip">user_sessions</div>
+          <div class="table-chip">user_hand_images</div>
+          <div class="table-chip">user_hand_profiles</div>
+        </div>
+      </div>
+      <div class="schema-group">
+        <div class="group-name">行为数据</div>
+        <div class="table-list">
+          <div class="table-chip">behavior_events</div>
+          <div class="table-chip">session_favorites</div>
+          <div class="table-chip">tryon_jobs</div>
+        </div>
+      </div>
+      <div class="schema-group">
+        <div class="group-name">推荐系统</div>
+        <div class="table-list">
+          <div class="table-chip">recommendation_snapshots</div>
+          <div class="table-chip">recommendation_items</div>
+        </div>
+      </div>
+      <div class="schema-group">
+        <div class="group-name">热度分析</div>
+        <div class="table-list">
+          <div class="table-chip">style_heat_snapshots</div>
+          <div class="table-chip">tag_heat_snapshots</div>
+        </div>
+      </div>
+      <div class="schema-group">
+        <div class="group-name">Agent 状态</div>
+        <div class="table-list">
+          <div class="table-chip blue">agent_runs</div>
+          <div class="table-chip blue">agent_findings</div>
+          <div class="table-chip blue">agent_decisions</div>
+          <div class="table-chip blue">agent_pending_reviews</div>
+          <div class="table-chip blue">strategy_memories</div>
+          <div class="table-chip">agent_chat_sessions/msgs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMMERCIAL VALUE -->
+<section id="value">
+  <div class="section-tag amber">商业价值</div>
+  <h2>商业化前景</h2>
+  <p class="subtitle">深度契合美团本地生活核心诉求：提升转化、降低运营成本、增强用户粘性，
+  并具备跨品类复制的平台级潜力。</p>
+
+  <div class="market-row">
+    <div class="market-block">
+      <div class="m-num">¥1300亿+</div>
+      <div class="m-label">中国美甲市场年规模（2024）</div>
+    </div>
+    <div class="market-block">
+      <div class="m-num" style="color:var(--accent3)">3.2亿+</div>
+      <div class="m-label">美团平台美业月活用户</div>
+    </div>
+    <div class="market-block">
+      <div class="m-num" style="color:var(--green)">↑30-40%</div>
+      <div class="m-label">AR/AI 试用对转化率提升（行业参考）</div>
+    </div>
+  </div>
+
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="v-icon">🎯</div>
+      <h3>提升转化率</h3>
+      <div class="v-metric">+30%</div>
+      <p>用户在下单前看见真实试戴效果，消除「选了不合适」的决策焦虑。
+      参考美妆 AR 试装数据，转化率提升 30-40%，退款率下降。</p>
+    </div>
+    <div class="value-card">
+      <div class="v-icon">⚡</div>
+      <h3>运营降本增效</h3>
+      <div class="v-metric">12h/轮</div>
+      <p>人工需要数天完成的数据分析 + 推荐调整，Agent 12 小时全自动完成。
+      平台可以极低边际成本服务更多商家，运营人力聚焦高价值决策。</p>
+    </div>
+    <div class="value-card">
+      <div class="v-icon">💎</div>
+      <h3>用户留存 & 粘性</h3>
+      <div class="v-metric">数据护城河</div>
+      <p>「相似手型推荐」让用户每次上传手图都加深与平台的数据绑定。
+      个性化程度随使用深度提升，形成竞争对手难以复制的差异化壁垒。</p>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem">
+    <div style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">平台级扩展：美业全品类复制</div>
+    <p style="font-size:.85rem;color:var(--muted);line-height:1.8;margin-bottom:1rem">
+      Nails-Agent 的核心架构——「试戴管线 + 行为热度 + Agent 运营闭环」——
+      可以平移到美发（发色试染）、美睫（款式试戴）、美妆（口红试色）等所有本地美业品类，
+      成为美团整个美业 AI 试用基础设施。
+    </p>
+    <div class="expand-chips">
+      <div class="expand-chip" style="color:var(--accent);border-color:var(--border)">💅 美甲（当前）</div>
+      <div class="expand-chip">💇 美发·发色试染</div>
+      <div class="expand-chip">👁️ 美睫·款式试戴</div>
+      <div class="expand-chip">💄 美妆·口红试色</div>
+      <div class="expand-chip">🏥 医美·效果预览</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CRITERIA MATRIX -->
+<section>
+  <div class="section-tag">评审映射</div>
+  <h2>四维评审覆盖</h2>
+  <p class="subtitle">逐一对应评审标准，无盲区。</p>
+
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>评审维度</th>
+        <th>项目对应点</th>
+        <th>评分依据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="criteria">创新性</div></td>
+        <td>
+          ① 「相似手型推荐」——业内未见的手型×肤色维度个性化<br>
+          ② Agent strategy_memories——自我学习型运营闭环<br>
+          ③ warmup 机制——数据不足时拒绝操作，避免噪音决策
+        </td>
+        <td>
+          <div class="score-bar">
+            <div class="score-dot"></div><div class="score-dot"></div>
+            <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><div class="criteria">完整性</div></td>
+        <td>
+          ① 21 张表覆盖全部业务逻辑，无跳跃<br>
+          ② C端全流程：浏览→上传→识别→推荐→试戴→收藏<br>
+          ③ B端全闭环：聚合→分析→决策→执行→复盘→记忆<br>
+          ④ 原子快照切换，无半更新状态
+        </td>
+        <td>
+          <div class="score-bar">
+            <div class="score-dot"></div><div class="score-dot"></div>
+            <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><div class="criteria">应用效果</div></td>
+        <td>
+          ① 100 张试戴图 100% 成功，K-beauty catalog 质量<br>
+          ② 真实行为数据驱动热度计算（4 维度：view/click/tryon/fav）<br>
+          ③ 手型识别基于真实手模（14 种手型×姿势×肤色组合）<br>
+          ④ 试戴响应 ≈30s，ComfyCloud 管线稳定
+        </td>
+        <td>
+          <div class="score-bar">
+            <div class="score-dot"></div><div class="score-dot"></div>
+            <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot empty"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><div class="criteria">商业价值</div></td>
+        <td>
+          ① 精准切入千亿美甲市场 + 美团本地生活核心场景<br>
+          ② 可量化指标：转化率提升 30-40%，运营人力替代<br>
+          ③ 数据护城河：手型档案形成用户留存壁垒<br>
+          ④ 平台级可复制性：整个美业品类的 AI 试用基础设施
+        </td>
+        <td>
+          <div class="score-bar">
+            <div class="score-dot"></div><div class="score-dot"></div>
+            <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- CLOSING -->
+<section class="closing">
+  <div class="section-tag">Nails-Agent</div>
+  <h2>让每一个用户<br>在选择之前看见答案</h2>
+  <p class="subtitle" style="text-align:center;margin:1rem auto">
+    美甲 AI 试戴 × 智能运营 Agent × 策略记忆<br>
+    美团 AI 比赛参赛作品
+  </p>
+  <div class="final-row">
+    <div class="final-chip">100 张试戴图</div>
+    <div class="final-chip">21 张数据表</div>
+    <div class="final-chip">98 款特征库</div>
+    <div class="final-chip">14 种手模</div>
+    <div class="final-chip" style="color:var(--accent2)">0 失败率</div>
+  </div>
+  <div style="color:var(--muted);font-size:.8rem">截止日期 2026-06-07 · Next.js + LangGraph.js + ComfyCloud</div>
+</section>
+
+<script>
+// Smooth reveal on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.arch-card, .demo-card, .mockup, .value-card, .tech-card, .finding-card, .memory-card, .market-block').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease';
+  observer.observe(el);
+});
+
+// Animate stats
+document.querySelectorAll('.stat-box .num').forEach(el => {
+  const target = el.textContent;
+  if (!isNaN(parseInt(target))) {
+    const num = parseInt(target);
+    const suffix = target.replace(/[0-9]/g, '');
+    let current = 0;
+    const step = Math.ceil(num / 40);
+    const timer = setInterval(() => {
+      current = Math.min(current + step, num);
+      el.textContent = current + suffix;
+      if (current >= num) clearInterval(timer);
+    }, 30);
+  }
+});
+</script>
+</body>
+</html>

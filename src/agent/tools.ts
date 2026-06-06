@@ -29,7 +29,27 @@ import {
   type TagTrend,
 } from './tagTrendMatcher';
 
-const { sqlite, db } = openDb();
+const db = new Proxy({} as any, {
+  get(_target, prop, receiver) {
+    const { db: actualDb } = openDb();
+    const value = Reflect.get(actualDb, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(actualDb);
+    }
+    return value;
+  }
+});
+
+const sqlite = new Proxy({} as any, {
+  get(_target, prop, receiver) {
+    const { sqlite: actualSqlite } = openDb();
+    const value = Reflect.get(actualSqlite, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(actualSqlite);
+    }
+    return value;
+  }
+});
 
 export interface SqliteTransactionConnection {
   // @libsql/client uses async execute(); better-sqlite3 uses sync exec()

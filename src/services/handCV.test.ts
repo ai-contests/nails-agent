@@ -28,3 +28,17 @@ test('maps Python analyzer JSON into a hand profile result', async () => {
     },
   });
 });
+
+test('falls back to deterministic mock profile when analyzer returns unknown parameters', async () => {
+  process.env['HAND_ANALYZER_PYTHON'] = 'python3';
+  process.env['HAND_ANALYZER_CLI'] = fileURLToPath(new URL('./fixtures/fake-hand-analyzer-unknown.py', import.meta.url));
+
+  const result = await analyzeHandImage('/tmp/sample-hand-unknown.png');
+
+  // Should successfully trigger fallback and return a mock profile with non-unknown properties
+  expect(result.handShape).not.toBe('unknown');
+  expect(result.skinTone).not.toBe('unknown');
+  expect(result.rawMetrics['isMocked']).toBe(true);
+});
+
+

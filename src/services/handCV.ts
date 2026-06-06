@@ -90,11 +90,17 @@ export async function analyzeHandImage(imagePath: string): Promise<HandProfileRe
       maxBuffer: 1024 * 1024,
     });
     const payload = JSON.parse(stdout.trim()) as PythonAnalyzerPayload;
+    const handShape = toHandShape(payload.hand_shape);
+    const skinTone = toSkinTone(payload.skin_tone);
+
+    if (payload.ok === false || handShape === 'unknown' || skinTone === 'unknown') {
+      throw new Error(payload.error || 'CV analyzer returned unknown hand/skin parameters');
+    }
 
     return {
-      handShape: toHandShape(payload.hand_shape),
+      handShape,
       handShapeConfidence: toNumber(payload.hand_shape_confidence),
-      skinTone: toSkinTone(payload.skin_tone),
+      skinTone,
       skinToneConfidence: toNumber(payload.skin_confidence ?? payload.skin_tone_confidence),
       skinRgb: toSkinRgb(payload.median_rgb),
       rawMetrics: {

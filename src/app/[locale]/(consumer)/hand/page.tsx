@@ -21,6 +21,7 @@ export default function HandStudioPage() {
   const t = useTranslations('hand');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [progress, setProgress] = useState(0);
   const [profile, setProfile] = useState<HandProfile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fromStyleId, setFromStyleId] = useState<string | null>(null);
@@ -66,7 +67,12 @@ export default function HandStudioPage() {
 
   const uploadHandFile = async (file: File) => {
     setStatus('uploading');
+    setProgress(0);
     setErrorMessage(null);
+
+    const progressInterval = setInterval(() => {
+      setProgress(p => p >= 90 ? p : p + (Math.random() * 10 + 2));
+    }, 500);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -113,11 +119,16 @@ export default function HandStudioPage() {
         skinRgb: data.skinRgb,
       }));
 
-      setStatus('success');
+      setProgress(100);
+      setTimeout(() => {
+        setStatus('success');
+      }, 400);
     } catch (err) {
       console.error(err);
       setErrorMessage((err as Error).message || 'Failed to scan hand image.');
       setStatus('error');
+    } finally {
+      clearInterval(progressInterval);
     }
   };
 
@@ -199,9 +210,16 @@ export default function HandStudioPage() {
             </Card>
           ) : status === 'uploading' ? (
             <Card className="aspect-video w-full bg-surface-warm border border-c-border flex flex-col items-center justify-center p-8 shadow-none">
-              <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+              <Loader2 className="w-10 h-10 text-primary animate-spin mb-6" />
+              <div className="w-full max-w-xs mb-3 bg-c-border/50 rounded-full h-1.5 overflow-hidden">
+                <div 
+                  className="bg-primary h-full transition-all duration-300 ease-out rounded-full" 
+                  style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} 
+                />
+              </div>
               <h3 className="text-lg font-bold text-ink mb-1">{t('statusScanning')}</h3>
-              <p className="text-ink-second text-xs">{t('statusScanningSub')}</p>
+              <p className="text-ink-second text-xs text-center">{t('statusScanningSub')}</p>
+              <p className="text-primary font-mono text-[10px] mt-2">{Math.round(progress)}%</p>
             </Card>
           ) : (
             <Card className="aspect-video w-full bg-surface-warm border border-c-border overflow-hidden relative shadow-none flex items-center justify-center">

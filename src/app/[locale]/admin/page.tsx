@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { Send, Play, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from "react";
+import { Send, Play, Loader2, ChevronRight, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { DecisionCard } from '@/components/admin/DecisionCard';
 import { TimelineNode } from '@/components/admin/TimelineNode';
@@ -59,6 +59,8 @@ interface RunDetail {
 export default function AdminDashboard() {
   const t = useTranslations('admin');
   const locale = useLocale();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const renderI18n = useCallback((text: string | null | undefined) => {
     if (!text) return '';
@@ -84,6 +86,33 @@ export default function AdminDashboard() {
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'agent'; content: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [sendingChat, setSendingChat] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0]!;
+    setIsUploading(true);
+    setMessage('Uploading and extracting visual features...');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/admin/nail-styles/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      setMessage(`Successfully uploaded candidate: ${data.styleId}`);
+    } catch (err) {
+      setMessage(`Upload error: ${(err as Error).message}`);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const fetchRuns = useCallback(async () => {
     try {
@@ -258,6 +287,17 @@ export default function AdminDashboard() {
             <p className="text-xs text-text-dark-secondary">{t('subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              accept="image/*" 
+              className="hidden" 
+            />
+            <Button variant="admin_default" onClick={() => fileInputRef.current?.click()} disabled={isUploading || triggering} className="gap-2 bg-surface-dark border-border-dark text-text-dark-primary hover:bg-surface-dark-elevated">
+              {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+              {isUploading ? 'Uploading...' : 'Upload Candidate'}
+            </Button>
             {selectedRunId && (
               <button
                 onClick={() => fetchRunDetail(selectedRunId)}

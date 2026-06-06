@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from 'next/navigation';
 import { Search, Loader2, X } from 'lucide-react';
 import { Link, useRouter } from '@/src/i18n/routing';
 import { CategoryTag } from '@/components/ui/CategoryTag';
@@ -23,17 +24,29 @@ interface NailStyle {
 
 export default function GalleryPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('gallery');
   const tCategory = useTranslations('gallery.categories');
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+
+  /* Initialise state from URL query params so back-navigation restores position */
+  const [activeCategory, setActiveCategory] = useState(() => searchParams.get('cat') || 'all');
+  const [currentPage, setCurrentPage] = useState(() => parseInt(searchParams.get('page') || '1', 10));
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [styles, setStyles] = useState<NailStyle[]>([]);
   const [loading, setLoading] = useState(true);
   const [handProfile, setHandProfile] = useState<{ handShape: string; skinTone: string } | null>(null);
   const [similarOpen, setSimilarOpen] = useState(false);
   const [similarStyles, setSimilarStyles] = useState<NailStyle[]>([]);
   const [similarLoading, setSimilarLoading] = useState(false);
+
+  /* Sync state changes back to URL without full navigation (replaceState) */
+  const syncToUrl = useCallback((page: number, cat: string, q: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', String(page));
+    params.set('cat', cat);
+    if (q) params.set('q', q); else params.delete('q');
+    window.history.replaceState(null, '', `?${params.toString()}`);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -147,6 +160,7 @@ export default function GalleryPage() {
               onClick={() => {
                 setActiveCategory(cat);
                 setCurrentPage(1);
+                syncToUrl(1, cat, searchQuery);
               }}
             >
               {t(`categories.${cat}`)}
@@ -162,6 +176,7 @@ export default function GalleryPage() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
+              syncToUrl(1, activeCategory, e.target.value);
             }}
             className="w-full pl-9 pr-4 py-2 bg-surface-warm rounded-pill text-sm focus:outline-none border border-transparent focus:border-c-border-focus"
           />
@@ -241,6 +256,7 @@ export default function GalleryPage() {
             totalPages={totalPages}
             onPageChange={(page) => {
               setCurrentPage(page);
+              syncToUrl(page, activeCategory, searchQuery);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />

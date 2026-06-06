@@ -239,9 +239,12 @@ export default function StyleDetailPage({ params }: StyleDetailProps) {
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
       <div className="mb-8">
-        <Link href="/gallery" className="inline-flex items-center text-xs font-semibold text-ink-second hover:text-primary transition-colors gap-1.5">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center text-xs font-semibold text-ink-second hover:text-primary transition-colors gap-1.5"
+        >
           <ArrowLeft className="w-3.5 h-3.5" /> {t('backCatalog')}
-        </Link>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">

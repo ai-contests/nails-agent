@@ -32,7 +32,9 @@ export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState(() => searchParams.get('cat') || 'all');
   const [currentPage, setCurrentPage] = useState(() => parseInt(searchParams.get('page') || '1', 10));
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
+  const [searchInput, setSearchInput] = useState(() => searchParams.get('q') || '');
   const [styles, setStyles] = useState<NailStyle[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [handProfile, setHandProfile] = useState<{ handShape: string; skinTone: string } | null>(null);
   const [similarOpen, setSimilarOpen] = useState(false);
@@ -89,55 +91,41 @@ export default function GalleryPage() {
     }
   };
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+      if (searchInput !== searchQuery) {
+        setCurrentPage(1);
+        syncToUrl(1, activeCategory, searchInput);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   useEffect(() => {
     const fetchStyles = async () => {
       try {
-        let sessionId = '';
-        if (typeof window !== 'undefined') {
-          sessionId = new URLSearchParams(window.location.search).get('sessionId') || '';
-          if (!sessionId) {
-            sessionId = localStorage.getItem('nails_session_id') || '';
-          }
-        }
-
-        const url = sessionId 
-          ? `/api/recommendations/main?sessionId=${encodeURIComponent(sessionId)}` 
-          : '/api/recommendations/main';
-
+        setLoading(true);
+        const url = `/api/gallery?page=${currentPage}&limit=${ITEMS_PER_PAGE}&cat=${activeCategory}&q=${encodeURIComponent(searchQuery)}`;
         const res = await fetch(url);
         const data = await res.json();
         
         if (data.items) {
-          const fetchedStyles = data.items.map((item: any) => item.style || item);
-          setStyles(fetchedStyles);
+          setStyles(data.items);
+          setTotalPages(data.totalPages || 1);
         }
       } catch (error) {
-        console.error('Failed to fetch styles:', error);
+        console.error('Failed to fetch gallery styles:', error);
       } finally {
         setLoading(false);
       }
     };
     fetchStyles();
-  }, []);
+  }, [currentPage, activeCategory, searchQuery]);
 
-  const filteredStyles = styles.filter(style => {
-    if (searchQuery && !style.style_id.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    
-    if (activeCategory !== 'all') {
-      const tags = `${style.color_tags} ${style.length_tags}`.toLowerCase();
-      if (!tags.includes(activeCategory)) {
-        return false;
-      }
-    }
-    
-    return true;
-  });
-
-  const totalPages = Math.ceil(filteredStyles.length / ITEMS_PER_PAGE);
-  const paginatedStyles = filteredStyles.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  // Server returns paginated and filtered data directly
+  const paginatedStyles = styles;
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
@@ -172,12 +160,8 @@ export default function GalleryPage() {
           <input 
             type="text" 
             placeholder={t('searchPlaceholder')} 
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-              syncToUrl(1, activeCategory, e.target.value);
-            }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full pl-9 pr-4 py-2 bg-surface-warm rounded-pill text-sm focus:outline-none border border-transparent focus:border-c-border-focus"
           />
         </div>

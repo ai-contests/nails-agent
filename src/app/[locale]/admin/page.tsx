@@ -7,6 +7,7 @@ import { DecisionCard } from '@/components/admin/DecisionCard';
 import { TimelineNode } from '@/components/admin/TimelineNode';
 import { Link } from '@/src/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
+import { AnalyticsCharts } from '@/src/components/admin/AnalyticsCharts';
 
 
 interface AgentRun {
@@ -54,6 +55,13 @@ interface RunDetail {
   findings: Finding[];
   decisions: Decision[];
   proposals: Proposal[];
+  styleHeat: any[];
+  tagHeat: any[];
+}
+
+interface GlobalAgentData {
+  pendingReviews: any[];
+  strategyMemories: any[];
 }
 
 export default function AdminDashboard() {
@@ -78,9 +86,12 @@ export default function AdminDashboard() {
   const [runs, setRuns] = useState<AgentRun[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [runDetail, setRunDetail] = useState<RunDetail | null>(null);
+  const [globalAgentData, setGlobalAgentData] = useState<GlobalAgentData | null>(null);
   const [triggering, setTriggering] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  
+  const [activeTab, setActiveTab] = useState<'run' | 'reviews' | 'memories'>('run');
 
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'agent'; content: string }[]>([]);
@@ -93,7 +104,7 @@ export default function AdminDashboard() {
     
     const file = files[0]!;
     setIsUploading(true);
-    setMessage('Uploading and extracting visual features...');
+    setMessage(t('uploadingMsg'));
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -105,9 +116,9 @@ export default function AdminDashboard() {
       if (!res.ok || data.error) {
         throw new Error(data.error || 'Upload failed');
       }
-      setMessage(`Successfully uploaded candidate: ${data.styleId}`);
+      setMessage(t('uploadSuccess', { id: data.styleId }));
     } catch (err) {
-      setMessage(`Upload error: ${(err as Error).message}`);
+      setMessage(t('uploadError', { msg: (err as Error).message }));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -119,6 +130,13 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/runs');
       const data = await res.json() as { runs: AgentRun[] };
       setRuns(data.runs ?? []);
+
+      // Also fetch global agent data
+      const dataRes = await fetch('/api/admin/agent-data');
+      if (dataRes.ok) {
+        const agentData = await dataRes.json() as GlobalAgentData;
+        setGlobalAgentData(agentData);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -175,8 +193,8 @@ export default function AdminDashboard() {
           clearInterval(interval);
           setMessage(
             data.run.status === 'completed'
-              ? `✓ Cycle complete — ${data.findings.length} findings, ${data.decisions.length} decisions`
-              : `✗ Cycle failed: ${data.run.error_message ?? 'unknown error'}`
+              ? t('cycleComplete', { findings: data.findings.length, decisions: data.decisions.length })
+              : t('cycleFailed', { msg: data.run.error_message ?? 'unknown error' })
           );
         }
       } catch {
@@ -267,8 +285,15 @@ export default function AdminDashboard() {
                 <TimelineNode
                   id={r.agent_run_id.slice(0, 8)}
                   title={r.trigger_type}
-                  status={r.status === 'completed' ? 'done' : r.status === 'failed' ? 'failed' : 'active'}
-                  description={r.chat_summary || r.error_message || 'Initializing agent sequence...'}
+                  status={
+                    r.status === 'completed' ? 'done' :
+                    (r.status === 'failed' || (r.status === 'running' && new Date(r.started_at).getTime() < Date.now() - 5 * 60 * 1000)) ? 'failed' :
+                    'active'
+                  }
+                  description={
+                    r.chat_summary || r.error_message ||
+                    t('loadingDetail')
+                  }
                 />
               </button>
             ))
@@ -296,7 +321,7 @@ export default function AdminDashboard() {
             />
             <Button variant="admin_default" onClick={() => fileInputRef.current?.click()} disabled={isUploading || triggering} className="gap-2 bg-surface-dark border-border-dark text-text-dark-primary hover:bg-surface-dark-elevated">
               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              {isUploading ? 'Uploading...' : 'Upload Candidate'}
+              {isUploading ? t('uploading') : t('uploadCandidate')}
             </Button>
             {selectedRunId && (
               <button
@@ -330,8 +355,14 @@ export default function AdminDashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between border-b border-border-dark pb-2">
                   <span className="text-text-dark-muted">{t('status')}</span>
-                  <span className={`font-mono ${lastRun.status === 'completed' ? 'text-accent-green' : lastRun.status === 'failed' ? 'text-red-400' : 'text-accent-amber'}`}>
-                    {lastRun.status}
+                  <span className={`font-mono ${
+                    lastRun.status === 'completed' ? 'text-accent-green' : 
+                    lastRun.status === 'failed' || (lastRun.status === 'running' && new Date(lastRun.started_at).getTime() < Date.now() - 5 * 60 * 1000) ? 'text-red-400' : 
+                    'text-accent-amber'
+                  }`}>
+                    {lastRun.status === 'completed' ? t('statusCompleted') : 
+                     lastRun.status === 'failed' || (lastRun.status === 'running' && new Date(lastRun.started_at).getTime() < Date.now() - 5 * 60 * 1000) ? t('statusFailed') : 
+                     t('statusRunning')}
                   </span>
                 </div>
                 <div className="flex justify-between border-b border-border-dark pb-2">
@@ -374,16 +405,53 @@ export default function AdminDashboard() {
           </DecisionCard>
         </div>
 
-        {/* Run detail: findings, decisions, proposals */}
-        {loadingDetail && (
-          <div className="flex items-center gap-2 text-xs text-text-dark-muted mb-4">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('loadingDetail')}
-          </div>
-        )}
+        {/* Top Tabs */}
+        <div className="flex gap-4 border-b border-border-dark mb-6">
+          <button 
+            onClick={() => setActiveTab('run')}
+            className={`pb-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'run' ? 'border-accent-blue text-text-dark-primary' : 'border-transparent text-text-dark-muted hover:text-text-dark-secondary'}`}
+          >
+            {t('tabRunInspector')}
+          </button>
+          <button 
+            onClick={() => setActiveTab('reviews')}
+            className={`pb-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'reviews' ? 'border-accent-blue text-text-dark-primary' : 'border-transparent text-text-dark-muted hover:text-text-dark-secondary'}`}
+          >
+            {t('tabPendingReviews')} {globalAgentData && `(${globalAgentData.pendingReviews.length})`}
+          </button>
+          <button 
+            onClick={() => setActiveTab('memories')}
+            className={`pb-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'memories' ? 'border-accent-blue text-text-dark-primary' : 'border-transparent text-text-dark-muted hover:text-text-dark-secondary'}`}
+          >
+            {t('tabStrategyMemories')} {globalAgentData && `(${globalAgentData.strategyMemories.length})`}
+          </button>
+        </div>
 
-        {runDetail && !loadingDetail && (
-          <div className="space-y-6">
-            {runDetail.findings.length > 0 && (
+        {activeTab === 'run' && (
+          <>
+            {loadingDetail && (
+              <div className="flex items-center gap-2 text-xs text-text-dark-muted mb-4">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('loadingDetail')}
+              </div>
+            )}
+
+            {runDetail && !loadingDetail && (
+              <div className="space-y-6">
+                {(runDetail.styleHeat?.length > 0 || runDetail.tagHeat?.length > 0) && (
+                  <AnalyticsCharts 
+                    styleHeat={runDetail.styleHeat || []} 
+                    tagHeat={runDetail.tagHeat || []} 
+                    labels={{
+                      chartStyleHeat: t('chartStyleHeat'),
+                      chartTagTrend: t('chartTagTrend'),
+                      chartHeatScore: t('chartHeatScore'),
+                      chartGrowthRate: t('chartGrowthRate'),
+                      chartHeatIndex: t('chartHeatIndex'),
+                    }}
+                  />
+                )}
+
+                {runDetail.findings.length > 0 && (
               <section>
                 <h3 className="text-xs font-semibold text-text-dark-muted uppercase tracking-wider mb-3">
                   {t('findings')} ({runDetail.findings.length})
@@ -495,6 +563,68 @@ export default function AdminDashboard() {
 
             {runDetail.findings.length === 0 && runDetail.decisions.length === 0 && runDetail.proposals.length === 0 && (
               <p className="text-xs text-text-dark-muted">{t('noFindings')}</p>
+            )}
+          </div>
+        )}
+        </>
+        )}
+
+        {activeTab === 'reviews' && (
+          <div className="space-y-4">
+            <h3 className="text-xs font-semibold text-text-dark-muted uppercase tracking-wider mb-3">{t('pendingReviewsTitle')}</h3>
+            {globalAgentData?.pendingReviews && globalAgentData.pendingReviews.length > 0 ? (
+              globalAgentData.pendingReviews.map(r => (
+                <div key={r.pending_review_id} className="bg-surface-dark border border-border-dark rounded-card p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <span className="text-[10px] font-mono text-accent-blue bg-accent-blue/10 px-1.5 py-0.5 rounded">{r.review_type}</span>
+                      <p className="text-sm font-medium text-text-dark-primary mt-2">{t('pendingTarget')}: {r.style_id || r.decision_id}</p>
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                      r.status === 'completed' ? 'bg-accent-green/10 text-accent-green' : 'bg-accent-amber/10 text-accent-amber'
+                    }`}>
+                      {r.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-dark-secondary mt-2">
+                    <span className="font-semibold text-text-dark-primary">{t('pendingExpectedEffect')}: </span>
+                    {r.expected_effect || 'N/A'}
+                  </p>
+                  <div className="text-[10px] font-mono text-text-dark-muted mt-3">
+                    {t('pendingReviewWindow')}: {new Date(r.review_window_start).toLocaleDateString()} → {new Date(r.review_window_end).toLocaleDateString()}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-text-dark-muted">{t('pendingReviewsEmpty')}</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'memories' && (
+          <div className="space-y-4">
+            <h3 className="text-xs font-semibold text-text-dark-muted uppercase tracking-wider mb-3">{t('memoriesTitle')}</h3>
+            {globalAgentData?.strategyMemories && globalAgentData.strategyMemories.length > 0 ? (
+              globalAgentData.strategyMemories.map(m => (
+                <div key={m.memory_id} className="bg-surface-dark border border-border-dark rounded-card p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <span className="text-[10px] font-mono text-text-dark-primary bg-bg-dark px-1.5 py-0.5 rounded">{m.action_type}</span>
+                      <p className="text-sm font-medium text-text-dark-primary mt-2">{m.lesson}</p>
+                    </div>
+                    <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded ${
+                      m.outcome_score >= 0.5 ? 'text-accent-green' : 'text-red-400'
+                    }`}>
+                      {t('memoriesScore')}: {m.outcome_score.toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-[10px] font-mono text-text-dark-muted mt-3">
+                    {t('memoriesTarget')}: {m.style_id || m.tag_signature || 'Global'} • {new Date(m.created_at).toLocaleString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-text-dark-muted">{t('memoriesEmpty')}</p>
             )}
           </div>
         )}

@@ -21,11 +21,13 @@ export async function GET(
 
   if (!run) return json({ error: 'Run not found' }, 404);
 
-  const [findings, decisions, proposals] = await Promise.all([
+  const [findings, decisions, proposals, styleHeat, tagHeat] = await Promise.all([
     db.select().from(schema.agentFindings).where(eq(schema.agentFindings.agent_run_id, runId)),
     db.select().from(schema.agentDecisions).where(eq(schema.agentDecisions.agent_run_id, runId)),
     db.select().from(schema.agentActionProposals).where(eq(schema.agentActionProposals.agent_run_id, runId)),
+    db.select().from(schema.styleHeatSnapshots).where(eq(schema.styleHeatSnapshots.agent_run_id, runId)),
+    db.select().from(schema.tagHeatSnapshots).where(eq(schema.tagHeatSnapshots.agent_run_id, runId)),
   ]);
 
-  return json({ run, findings, decisions, proposals });
+  return json({ run, findings, decisions, proposals, styleHeat, tagHeat });
 }

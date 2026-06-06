@@ -200,24 +200,76 @@ export interface BuildExecutionPlanInput extends ProposalGuardInput {
   recommendationChanges?: Array<Pick<RecommendationChangeRequest, 'styleId' | 'action' | 'targetRank' | 'maxDelta'> & { reason?: string }>;
 }
 
+/**
+ * Parse the intendedAction text to derive per-style action and targetRank hints.
+ *
+ * Handles patterns like:
+ *   "Lower rank of STYLE028 from 1 to 5"  → demote STYLE028, targetRank=5
+ *   "raise STYLE026 to rank 4"            → promote STYLE026, targetRank=4
+ *   "demote STYLE028 to rank 10"          → demote STYLE028, targetRank=10
+ */
+function parseIntentHints(
+  text: string,
+  styleIds: string[],
+): Map<string, { action: 'promote' | 'demote'; targetRank?: number }> {
+  const hints = new Map<string, { action: 'promote' | 'demote'; targetRank?: number }>();
+  const lowerText = text.toLowerCase();
+
+  const demoteKeywords = ['demote', 'lower', 'decrease', 'reduce', 'remove from top'];
+  const promoteKeywords = ['promote', 'raise', 'increase', 'boost', 'elevate', 'move up'];
+
+  for (const styleId of styleIds) {
+    const sid = styleId.toLowerCase();
+    // Find the mention of this style in the text
+    const idx = lowerText.indexOf(sid);
+    if (idx < 0) continue;
+
+    // Extract a window around the mention to check direction keywords
+    const window = lowerText.slice(Math.max(0, idx - 40), idx + 60);
+    const isDemote = demoteKeywords.some(k => window.includes(k));
+    const isPromote = promoteKeywords.some(k => window.includes(k));
+    const action: 'promote' | 'demote' = isDemote ? 'demote' : isPromote ? 'promote' : 'promote';
+
+    // Extract "to rank N" or "to N" or "rank N"
+    const rankMatch = window.match(/to\s+(?:rank\s+)?(\d+)/i)
+      ?? window.match(/rank\s+(\d+)/i);
+    const targetRank = rankMatch ? parseInt(rankMatch[1]!, 10) : undefined;
+
+    hints.set(styleId, { action, targetRank });
+  }
+
+  return hints;
+}
+
 export function buildExecutionPlanForProposal(proposal: BuildExecutionPlanInput): ExecutionPlan {
   const reviewWindowHours = proposal.reviewWindowHours ?? Number(process.env['AGENT_REVIEW_WINDOW_HOURS'] ?? '2');
   const targetMetrics = extractTargetMetrics(proposal.expectedMetrics);
   const reason = proposal.intendedAction;
 
   if (proposal.proposalType === 'adjust_recommendation') {
-    // Prefer LLM-provided per-change targets, falling back to default "promote" for each targetId.
+    // 1. Prefer LLM-provided per-change hints
     const llmChanges = (proposal.recommendationChanges ?? [])
       .filter(c => proposal.targetIds.includes(c.styleId));
     const llmChangeByStyle = new Map(llmChanges.map(c => [c.styleId, c]));
+
+    // 2. Fall back to parsing intendedAction text for direction + targetRank
+    const textHints = parseIntentHints(reason, proposal.targetIds);
+
     const changes: RecommendationChangeRequest[] = proposal.targetIds.map(styleId => {
-      const hint = llmChangeByStyle.get(styleId);
+      const llmHint = llmChangeByStyle.get(styleId);
+      const textHint = textHints.get(styleId);
+      // Priority: explicit LLM hint > text-parsed hint > default promote
+      const action: 'promote' | 'demote' =
+        llmHint?.action === 'demote' ? 'demote'
+        : llmHint?.action === 'promote' ? 'promote'
+        : textHint?.action ?? 'promote';
+      const targetRank = llmHint?.targetRank ?? textHint?.targetRank;
       return {
         styleId,
-        action: (hint?.action === 'demote' ? 'demote' : 'promote'),
-        targetRank: hint?.targetRank,
-        maxDelta: hint?.maxDelta,
-        reason: hint?.reason || reason,
+        action,
+        targetRank,
+        maxDelta: llmHint?.maxDelta,
+        reason: (llmHint as { reason?: string } | undefined)?.reason || reason,
       };
     });
     return {

@@ -21,9 +21,14 @@ export default function HandStudioPage() {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [profile, setProfile] = useState<HandProfile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fromStyleId, setFromStyleId] = useState<string | null>(null);
 
-  // Load existing profile from localStorage on mount
+  // Load existing profile from localStorage and query param on mount
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setFromStyleId(new URLSearchParams(window.location.search).get('fromStyleId'));
+    }
+
     const savedSession = localStorage.getItem('nails_session_id');
     const savedImage = localStorage.getItem('nails_hand_image_id');
     const savedProfile = localStorage.getItem('nails_hand_profile');
@@ -119,18 +124,25 @@ export default function HandStudioPage() {
 
   const handleApplyProfile = () => {
     if (profile) {
-      // Redirect to gallery page, which will load custom recommendations using the sessionId
-      router.push(`/gallery?sessionId=${profile.sessionId}`);
+      if (fromStyleId) {
+        // Redirect back to the style details page with auto-open try-on query param
+        router.push(`/styles/${fromStyleId}?autoTryOn=true`);
+      } else {
+        // Redirect to gallery page, which will load custom recommendations using the sessionId
+        router.push(`/gallery?sessionId=${profile.sessionId}`);
+      }
     }
   };
 
   const formatShape = (shape: string) => {
-    if (!shape || shape === 'unknown') return 'Analyzing...';
+    if (status === 'uploading') return 'Analyzing...';
+    if (!shape || shape === 'unknown') return 'Unknown';
     return shape.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
   const formatSkinTone = (tone: string) => {
-    if (!tone || tone === 'unknown') return 'Analyzing...';
+    if (status === 'uploading') return 'Analyzing...';
+    if (!tone || tone === 'unknown') return 'Unknown';
     return tone.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
@@ -262,7 +274,7 @@ export default function HandStudioPage() {
                 disabled={!profile}
                 onClick={handleApplyProfile}
               >
-                Apply Hand Profile & Search →
+                {fromStyleId ? 'Apply & Return to Try-On →' : 'Apply Hand Profile & Search →'}
               </Button>
               <p className="text-[10px] text-ink-second">This profile will be used to calibrate all AR Try-ons.</p>
             </div>

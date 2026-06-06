@@ -68,6 +68,19 @@ export default function StyleDetailPage({ params }: StyleDetailProps) {
     }
   }, []);
 
+  // Auto-open try-on modal if redirected from hand scan studio
+  useEffect(() => {
+    if (typeof window !== 'undefined' && style) {
+      const autoTry = new URLSearchParams(window.location.search).get('autoTryOn');
+      if (autoTry === 'true') {
+        setModalOpen(true);
+        // Clean query parameter from URL to prevent reopening on reload
+        const newUrl = window.location.pathname;
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+      }
+    }
+  }, [style]);
+
   // 3. Fetch style details and similar recommendations
   useEffect(() => {
     if (!styleId) return;

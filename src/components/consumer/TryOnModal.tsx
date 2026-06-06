@@ -213,7 +213,7 @@ export function TryOnModal({ open, onOpenChange, styleId, styleName, sessionId, 
                     <h3 className="font-semibold text-sm text-ink-second">Personalized Try-On</h3>
                     <p className="text-xs text-ink-light mt-1 leading-relaxed">Upload your hand photo to see custom styles mapped to your skin tone and nail shape.</p>
                   </div>
-                  <Link href="/hand" onClick={() => onOpenChange(false)} className="shrink-0">
+                  <Link href={`/hand?fromStyleId=${styleId}`} onClick={() => onOpenChange(false)} className="shrink-0">
                     <Button variant="outline" size="sm" className="gap-1 bg-white text-xs">
                       <Camera className="w-3.5 h-3.5" /> Scan Hand
                     </Button>

@@ -72,7 +72,20 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   let replyText = '备用回复：LLM 模型调用失败，请稍后重试。';
   try {
-    replyText = await callLlmModel(messages);
+    const rawReply = await callLlmModel(messages, { responseFormat: 'text' });
+    
+    // Defensive check: if the model ignored 'text' format and returned JSON anyway
+    if (rawReply.trim().startsWith('{') && rawReply.trim().endsWith('}')) {
+      try {
+        const parsed = JSON.parse(rawReply);
+        // Common patterns: {"content": "..."}, {"text": "..."}, {"message": "..."}
+        replyText = parsed.content || parsed.text || parsed.message || rawReply;
+      } catch {
+        replyText = rawReply;
+      }
+    } else {
+      replyText = rawReply;
+    }
   } catch (e: unknown) {
     const err = e as Error;
     console.error('Error calling LLM for Chat:', err);

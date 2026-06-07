@@ -65,43 +65,33 @@ export interface ChatMessage {
   content: string;
 }
 
-export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
+export async function callLlmModel(messages: ChatMessage[], options?: { responseFormat?: 'json_object' | 'text'; onChunk?: (chunk: string) => void }): Promise<string> {
   const apiKey = requiredEnv('MODELSCOPE_API_KEY');
   const apiUrl = requiredEnv('MODELSCOPE_API_URL');
+  
+  const envResponseFormat = optionalEnv('MODELSCOPE_RESPONSE_FORMAT');
+  const responseFormat = options?.responseFormat || (envResponseFormat as 'json_object' | 'text' | undefined);
+
   const fallbackModels = [
     requiredEnv('MODELSCOPE_MODEL'),
+    'meituan-longcat/LongCat-Flash-Lite',
+    'deepseek-ai/DeepSeek-V3',
     'deepseek-ai/DeepSeek-V4-Pro',
-    'inclusionAI/Ring-2.6-1T',
     'deepseek-ai/DeepSeek-V4-Flash',
-    'ZhipuAI/GLM-5.1',
-    'ZhipuAI/GLM-5',
-    'inclusionAI/Ling-2.6-1T',
-    'stepfun-ai/Step-3.7-Flash',
-    'moonshotai/Kimi-K2.6',
-    'moonshotai/Kimi-K2.5',
-    'Qwen/Qwen3.5-397B-A17B',
-    'Shanghai_AI_Laboratory/Intern-S1-Pro',
-    'Shanghai_AI_Laboratory/Intern-S2-Preview'
+    'inclusionAI/Ring-2.6-1T',
+    'ZhipuAI/GLM-4-Flash',
+    'Qwen/Qwen2.5-7B-Instruct',
   ];
 
-  // Remove duplicates just in case the env var matches one in the fallback list
   const models = Array.from(new Set(fallbackModels));
-
   const enableThinking = optionalBooleanEnv('MODELSCOPE_ENABLE_THINKING');
   const maxTokens = optionalPositiveIntegerEnv('MODELSCOPE_MAX_TOKENS') ?? 1024;
-  const responseFormat = optionalEnv('MODELSCOPE_RESPONSE_FORMAT');
 
   let lastError: Error | null = null;
 
-  for (const model of models) {
-    const body: {
-      model: string;
-      messages: ChatMessage[];
-      temperature: number;
-      max_tokens: number;
-      enable_thinking?: boolean;
-      response_format?: { type: 'json_object' };
-    } = {
+  for (let modelIdx = 0; modelIdx < models.length; modelIdx++) {
+    const model = models[modelIdx]!;
+    const body: any = {
       model,
       messages,
       temperature: 0.2,
@@ -112,14 +102,17 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
       body.enable_thinking = true;
     }
 
-    if (responseFormat) {
-      if (responseFormat !== 'json_object') {
-        throw new Error('MODELSCOPE_RESPONSE_FORMAT must be json_object');
-      }
+    if (responseFormat === 'json_object') {
       body.response_format = { type: 'json_object' };
     }
 
-    const maxRetries = 2; // Reduced retries per model so we can fall back faster
+    // Streaming is only supported for the first model to simplify fallback logic
+    const shouldStream = options?.onChunk && modelIdx === 0;
+    if (shouldStream) {
+      body.stream = true;
+    }
+
+    const maxRetries = 2;
     let modelSuccess = false;
     let responseContent = '';
 
@@ -127,10 +120,10 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-      }, 90000); // 90-second timeout
+      }, 90000);
 
       try {
-        console.log(`[LLM] Calling API: ${apiUrl}, model: ${model}, payload size: ${JSON.stringify(body).length} bytes`);
+        console.log(`[LLM] Calling API: ${apiUrl}, model: ${model}, stream: ${!!shouldStream}`);
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
@@ -141,60 +134,68 @@ export async function callLlmModel(messages: ChatMessage[]): Promise<string> {
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
-        console.log(`[LLM] API response status: ${response.status} for model: ${model}`);
-
-        if (response.status === 429) {
-          const errorText = await response.text();
-          console.warn(`[LLM] Quota exceeded or rate limited for model ${model} (429): ${errorText}. Falling back to next model.`);
-          lastError = new Error(`ModelScope API error: 429 - ${errorText}`);
-          break; // Break inner loop to move to the next model immediately
-        }
-
-        // Retry on 5xx (transient server errors)
-        if (response.status >= 500) {
-          const errorText = await response.text();
-          lastError = new Error(`ModelScope API error: ${response.status} - ${errorText}`);
-          if (attempt < maxRetries) {
-            const delay = attempt * 2000;
-            console.warn(`[LLM] Attempt ${attempt}/${maxRetries} for ${model} failed (${response.status}), retrying in ${delay}ms…`);
-            await new Promise(r => setTimeout(r, delay));
-            continue;
-          }
-          break; // Try next model
-        }
 
         if (!response.ok) {
           const errorText = await response.text();
-          lastError = new Error(`ModelScope API error: ${response.status} - ${errorText}`);
-          console.warn(`[LLM] Request failed for model ${model} (${response.status}): ${errorText}`);
-          break; // Fatal error for this model, try next model
+          throw new Error(`API error ${response.status}: ${errorText}`);
         }
 
-        const data = await response.json() as { choices?: { message?: { content?: string } }[] } | null;
-        if (!data || !Array.isArray(data.choices) || data.choices.length === 0) {
-          throw new Error(`ModelScope API returned unexpected response shape: ${JSON.stringify(data)}`);
+        if (shouldStream) {
+          const reader = response.body?.getReader();
+          if (!reader) throw new Error('Response body is null');
+          const decoder = new TextDecoder();
+          let buffer = '';
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            
+            for (const line of lines) {
+              const trimmedLine = line.trim();
+              if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
+              if (trimmedLine.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(trimmedLine.slice(6));
+                  const content = data.choices?.[0]?.delta?.content || '';
+                  if (content) {
+                    responseContent += content;
+                    options.onChunk!(content);
+                  }
+                } catch (e) {
+                  console.error('[LLM] Error parsing stream chunk:', e);
+                }
+              }
+            }
+          }
+        } else {
+          const data = await response.json() as any;
+          if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('[LLM] Unexpected response shape:', JSON.stringify(data));
+            throw new Error('Unexpected API response shape: missing choices[0].message');
+          }
+          responseContent = data.choices[0].message.content || '';
         }
         
-        responseContent = data.choices[0]?.message?.content || '';
+        if (!responseContent && responseFormat === 'json_object') {
+          throw new Error('LLM returned empty content for json_object request');
+        }
+
         modelSuccess = true;
-        break; // Success, break retry loop
+        break;
       } catch (error) {
         clearTimeout(timeoutId);
         lastError = error as Error;
-        const delay = attempt * 2000;
-        console.warn(`[LLM] Attempt ${attempt}/${maxRetries} for ${model} failed due to: ${(error as Error).message || String(error)}, retrying in ${delay}ms…`);
-        
-        if (attempt < maxRetries) {
-          await new Promise(r => setTimeout(r, delay));
-        }
+        console.warn(`[LLM] Attempt ${attempt} for ${model} failed: ${lastError.message}`);
+        if (attempt < maxRetries) await new Promise(r => setTimeout(r, 2000));
       }
     }
 
-    if (modelSuccess) {
-      return responseContent;
-    }
-    // If we reach here, this model failed completely, continue to next model in fallback array
+    if (modelSuccess) return responseContent;
   }
 
-  throw lastError ?? new Error('LLM call failed after trying all fallback models');
+  throw lastError ?? new Error('LLM call failed');
 }

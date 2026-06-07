@@ -49,7 +49,7 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
     const promptMessages: ChatMessage[] = [
       {
         role: 'system',
-        content: 'You are Nails-Agent, an AI Operations Manager for a nail design platform. Return strict JSON only. The top-level object must contain only a "toolCalls" array. Use camelCase keys only.'
+        content: 'You are Nails-Agent, an AI Operations Manager for a nail design platform. Return strict JSON only. The top-level object must contain a "toolCalls" array and a "summary" object with "en" and "zh" fields. Use camelCase keys only.'
       },
       {
         role: 'user',
@@ -79,6 +79,10 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
 
         Output JSON format:
         {
+          "summary": {
+            "en": "A concise summary of findings and decisions made in this run, including the technical rationale.",
+            "zh": "本次运行的发现和决策简述，包括技术依据。"
+          },
           "toolCalls": [
             { "toolName": "discoverOpportunity", "arguments": { "targetType": "style, tag, candidate, or global", "targetId": "string", "title": { "en": "string", "zh": "string" }, "summary": { "en": "string", "zh": "string" }, "score": number } },
             { "toolName": "diagnoseAnomaly", "arguments": { "targetType": "style, tag, or global", "targetId": "string", "title": { "en": "string", "zh": "string" }, "summary": { "en": "string", "zh": "string" }, "score": number } },
@@ -88,26 +92,32 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
         }
 
         Rules:
+        - Prioritize making concrete decisions (proposals) when data shows clear trends.
+        - The summary must explicitly mention the basis/rationale for your decisions.
         - score/confidence must be 0.0 to 1.0.
         - Call at least one finding tool: discoverOpportunity, diagnoseAnomaly, or continueObservation.
-        - Only recordActionProposal creates proposals (targetType must be "style" or "candidate").
-        - Never call execution tools (e.g. adjustRecommendation, decideStyleStatus, writeStrategyMemory, etc.).
-        - If a tag trend has no matched styles, call discoverOpportunity only; do not create proposal.
+        - Only recordActionProposal creates proposals.
+        - Never call execution tools directly.
         `
       }
     ];
 
     let findingIds: string[] = [];
     let proposalIds: string[] = [];
-    let observationNote = 'No anomalous behavior detected. Overall metrics are stable.';
+    let observationNote = '未检测到异常行为，整体指标保持稳定。';
+    let runSummary: tools.I18nString | null = null;
 
     try {
       const responseText = await callLlmModel(promptMessages);
       console.log(`[Agent Cycle] LLM Response Content:\n${responseText}`);
+      if (!responseText) {
+        throw new Error('LLM returned an empty response');
+      }
       const toolCallPlan = parseAgentToolCallPlanResponse(responseText);
       const toolExecution = await executeAgentToolCalls(toolCallPlan.toolCalls, runId);
       findingIds = toolExecution.findingIds;
       proposalIds = toolExecution.proposalIds;
+      runSummary = toolCallPlan.summary || null;
     } catch (e) {
       console.error('[Agent Cycle] Failed to call LLM or validate agent tool calls:', e);
       observationNote = 'LLM tool call plan was unavailable or failed schema validation. No operational action executed this run.';
@@ -146,7 +156,12 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
     });
 
     // Phase 10: Complete Run
-    const summaryMsg = `Successfully processed rollup metrics. Found ${findingIds.length} items to report. Executed ${executionResult.executedCount} operational actions.`;
+    const defaultSummary: tools.I18nString = {
+      en: `本轮智能运营分析完成：成功汇总指标，识别到 ${findingIds.length} 个关键事项，并执行了 ${executionResult.executedCount} 项自动化运营决策。`,
+      zh: `本轮智能运营分析完成：成功汇总指标，识别到 ${findingIds.length} 个关键事项，并执行了 ${executionResult.executedCount} 项自动化运营决策。`
+    };
+    const summaryMsg = runSummary ? JSON.stringify(runSummary) : JSON.stringify(defaultSummary);
+
     await tools.completeAgentRun({
       agentRunId: runId,
       chatSummary: summaryMsg,
@@ -158,9 +173,13 @@ export async function runOperationCycle(triggerType: 'manual_demo' | 'scheduled_
   } catch (error: unknown) {
     const err = error as Error;
     console.error(`[Agent Cycle] Error in run ${runId}:`, err);
+    const errorSummary: tools.I18nString = {
+      en: '运营周期由于意外错误失败。',
+      zh: '运营周期由于意外错误失败。'
+    };
     await tools.completeAgentRun({
       agentRunId: runId,
-      chatSummary: 'Operation cycle failed due to unexpected error.',
+      chatSummary: JSON.stringify(errorSummary),
       success: false,
       errorMessage: err.message || String(error),
     });

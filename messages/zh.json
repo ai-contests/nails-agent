@@ -230,7 +230,13 @@
     "cycleFailed": "周期失败：{msg}",
     "statusCompleted": "已完成",
     "statusFailed": "已失败",
-    "statusRunning": "运行中"
+    "statusRunning": "运行中",
+    "trigger_manual_demo": "手动触发 (Demo)",
+    "trigger_scheduled_12h": "计划任务 (12h)",
+    "status_active": "活跃",
+    "status_done": "已完成",
+    "status_failed": "失败",
+    "status_pending": "待定"
   },
   "favorites": {
     "title": "我的收藏",

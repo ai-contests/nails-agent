@@ -45,6 +45,7 @@ const AgentToolCallSchema = z.discriminatedUnion('toolName', [
 
 const AgentToolCallPlanSchema = z.object({
   toolCalls: z.array(AgentToolCallSchema),
+  summary: I18nStringSchema.optional(),
 }).strict();
 
 export type AgentToolCallPlan = z.infer<typeof AgentToolCallPlanSchema>;

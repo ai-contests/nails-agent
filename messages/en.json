@@ -16,7 +16,7 @@
     "help": "Help Center",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "rights": "© 2026 Blush AI. All rights reserved.",
+    "rights": "© 2026 Nails Agent. All rights reserved.",
     "sub": "Designed for Perfection · Powered by AI"
   },
   "home": {
@@ -39,7 +39,7 @@
     "style3Title": "Winter Blossom",
     "style3Desc": "Hand painted frost and florals on medium coffin bases.",
     "transformTitle": "Ready for your transformation?",
-    "transformDesc": "Join 50,000+ beauty enthusiasts discovering their perfect look with Blush AI.",
+    "transformDesc": "Join 50,000+ beauty enthusiasts discovering their perfect look with Nails Agent.",
     "transformAction": "Launch AI Studio"
   },
   "gallery": {
@@ -117,6 +117,8 @@
     "statusScanning": "Scanning Hand Profile...",
     "statusScanningSub": "Analyzing skin tone shade and hand contours",
     "statusReupload": "Re-upload Photo",
+    "currentSession": "Current session",
+    "clearImage": "Clear image",
     "detectedTitle": "Detected Parameters",
     "detectedShape": "Hand Type",
     "detectedSkin": "Skin Tone",

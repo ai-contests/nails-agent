@@ -16,7 +16,7 @@
     "help": "帮助中心",
     "privacy": "隐私政策",
     "terms": "服务条款",
-    "rights": "© 2026 Blush AI. 保留所有权利。",
+    "rights": "© 2026 Nails Agent. 保留所有权利。",
     "sub": "匠心设计 · AI 驱动"
   },
   "home": {
@@ -39,7 +39,7 @@
     "style3Title": "冬日花卉 (Winter Blossom)",
     "style3Desc": "中型梯形基底上手绘冰霜与绽放花卉纹理。",
     "transformTitle": "准备好开启您的美丽蜕变了吗？",
-    "transformDesc": "加入 50,000+ 美丽探索者，使用 Blush AI 寻找专属的闪耀款式。",
+    "transformDesc": "加入 50,000+ 美丽探索者，使用 Nails Agent 寻找专属的闪耀款式。",
     "transformAction": "启动 AI 演练室"
   },
   "gallery": {
@@ -117,6 +117,8 @@
     "statusScanning": "正在扫描手部特征...",
     "statusScanningSub": "深度分析皮肤冷暖与手部轮廓线条",
     "statusReupload": "重新上传照片",
+    "currentSession": "当前 session",
+    "clearImage": "清除图",
     "detectedTitle": "检测到的特征参数",
     "detectedShape": "手型类别",
     "detectedSkin": "肤色等级",

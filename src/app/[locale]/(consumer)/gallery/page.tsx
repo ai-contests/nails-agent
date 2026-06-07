@@ -12,7 +12,7 @@ import { Dialog } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 import { resolveImageUrl } from "@/src/lib/utils";
 
-const CATEGORIES = ['all', 'short', 'medium', 'long', 'nude', 'pink', 'purple', 'red', 'metallic'];
+const CATEGORIES = ['all', 'short', 'medium', 'long', 'nude', 'pink', 'purple', 'red', 'metallic', 'white', 'black', 'blue', 'green', 'gray', 'brown'];
 const ITEMS_PER_PAGE = 8;
 
 interface NailStyle {

@@ -20,7 +20,10 @@ export default async function ConsumerLayout({
     <div suppressHydrationWarning className="min-h-screen bg-off-white text-ink font-sans flex flex-col">
       <header className="flex items-center justify-between px-8 py-4 bg-off-white sticky top-0 z-50">
         <div className="flex items-center gap-8">
-          <div className="text-xl font-bold text-primary tracking-tight">Blush AI</div>
+          <Link href="/" className="flex items-center gap-3 group">
+            <img src="/logo.png" alt="Nails Agent Logo" className="h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+            <span className="text-xl font-bold text-primary tracking-tight">Nails Agent</span>
+          </Link>
           <nav className="hidden md:flex gap-6 text-sm font-medium text-ink-second">
             <Link href="/" className="hover:text-ink transition-colors">{tNav('discovery')}</Link>
             <Link href="/gallery" className="hover:text-ink transition-colors">{tNav('gallery')}</Link>
@@ -54,7 +57,10 @@ export default async function ConsumerLayout({
       <footer className="bg-surface-warm py-12 px-8 mt-24">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-2">
-            <div className="text-lg font-bold text-primary mb-4">Blush AI</div>
+            <Link href="/" className="flex items-center gap-2 mb-4 group">
+              <img src="/logo.png" alt="Nails Agent Logo" className="h-6 w-auto object-contain" />
+              <span className="text-lg font-bold text-primary">Nails Agent</span>
+            </Link>
             <p className="text-sm text-ink-second max-w-sm mb-6">
               {tFooter('desc')}
             </p>

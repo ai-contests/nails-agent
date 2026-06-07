@@ -62,7 +62,40 @@ export default function HandStudioPage() {
     if (!files || files.length === 0) return;
 
     const file = files[0]!;
-    await uploadHandFile(file);
+    try {
+      await uploadHandFile(file);
+    } finally {
+      e.target.value = '';
+    }
+  };
+
+  const clearHandProfile = async () => {
+    if (profile?.sessionId) {
+      try {
+        await fetch('/api/hand-images', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId: profile.sessionId }),
+        });
+      } catch (err) {
+        console.error('Failed to clear current hand image on server:', err);
+      }
+    }
+
+    setProfile(null);
+    setStatus('idle');
+    setProgress(0);
+    setErrorMessage(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    localStorage.removeItem('nails_session_id');
+    localStorage.removeItem('nails_hand_image_id');
+    localStorage.removeItem('nails_hand_profile');
   };
 
   const uploadHandFile = async (file: File) => {
@@ -70,9 +103,15 @@ export default function HandStudioPage() {
     setProgress(0);
     setErrorMessage(null);
 
+    // Aim for ~5 seconds of progress for better UX
+    const startTime = Date.now();
+    const duration = 5000; 
+
     const progressInterval = setInterval(() => {
-      setProgress(p => p >= 90 ? p : p + (Math.random() * 10 + 2));
-    }, 500);
+      const elapsed = Date.now() - startTime;
+      const calculatedProgress = Math.min(99, (elapsed / duration) * 100);
+      setProgress(calculatedProgress);
+    }, 50);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -118,6 +157,12 @@ export default function HandStudioPage() {
         skinTone: data.skinTone,
         skinRgb: data.skinRgb,
       }));
+
+      // Ensure at least 5 seconds for the UX progress bar
+      const elapsed = Date.now() - startTime;
+      if (elapsed < duration) {
+        await new Promise(resolve => setTimeout(resolve, duration - elapsed));
+      }
 
       setProgress(100);
       setTimeout(() => {
@@ -241,7 +286,29 @@ export default function HandStudioPage() {
         {/* Right: Analysis Parameters */}
         <div className="flex flex-col gap-6">
           <Card className="p-8 border-c-border shadow-sm bg-white">
-            <h2 className="text-lg font-bold text-ink mb-6">{t('detectedTitle')}</h2>
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-lg font-bold text-ink">{t('detectedTitle')}</h2>
+                {profile && (
+                  <p className="mt-2 text-[11px] text-ink-second font-mono">
+                    {t('currentSession')}: <span className="text-ink">{profile.sessionId}</span>
+                  </p>
+                )}
+              </div>
+
+              {profile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    void clearHandProfile();
+                  }}
+                  className="shrink-0"
+                >
+                  {t('clearImage')}
+                </Button>
+              )}
+            </div>
             
             <div className="space-y-6">
               <div className="border-b border-c-border pb-4">
@@ -259,18 +326,24 @@ export default function HandStudioPage() {
               <div className="border-b border-c-border pb-4">
                 <div className="text-[10px] font-bold text-ink-light tracking-widest uppercase mb-2">{t('detectedSkin')}</div>
                 <div className="flex items-center gap-4">
-                  <div 
-                    className="w-10 h-10 rounded-lg shadow-inner" 
-                    style={{ backgroundColor: profile ? rgbToHex(profile.skinRgb) : '#E6D2C4' }}
-                  />
-                  <div>
-                    <div className="font-mono text-ink text-sm uppercase">
-                      {profile ? rgbToHex(profile.skinRgb) : '#E6D2C4'}
-                    </div>
-                    <div className="text-xs text-ink-second font-mono mt-1">
-                      {profile ? formatSkinTone(profile.skinTone) : t('skins.unknown')}
-                    </div>
-                  </div>
+                  {profile ? (
+                    <>
+                      <div 
+                        className="w-10 h-10 rounded-lg shadow-inner" 
+                        style={{ backgroundColor: rgbToHex(profile.skinRgb) }}
+                      />
+                      <div>
+                        <div className="font-mono text-ink text-sm uppercase">
+                          {rgbToHex(profile.skinRgb)}
+                        </div>
+                        <div className="text-xs text-ink-second font-mono mt-1">
+                          {formatSkinTone(profile.skinTone)}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-xs text-ink-second font-mono">{t('uncalibrated')}</span>
+                  )}
                 </div>
               </div>
 

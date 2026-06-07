@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
+import { eq } from 'drizzle-orm';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { openDb, schema } from '@/db/src/client';
@@ -89,4 +90,21 @@ export async function POST(req: NextRequest): Promise<Response> {
     skinRgb: analysis.skinRgb,
     analysisSource: analysisOk ? 'server' : 'client_fallback',
   });
+}
+
+export async function DELETE(req: NextRequest): Promise<Response> {
+  const body = await req.json().catch(() => ({} as { sessionId?: unknown }));
+  const sessionId = typeof body.sessionId === 'string' ? body.sessionId : null;
+
+  if (!sessionId) {
+    return json({ error: 'Missing session ID' }, 400);
+  }
+
+  const { db } = openDb();
+  await db
+    .update(schema.userSessions)
+    .set({ current_hand_image_id: null })
+    .where(eq(schema.userSessions.session_id, sessionId));
+
+  return json({ sessionId, cleared: true });
 }

@@ -14,6 +14,15 @@ import {
 } from '@/src/services/comfycloud';
 import { json, generateId } from '@/app/api/_helpers';
 
+const PUBLIC_ROOT = path.join(process.cwd(), 'public');
+const resolvePublicPath = (assetPath: string) => {
+  if (assetPath.startsWith('/')) {
+    return path.join(PUBLIC_ROOT, assetPath.slice(1));
+  }
+
+  return path.isAbsolute(assetPath) ? assetPath : path.join(PUBLIC_ROOT, assetPath);
+};
+
 export async function POST(req: NextRequest): Promise<Response> {
   const body = await req.json() as {
     sessionId?: string;
@@ -80,20 +89,18 @@ export async function POST(req: NextRequest): Promise<Response> {
         // Mocking behavior
         await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate delay
         
-        const outDir = path.join(process.cwd(), 'data', 'tryon_results');
+        const outDir = path.join(PUBLIC_ROOT, 'data', 'tryon_results');
         await mkdir(outDir, { recursive: true });
         const outName = `${tryonJobId}.png`;
         
-        const srcPath = style.image_url.startsWith('/') 
-          ? path.join(process.cwd(), style.image_url.substring(1)) // Remove leading slash for local disk
-          : style.image_url;
+        const srcPath = resolvePublicPath(style.image_url);
           
         try {
           await copyFile(srcPath, path.join(outDir, outName));
         } catch (e) {
           console.error(`Failed to copy style image for mock try-on:`, e);
           try {
-            await copyFile(path.join(process.cwd(), style.image_url), path.join(outDir, outName));
+            await copyFile(resolvePublicPath(style.image_url), path.join(outDir, outName));
           } catch (e2) {
             console.error(`Second copy attempt failed:`, e2);
           }
@@ -120,8 +127,8 @@ export async function POST(req: NextRequest): Promise<Response> {
         return;
       }
 
-      const handName = await uploadImage(path.join(process.cwd(), handImage.image_url));
-      const styleName = await uploadImage(path.join(process.cwd(), style.image_url));
+      const handName = await uploadImage(resolvePublicPath(handImage.image_url));
+      const styleName = await uploadImage(resolvePublicPath(style.image_url));
       const workflow = buildTryonWorkflow(handName, styleName);
       const promptId = await submitPrompt(workflow);
 
@@ -136,7 +143,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         const outImg = outputs[0];
         if (outImg) {
           const imgBuffer = await downloadView(outImg.filename, outImg.subfolder, outImg.type);
-          const outDir = path.join(process.cwd(), 'data', 'tryon_results');
+          const outDir = path.join(PUBLIC_ROOT, 'data', 'tryon_results');
           await mkdir(outDir, { recursive: true });
           const outName = `${tryonJobId}.png`;
           await writeFile(path.join(outDir, outName), imgBuffer);
@@ -164,18 +171,16 @@ export async function POST(req: NextRequest): Promise<Response> {
       
       // Fallback: Mock generation by copying pre-rendered image
       try {
-        const outDir = path.join(process.cwd(), 'data', 'tryon_results');
+        const outDir = path.join(PUBLIC_ROOT, 'data', 'tryon_results');
         await mkdir(outDir, { recursive: true });
         const outName = `${tryonJobId}.png`;
         
-        const srcPath = style.image_url.startsWith('/') 
-          ? path.join(process.cwd(), style.image_url.substring(1)) // Remove leading slash for local disk
-          : style.image_url;
+        const srcPath = resolvePublicPath(style.image_url);
           
         try {
           await copyFile(srcPath, path.join(outDir, outName));
         } catch (copyErr) {
-          await copyFile(path.join(process.cwd(), style.image_url), path.join(outDir, outName));
+          await copyFile(resolvePublicPath(style.image_url), path.join(outDir, outName));
         }
         
         const resultUrl = `/data/tryon_results/${outName}`;

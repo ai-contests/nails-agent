@@ -61,8 +61,29 @@ export function TryOnModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tryOnMode, setTryOnMode] = useState<'demo' | 'custom' | null>(null);
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [progress, setProgress] = useState(0);
   
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startProgress = (limit: number = 90, duration: number = 3000) => {
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    setProgress(0);
+    const startTime = Date.now();
+    progressIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const calculated = Math.min(limit, (elapsed / duration) * limit);
+      setProgress(calculated);
+      if (calculated >= limit) {
+        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      }
+    }, 50);
+  };
+
+  const completeProgress = () => {
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    setProgress(100);
+  };
 
   const getHandModelFromImageUrl = (url: string): string => {
     const mapping: Record<string, string> = {
@@ -130,9 +151,8 @@ export function TryOnModal({
 
   useEffect(() => {
     return () => {
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-      }
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
   }, []);
 
@@ -146,6 +166,7 @@ export function TryOnModal({
     setTryOnMode('custom');
     setJobStatus('running');
     setErrorMessage(null);
+    startProgress(90, 5000); // 5 seconds to reach 90%
 
     try {
       const res = await fetch('/api/tryon-jobs', {
@@ -175,6 +196,7 @@ export function TryOnModal({
   const startDemoTryOn = async () => {
     setTryOnMode('demo');
     setJobStatus('running');
+    startProgress(100, 1200);
     
     setTimeout(async () => {
       try {
@@ -209,9 +231,12 @@ export function TryOnModal({
         
         if (data.status === 'success') {
           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-          setResultImage(data.resultImageUrl);
-          setOriginalHandImage(data.inputHandImageUrl);
-          setJobStatus('success');
+          completeProgress();
+          setTimeout(() => {
+            setResultImage(data.resultImageUrl);
+            setOriginalHandImage(data.inputHandImageUrl);
+            setJobStatus('success');
+          }, 400);
         } else if (data.status === 'failed') {
           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
           setErrorMessage(data.errorMessage || 'AI generation failed.');
@@ -297,13 +322,20 @@ export function TryOnModal({
         {/* Scenario 2: Job Running */}
         {jobStatus === 'running' && (
           <div className="text-center py-12 flex flex-col items-center">
-            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
-            <h3 className="text-base font-bold text-ink mb-2">
+            <Loader2 className="w-12 h-12 text-primary animate-spin mb-6" />
+            <div className="w-full max-w-xs mb-3 bg-c-border/50 rounded-full h-1.5 overflow-hidden">
+              <div 
+                className="bg-primary h-full transition-all duration-300 ease-out rounded-full" 
+                style={{ width: `${progress}%` }} 
+              />
+            </div>
+            <h3 className="text-base font-bold text-ink mb-1">
               {tryOnMode === 'demo' ? t('loadingDemoTitle') : t('loadingCustomTitle')}
             </h3>
             <p className="text-xs text-ink-second max-w-xs leading-relaxed">
               {tryOnMode === 'demo' ? t('loadingDemoDesc') : t('loadingCustomDesc')}
             </p>
+            <p className="text-primary font-mono text-[10px] mt-2">{Math.round(progress)}%</p>
           </div>
         )}
 

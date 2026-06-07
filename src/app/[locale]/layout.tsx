@@ -17,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 
 export const metadata: Metadata = {
-  title: 'Nails-Agent',
+  title: 'Nails Agent',
   description: 'AI Nail Try-on & Intelligent Operations',
 };
 

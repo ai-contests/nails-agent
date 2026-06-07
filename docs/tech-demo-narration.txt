@@ -1,0 +1,11 @@
+Nails-Agent is powered by a multi-modal AI architecture. 
+
+First, our computer vision pipeline. Using MediaPipe, we extract twenty-one three-D keypoints to model hand geometry. Simultaneously, K-Means clustering analyzes skin tones, creating a precise digital hand profile.
+
+The heart of virtual try-on is our optimized Comfy-U-I workflow. Built on FLUX dot two Klein, a nine-billion parameter model, we've integrated custom NAG and C-F-G-Zero-Star nodes. 
+
+NAG, or Normalized Attention Guidance, preserves skin texture while the C-F-G-Zero-Star guider enhances nail patterns, eliminating the common issue of style degradation. 
+
+By cascading Reference Latents, we achieve zero-shot style transfer. The nail design is naturally wrapped around the three-D curvature of the user's hand with one-K photorealistic quality.
+
+Finally, the Agent closes the loop. It monitors engagement, updates heat scores, and automatically refines the recommendation strategy, ensuring a data-driven evolution of the platform.

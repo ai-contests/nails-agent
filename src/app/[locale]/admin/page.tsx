@@ -8,6 +8,8 @@ import { TimelineNode } from '@/components/admin/TimelineNode';
 import { Link } from '@/src/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
 import { AnalyticsCharts } from '@/src/components/admin/AnalyticsCharts';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 
 interface AgentRun {
@@ -306,6 +308,10 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-3 mb-1">
+              <Link href="/" className="flex items-center gap-2 group">
+                <img src="/logo.png" alt="Nails Agent Logo" className="h-6 w-auto object-contain brightness-0 invert" />
+                <span className="text-lg font-bold text-text-dark-primary">Nails Agent</span>
+              </Link>
               <h1 className="text-xl font-bold text-text-dark-primary">{t('title')}</h1>
               <Link href="/" className="text-xs text-accent-blue hover:underline">{t('backConsumer')}</Link>
             </div>
@@ -653,7 +659,11 @@ export default function AdminDashboard() {
               <div className="text-[10px] font-bold text-text-dark-muted uppercase mb-1">
                 {msg.role === 'user' ? t('operator') : t('copilotTitle')}
               </div>
-              <p className="text-xs text-text-dark-primary whitespace-pre-wrap">{msg.content}</p>
+              <div className="text-xs text-text-dark-primary markdown-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {msg.content}
+                </ReactMarkdown>
+              </div>
             </div>
           ))}
           {sendingChat && (

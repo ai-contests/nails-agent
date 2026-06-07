@@ -1,5 +1,7 @@
 import { Card } from '../ui/Card';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export interface TimelineNodeProps {
   id: string;
@@ -24,9 +26,11 @@ export function TimelineNode({ id, status, title, description }: TimelineNodePro
           <span className="text-xs font-semibold text-text-dark-primary">{title}</span>
           <span className="text-[10px] text-text-dark-muted font-mono">{id}</span>
         </div>
-        <p className="text-xs text-text-dark-secondary leading-relaxed line-clamp-2">
-          {description}
-        </p>
+        <div className="text-xs text-text-dark-secondary leading-relaxed line-clamp-2 markdown-content-mini">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {description}
+          </ReactMarkdown>
+        </div>
       </Card>
     </div>
   );

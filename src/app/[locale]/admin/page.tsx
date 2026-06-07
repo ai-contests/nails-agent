@@ -286,14 +286,14 @@ export default function AdminDashboard() {
               >
                 <TimelineNode
                   id={r.agent_run_id.slice(0, 8)}
-                  title={r.trigger_type}
+                  title={t(`trigger_${r.trigger_type}` as Parameters<typeof t>[0]) || r.trigger_type}
                   status={
                     r.status === 'completed' ? 'done' :
                     (r.status === 'failed' || (r.status === 'running' && new Date(r.started_at).getTime() < Date.now() - 5 * 60 * 1000)) ? 'failed' :
                     'active'
                   }
                   description={
-                    r.chat_summary || r.error_message ||
+                    renderI18n(r.chat_summary) || r.error_message ||
                     t('loadingDetail')
                   }
                 />
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
           <DecisionCard
             title={t('lastRun')}
             status={lastRun
-              ? (lastRun.status === 'completed' ? 'done' : lastRun.status === 'failed' ? 'failed' : 'running')
+              ? (lastRun.status === 'completed' ? 'done' : lastRun.status === 'failed' ? 'failed' : 'active')
               : 'done'}
           >
             {lastRun ? (

@@ -1,0 +1,221 @@
+{
+  "project": "nails-agent",
+  "doc_version": "v1",
+  "language": "zh",
+  "goal": "给视频生成 Agent 使用的 C 端逻辑摘要、素材索引和分镜提示",
+  "source_refs": [
+    "src/services/handCV.ts",
+    "src/services/hand_analysis_cli.py",
+    "tools/extraction/src/extractAll.ts",
+    "tools/extraction/src/maskCrop.ts",
+    "tools/extraction/src/colorExtractor.ts",
+    "tools/extraction/src/lengthExtractor.ts",
+    "src/services/comfycloud.ts",
+    "public/nail_tryon_klein_9b.json"
+  ],
+  "logic_summary": {
+    "hand_analysis": {
+      "input": "用户上传手图",
+      "output": [
+        "handShape",
+        "handShapeConfidence",
+        "skinTone",
+        "skinToneConfidence",
+        "skinRgb",
+        "rawMetrics"
+      ],
+      "fallback": "Python 分析失败或返回 unknown 时，按 imagePath hash 走确定性 mock，保证演示稳定",
+      "key_point": "先理解手，再进入推荐和试戴"
+    },
+    "nail_extraction": {
+      "input": "单款美甲图 / 试戴成品图",
+      "output": [
+        "primary_color_family",
+        "primary_color_name",
+        "primary_color_rgb",
+        "secondary_color_family",
+        "secondary_color_name",
+        "secondary_color_rgb",
+        "dominant_palette",
+        "length_tag",
+        "length_ratio",
+        "length_confidence"
+      ],
+      "key_point": "把“好看”拆成可计算的颜色、长度和轮廓"
+    },
+    "tryon": {
+      "runtime": "ComfyCloud + Nano Banana 2",
+      "reference_workflow": "FLUX 2 Klein / public/nail_tryon_klein_9b.json",
+      "workflow_nodes": [
+        "LoadImage",
+        "ImageBatch",
+        "GeminiImage2Node",
+        "SaveImage"
+      ],
+      "prompt_rule": "IMAGE 1 保持手 100% 不变；IMAGE 2 只提供美甲设计",
+      "key_point": "把款式自然包裹到手指弧度上，生成可直接展示的上手效果"
+    }
+  },
+  "asset_pool": [
+    {
+      "id": "home_slider",
+      "path": "frame_10.png",
+      "type": "image",
+      "role": "首页 before/after 对比滑杆",
+      "note": "用于交代产品心智和试戴入口"
+    },
+    {
+      "id": "tryon_loading_modal",
+      "path": "frame_60.png",
+      "type": "image",
+      "role": "试戴加载弹窗",
+      "note": "用于展示生成中状态"
+    },
+    {
+      "id": "tryon_result_modal",
+      "path": "frame_90.png",
+      "type": "image",
+      "role": "试戴结果弹窗",
+      "note": "用于展示 before/after 对比和相似款推荐"
+    },
+    {
+      "id": "style_detail_page",
+      "path": "frame_98.png",
+      "type": "image",
+      "role": "款式详情页",
+      "note": "用于展示款式页信息结构"
+    },
+    {
+      "id": "style_detail_zoom",
+      "path": "frame_105.png",
+      "type": "image",
+      "role": "款式详情页局部",
+      "note": "用于强化细节和材质感"
+    },
+    {
+      "id": "comparison_sheet",
+      "path": "public/images/tryon_v2/compare_sheet.jpg",
+      "type": "image",
+      "role": "手图 vs 美甲图对照",
+      "note": "用于讲解手图和美甲参考图如何进入工作流"
+    },
+    {
+      "id": "single_nail_reference",
+      "path": "public/images/tryon_v2/white_nails_85c5f2cafb.png",
+      "type": "image",
+      "role": "单款美甲原图示例",
+      "note": "用于展示可被提取和迁移的单款设计"
+    },
+    {
+      "id": "batch_contact_sheet",
+      "path": "public/images/tryon_v2/batch_contact_sheet.jpg",
+      "type": "image",
+      "role": "批量试戴总览",
+      "note": "用于展示试戴产能和多姿态覆盖"
+    },
+    {
+      "id": "bgwash_compare",
+      "path": "public/images/tryon_v2/bgwash_03_compare.jpg",
+      "type": "image",
+      "role": "背景清洗前后对照",
+      "note": "用于表现从原图到 clean catalog 风格的处理"
+    },
+    {
+      "id": "hand_sample_dir",
+      "path": "data/seed_hands/",
+      "type": "directory",
+      "role": "手部上传样例池",
+      "note": "挑一张轮廓清楚、背景干净的单手正面图作为识别场景输入"
+    },
+    {
+      "id": "workflow_reference",
+      "path": "public/nail_tryon_klein_9b.json",
+      "type": "json",
+      "role": "FLUX 2 Klein 参考工作流",
+      "note": "用于解释底层图纸结构，不是当前唯一运行路径"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_01_hand_analysis",
+      "title": "先看懂手",
+      "duration_sec": 10,
+      "goal": "展示手图上传、关键点识别、手型和肤色输出",
+      "assets": [
+        "data/seed_hands/hands_01f04214bb.jpg",
+        "frame_10.png"
+      ],
+      "visual_prompt": "真实产品录屏风格，先显示上传的手部照片，再叠加 21 个关键点、手型标签、肤色标签、置信度和简短说明；画面干净，偏产品演示，不要夸张特效。",
+      "narration": "系统先看懂你的手型和肤色，再决定后面的试戴和推荐。",
+      "negative_prompt": "不要出现第二只手，不要卡通化，不要科幻 HUD 过重，不要让文字遮挡手部主体。"
+    },
+    {
+      "id": "scene_02_nail_extraction",
+      "title": "再拆解美甲",
+      "duration_sec": 12,
+      "goal": "展示单款美甲特征提取，强调颜色、长度、mask 和主辅色",
+      "assets": [
+        "public/images/tryon_v2/compare_sheet.jpg",
+        "public/images/tryon_v2/batch_contact_sheet.jpg",
+        "public/images/tryon_v2/bgwash_03_compare.jpg"
+      ],
+      "visual_prompt": "把一张美甲图拆成可解释的视觉层：指甲 mask、主色、辅色、长度标签、色板和轮廓轮廓线；展示这是一个结构化提取过程，而不是简单图片分类。",
+      "narration": "我们不是只看这张图好不好看，而是把它拆成颜色、长度和轮廓这些可复用的特征。",
+      "negative_prompt": "不要把结果做成抽象海报，不要丢失原始款式信息，不要出现错误的指甲数量。"
+    },
+    {
+      "id": "scene_03_flux_reference",
+      "title": "工作流图纸",
+      "duration_sec": 10,
+      "goal": "展示 FLUX 2 Klein 参考工作流结构",
+      "assets": [
+        "public/nail_tryon_klein_9b.json"
+      ],
+      "visual_prompt": "以工作流图纸、节点流和代码注释的方式展示底层生成过程：LoadImage、ImageBatch、ReferenceLatent、NAGuidance、CFGZeroStar、Flux2Scheduler、Sampler、SaveImage；整体像一个技术演示屏幕。",
+      "narration": "底层试戴图纸会先锁住手，再把美甲设计贴进去，最后合成成可看的结果。",
+      "negative_prompt": "不要把节点画得太乱，不要引入无关模型名，不要让图纸看起来像纯代码截图。"
+    },
+    {
+      "id": "scene_04_nanobanana_tryon",
+      "title": "执行试戴",
+      "duration_sec": 14,
+      "goal": "展示 ComfyCloud + Nano Banana 2 的试戴执行和等待状态",
+      "assets": [
+        "frame_60.png",
+        "frame_90.png"
+      ],
+      "visual_prompt": "试戴加载弹窗先出现，随后切到生成成功的 before/after 对比滑杆；右侧可以补一小块状态信息，说明正在使用 ComfyCloud 和 Nano Banana 2 处理图像融合。",
+      "narration": "手图和款式图会被送进云端工作流，生成后直接回到前台展示试戴效果。",
+      "negative_prompt": "不要出现多余的 AI 文案，不要让加载态太花，不要改变手的姿势和背景。"
+    },
+    {
+      "id": "scene_05_result_and_recommendation",
+      "title": "结果与推荐",
+      "duration_sec": 12,
+      "goal": "展示试戴结果、相似手型推荐和收藏动作",
+      "assets": [
+        "frame_90.png",
+        "frame_98.png",
+        "frame_105.png"
+      ],
+      "visual_prompt": "在试戴结果下方，补出相似手型推荐卡片和收藏按钮；画面保持克制，重点是用户可以快速比较、收藏和继续试。",
+      "narration": "看完试戴结果，用户可以继续看相似手型的热门选择，也可以直接收藏。",
+      "negative_prompt": "不要做成电商广告页，不要插入夸张价格标签，不要打断试戴主视觉。"
+    }
+  ],
+  "editing_rules": {
+    "must_keep": [
+      "手部真实感",
+      "试戴前后可比性",
+      "指甲款式和参考图一致",
+      "界面干净、信息密度适中"
+    ],
+    "must_avoid": [
+      "多余手指",
+      "多余手掌",
+      "错误手型",
+      "过强的营销海报感",
+      "过度科幻特效"
+    ]
+  }
+}
